@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
-abstract class AppState extends ChangeNotifier {
+class AppState extends ChangeNotifier {
   bool _isUserAuthenticated = false;
   bool get isUserAuthenticated => _isUserAuthenticated;
 

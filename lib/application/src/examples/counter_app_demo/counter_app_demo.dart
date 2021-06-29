@@ -10,7 +10,6 @@ import '../../core/app_state.dart';
 class CounterAppDemo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final _DependencyA depA = _DependencyA();
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark(),
@@ -18,8 +17,8 @@ class CounterAppDemo extends StatelessWidget {
         child: _CounterApp(),
         appStateModel: _CounterState(),
         providers: [
-          // createProvider<_DependencyA>(depA),
-          // createProvider<_DependencyB>(_DependencyB()),
+          Provider(create: (_) => _DependencyA()),
+          Provider(create: (_) => _DependencyB()),
         ],
       ),
     );
@@ -29,16 +28,16 @@ class CounterAppDemo extends StatelessWidget {
 class _CounterApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final counterState = getAppStateAs<_CounterState>(context);
-    // final depA = context.read<_DependencyA>();
-    // final depB = context.read<_DependencyB>();
+    final counterState = Provider.of<_CounterState>(context);
+    final depA = context.read<_DependencyA>();
+    final depB = context.read<_DependencyB>();
     return Scaffold(
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            // Text('Dependency A:${depA.value}'),
-            // Text('Dependency B:${depB.value}'),
+            Text('Dependency A:${depA.value}'),
+            Text('Dependency B:${depB.value}'),
             Text('You have pushed the button this many times:'),
             Text(
               '${counterState.count}',
@@ -64,6 +63,9 @@ class _CounterState extends AppState {
     _count++;
     notifyListeners();
   }
+
+  @override
+  bool get isAppAuthenticated => false;
 }
 
 class _DependencyA {

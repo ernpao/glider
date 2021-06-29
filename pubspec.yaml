@@ -12,6 +12,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   provider: ^5.0.0
   amplify_auth_cognito: ^0.1.6
+  hover: ^0.3.0
 
 dev_dependencies:
   flutter_test:

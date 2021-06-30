@@ -1,15 +1,23 @@
+library application_layer;
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'app_state.dart';
+import 'state_management/state_management.dart';
 
-class App extends StatelessWidget {
+export 'state_management/state_management.dart';
+export 'ui_widgets/ui_widgets.dart';
+
+/// A MaterialApp wrapped with a MultiProvider widget used for
+/// general development of apps with state management
+/// and dependency injection.
+class Application extends StatelessWidget {
   final Widget child;
   final List<InheritedProvider>? providers;
-  final AppState? appStateModel;
+  final ApplicationState? appStateModel;
   final bool useMaterialAppWidget;
 
-  App({
+  Application({
     required this.child,
     this.appStateModel,
     this.providers,
@@ -45,5 +53,5 @@ class App extends StatelessWidget {
 }
 
 T getAppStateAs<T>(BuildContext context) {
-  return Provider.of<AppState>(context) as T;
+  return Provider.of<ApplicationState>(context) as T;
 }

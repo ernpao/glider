@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import '../../core/app.dart';
 import 'package:hover/widgets.dart';
 
+import '../../src/application_layer.dart';
 import 'auth_flow_demo_state.dart';
 
 class AuthFlowDemo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return App(
+    return Application(
       appStateModel: AuthFlowDemoState(),
       child: AuthFlowDemoBody(),
     );

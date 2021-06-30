@@ -1,12 +1,11 @@
-import 'package:flutter_with_serverless/application/src/core/app_state.dart';
-import 'package:flutter_with_serverless/application/src/mixins/auth_flow.dart';
+import '../../src/application_layer.dart';
 
 class AuthFlowDemoUser {
   final String username;
   AuthFlowDemoUser(this.username);
 }
 
-class AuthFlowDemoState extends AppState with AuthFlowMixin {
+class AuthFlowDemoState extends ApplicationState with AuthFlowMixin {
   AuthFlowDemoState({
     this.otpRequired = true,
   });

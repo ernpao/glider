@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../core/app.dart';
-import '../../core/app_state.dart';
+import '../../src/application_layer.dart';
 
 /// An app to demonstrate state management using
 /// the core library.
@@ -13,7 +12,7 @@ class CounterAppDemo extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark(),
-      home: App(
+      home: Application(
         child: _CounterApp(),
         appStateModel: _CounterState(),
         providers: [
@@ -55,7 +54,7 @@ class _CounterApp extends StatelessWidget {
   }
 }
 
-class _CounterState extends AppState {
+class _CounterState extends ApplicationState {
   int _count = 0;
   int get count => _count;
 

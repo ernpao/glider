@@ -1,13 +1,14 @@
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
-abstract class AppState extends ChangeNotifier {
+/// Base class
+abstract class ApplicationState extends ChangeNotifier {
   bool get isAppAuthenticated;
 }
 
-class AppStateProvider extends ChangeNotifierProvider<AppState> {
+class AppStateProvider extends ChangeNotifierProvider<ApplicationState> {
   AppStateProvider(
-    AppState appStateModel, {
+    ApplicationState appStateModel, {
     Widget child = const SizedBox.shrink(),
   }) : super(
           create: (_) => appStateModel,

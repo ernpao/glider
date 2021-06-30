@@ -8,14 +8,14 @@
             "name": "flutter-with-serverless",
             "request": "launch",
             "type": "dart",
-            "program": "lib/application/main.dart"
+            // "program": "lib/application/main.dart"
         },
         {
             "name": "flutter-with-serverless (profile mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "profile",            
-            "program": "lib/application/main.dart"
+            // "program": "lib/application/main.dart"
         }
     ]
 }

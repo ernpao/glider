@@ -47,19 +47,18 @@ class SignUpPage extends StatelessWidget {
         HoverEmailSignUpForm(
           title: "Create A New Account",
           onSubmit: (email, password) {
-            state.signUpWithEmail(email, password);
+            if (email != null && password != null) {
+              state.signUpWithEmail(email, password);
+            }
           },
           formName: "aws-cognito-sign-up",
         ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: HoverCallToActionButton(
-            text: "Log In Instead",
-            onPressed: state.cancelSignUp,
-            color: Colors.orange,
-            cornerRadius: 6,
-          ),
-        )
+        HoverCallToActionButton(
+          text: "Log In Instead",
+          onPressed: state.cancelSignUp,
+          color: Colors.orange,
+          maxWidth: 418,
+        ),
       ],
     );
   }
@@ -78,15 +77,12 @@ class LoginPage extends StatelessWidget {
           },
           formName: "aws-cognito-login",
         ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: HoverCallToActionButton(
-            text: "Create New Account",
-            color: Colors.orange,
-            onPressed: state.startSignUp,
-            cornerRadius: 6,
-          ),
-        )
+        HoverCallToActionButton(
+          maxWidth: 418,
+          text: "Create New Account",
+          color: Colors.orange,
+          onPressed: state.startSignUp,
+        ),
       ],
     );
   }

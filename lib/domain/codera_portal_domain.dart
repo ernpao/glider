@@ -1,0 +1,1 @@
+library codera_portal_domain;

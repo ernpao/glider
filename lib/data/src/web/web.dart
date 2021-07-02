@@ -157,6 +157,6 @@ class WebResponse extends Result {
 mixin WebScheme {
   bool get usesHttps;
 
-  /// Returns "http" or "https"
+  /// Returns "http" or "https" based on the URI scheme being used.
   String get webScheme => usesHttps ? "https" : "http";
 }

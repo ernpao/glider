@@ -6,5 +6,5 @@ abstract class Result with DebugConsoleLogging {
 
   @override
   String toString() =>
-      "${this.runtimeType} as Result is${success ? " " : " not "}successful. $message";
+      "${this.runtimeType} result is${success ? " " : " not "}successful. $message";
 }

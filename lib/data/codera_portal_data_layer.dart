@@ -1,7 +1,7 @@
 import 'src/data_layer.dart';
 
-class CoderaPortalAPI extends WebAPI {
-  CoderaPortalAPI({
+class CoderaPortalClient extends WebClient {
+  CoderaPortalClient({
     bool useHttps = true,
   }) : super(
           host: "portal.codera.tech",
@@ -11,16 +11,16 @@ class CoderaPortalAPI extends WebAPI {
   POST login(String username, String password) => post("/login")
     ..withJsonContentType()
     ..withBody(
-      SimpleJSON()..add("username", username)..add("password", password),
+      JSON()..set("username", username)..set("password", password),
     );
 
   POST register(String email, String username, String password) =>
       post("/register")
         ..withJsonContentType()
         ..withBody(
-          SimpleJSON()
-            ..add("username", username)
-            ..add("password", password)
-            ..add("email", email),
+          JSON()
+            ..set("username", username)
+            ..set("password", password)
+            ..set("email", email),
         );
 }

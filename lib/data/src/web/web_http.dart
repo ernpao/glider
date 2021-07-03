@@ -1,30 +1,36 @@
 library web;
 
-import 'dart:convert';
-
-import 'package:flutter_with_serverless/data/src/models/models.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 
+import '../models/models.dart';
 import 'mixins.dart';
 
-abstract class WebAPI with WebHTTP, WebHost {
+class WebClient with WebHTTP, WebHost {
   final String host;
-  final Map<String, String>? defaultHeaders;
+
+  /// A set of headers that will be included
+  /// in all requests made by this client.
+  final Map<String, String>? fixedHeaders;
+
+  /// If set, all requests will be made to
+  /// this port.
   final int? defaultPort;
 
-  WebAPI({
+  WebClient({
     required this.host,
     bool useHttps = true,
-    this.defaultHeaders,
+    this.fixedHeaders,
     this.defaultPort,
   }) {
     usesHttps = useHttps;
   }
 
+  /// Indicates whether requests made by this
+  /// client use HTTPS (true by default).
   late final bool usesHttps;
 
-  GET index() => get("/")..withHeaders(defaultHeaders ?? {});
+  GET index() => get("/")..withHeaders(fixedHeaders ?? {});
 
   /// Generates a GET request.
   GET get(String? path) => GET(
@@ -32,7 +38,7 @@ abstract class WebAPI with WebHTTP, WebHost {
         path,
         useHttps: usesHttps,
       )
-        ..withHeaders(defaultHeaders ?? {})
+        ..withHeaders(fixedHeaders ?? {})
         ..withPort(defaultPort);
 
   /// Generates a POST request.
@@ -41,7 +47,7 @@ abstract class WebAPI with WebHTTP, WebHost {
         path,
         useHttps: usesHttps,
       )
-        ..withHeaders(defaultHeaders ?? {})
+        ..withHeaders(fixedHeaders ?? {})
         ..withPort(defaultPort);
 }
 
@@ -130,19 +136,6 @@ class POST extends WebRequest {
     );
     return WebResponse(response);
   }
-}
-
-extension ResponseExtensions on Response {
-  dynamic get decodedBody => jsonDecode(body);
-  Map<String, dynamic> get decodedBodyAsJson =>
-      decodedBody as Map<String, dynamic>;
-  bool get hasStatusCode2XX => statusCode.toString().startsWith("2");
-  bool get hasStatusCode3XX => statusCode.toString().startsWith("3");
-  bool get hasStatusCode4XX => statusCode.toString().startsWith("4");
-  bool get hasStatusCode5XX => statusCode.toString().startsWith("5");
-  bool get hasSuccessKey => decodedBodyAsJson.keys.toList().contains("success");
-  bool get successKeyValue => decodedBodyAsJson["success"];
-  bool get isSuccessful => hasSuccessKey ? successKeyValue : hasStatusCode2XX;
 }
 
 class WebResponse extends Result {

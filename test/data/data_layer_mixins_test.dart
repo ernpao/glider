@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_with_serverless/data/src/models/mixins/mixins.dart';
+import 'package:flutter_with_serverless/data/src/models/mixins.dart';
 
 void main() {
   test("Data Layer Mixins Test - DateTimeFormatter", () async {
@@ -16,7 +16,7 @@ final MixinsTester m = MixinsTester(
 
 /// A class with all the mixins for testing purposes.
 class MixinsTester
-    with DateTimeFormatter, EmailAddress, MobileNumber, DebugConsoleLogging {
+    with DateTimeFormatting, EmailAddress, MobileNumber, DebugConsoleLogging {
   @override
   final String email;
 

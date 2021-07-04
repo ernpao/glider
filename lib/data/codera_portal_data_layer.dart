@@ -8,14 +8,14 @@ class CoderaPortalClient extends WebClient {
           useHttps: useHttps,
         );
 
-  POST login(String username, String password) => post("/login")
+  POST login(String username, String password) => httpPOST("/login")
     ..withJsonContentType()
     ..withBody(
       JSON()..set("username", username)..set("password", password),
     );
 
   POST register(String email, String username, String password) =>
-      post("/register")
+      httpPOST("/register")
         ..withJsonContentType()
         ..withBody(
           JSON()
@@ -23,4 +23,7 @@ class CoderaPortalClient extends WebClient {
             ..set("password", password)
             ..set("email", email),
         );
+
+  GET verify(String accessToken) =>
+      httpGET("/verify")..withHeader("x-access-token", accessToken);
 }

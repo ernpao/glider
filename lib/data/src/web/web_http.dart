@@ -30,10 +30,10 @@ class WebClient with WebHTTP, WebHost {
   /// client use HTTPS (true by default).
   late final bool usesHttps;
 
-  GET index() => get("/")..withHeaders(fixedHeaders ?? {});
+  GET index() => httpGET("/")..withHeaders(fixedHeaders ?? {});
 
   /// Generates a GET request.
-  GET get(String? path) => GET(
+  GET httpGET(String? path) => GET(
         host,
         path,
         useHttps: usesHttps,
@@ -42,7 +42,7 @@ class WebClient with WebHTTP, WebHost {
         ..withPort(defaultPort);
 
   /// Generates a POST request.
-  POST post(String? path) => POST(
+  POST httpPOST(String? path) => POST(
         host,
         path,
         useHttps: usesHttps,
@@ -142,14 +142,13 @@ class WebResponse extends Result {
   final Response httpResponse;
   WebResponse(this.httpResponse);
 
-  String get body => httpResponse.body;
-  dynamic get decodedBody => httpResponse.decodedBody;
-  Map<String, dynamic> get decodedBodyAsJson => httpResponse.decodedBodyAsJson;
+  JSON get body => JSON.fromMap(httpResponse.decodedBodyAsMap);
+
   int get statusCode => httpResponse.statusCode;
   Map<String, String> get headers => httpResponse.headers;
 
   @override
-  String get message => body;
+  String get message => httpResponse.body;
 
   @override
   bool get success => httpResponse.isSuccessful;

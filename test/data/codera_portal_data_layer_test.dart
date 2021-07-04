@@ -14,4 +14,13 @@ void main() {
     response.debug();
     assert(response.success);
   });
+
+  test("CoderaPortalAPI Verify", () async {
+    var response = await api.login("ernpao", "Zero1928!").resolve();
+    final token = response.body.get("accessToken");
+    print(token);
+    response = await api.verify(token).resolve();
+    response.debug();
+    assert(response.success);
+  });
 }

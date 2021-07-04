@@ -16,18 +16,26 @@ class JSON extends Mappable with DebugConsoleLogging {
 
   void _setContent(Map<String, dynamic> content) => _content = content;
 
-  static JSON fromMap(Map<String, dynamic> map) => JSON().._setContent(map);
-
   static JSON fromString(String jsonString) {
     final Map<String, dynamic> map =
         jsonDecode(jsonString) as Map<String, dynamic>;
     return JSON().._setContent(map);
   }
 
+  static JSON fromMap(Map<String, dynamic> map) => JSON().._setContent(map);
+
   String get prettified => JsonEncoder.withIndent('  ').convert(_content);
+
+  void debugProperty(String key) => print(get(key));
 
   @override
   String toString() => prettified;
+}
+
+/// Copies the contents of a JSON object to another object that extends the JSON class and returns that object.
+T copyJsonAs<T extends JSON>(JSON from, T to) {
+  to._setContent(from._content);
+  return to;
 }
 
 /// An object that represents the result of an operation where
@@ -53,8 +61,10 @@ abstract class Mappable {
   String encode() => jsonEncode(map());
 
   bool contains(String key) => map()[key] != null;
-  dynamic get(String key) => map()[key];
+  T get<T>(String key) => map()[key] as T;
 
   List<String> get keys => map().keys.toList();
   List<dynamic> get values => map().values.toList();
+
+  void forEach(void Function(String, dynamic) action) => map().forEach(action);
 }

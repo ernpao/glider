@@ -1,4 +1,4 @@
-package tech.codera.flutter_with_serverless
+package tech.codera.glider
 
 import io.flutter.embedding.android.FlutterActivity
 

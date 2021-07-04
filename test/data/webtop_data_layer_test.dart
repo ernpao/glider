@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_with_serverless/data/src/data_layer.dart';
-import 'package:flutter_with_serverless/data/webtop_data_layer.dart';
+import 'package:glider/data/src/data_layer.dart';
+import 'package:glider/data/webtop_data_layer.dart';
 
 void main() {
   final client = WebtopClient();

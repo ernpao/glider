@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_with_serverless/data/src/models/mixins.dart';
+import 'package:glider/data/src/models/mixins.dart';
 
 void main() {
   test("Data Layer Mixins Test - DateTimeFormatter", () async {

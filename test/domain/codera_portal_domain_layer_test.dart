@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_with_serverless/domain/codera_portal_domain_layer.dart';
+import 'package:glider/domain/codera_portal_domain_layer.dart';
 
 void main() {
   final api = CoderaPortal();

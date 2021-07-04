@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_with_serverless/data/codera_portal_data_layer.dart';
+import 'package:glider/data/codera_portal_data_layer.dart';
 
 void main() {
   final client = CoderaPortalClient();

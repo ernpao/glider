@@ -1,4 +1,4 @@
-name: flutter_with_serverless
+name: glider
 description: Base Flutter app for use with a serverless backend. 
 publish_to: 'none'
 version: 1.0.0+1
@@ -11,7 +11,6 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.2
   provider: ^5.0.0
-  amplify_auth_cognito: ^0.1.6
   hover: ^0.3.2+2
   http: ^0.13.3
   intl: ^0.17.0

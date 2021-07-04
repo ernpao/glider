@@ -1,10 +1,11 @@
 library async;
 
+import 'dart:convert';
+
+import 'mixins.dart';
+
 export 'extensions.dart';
 export 'mixins.dart';
-
-import 'dart:convert';
-import 'mixins.dart';
 
 class JSON extends Mappable with DebugConsoleLogging {
   Map<String, dynamic> _content = {};

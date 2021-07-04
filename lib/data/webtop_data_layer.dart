@@ -4,7 +4,10 @@ const int _web_port = 6767;
 const int _socket_port = 6868;
 const String _host = "192.168.100.191";
 
-class WebtopClient implements WebClientInterface, WebSocketInterface {
+abstract class WebtopClientInterface {}
+
+class WebtopClient
+    implements WebtopClientInterface, WebClientInterface, WebSocketInterface {
   final WebSocket _socket = WebSocket(host: _host, port: _socket_port);
   final WebClient _client = WebClient(host: _host, defaultPort: _web_port);
 

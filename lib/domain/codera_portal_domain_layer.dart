@@ -7,13 +7,22 @@ class CoderaPortalUser extends JSON with EmailAddress {
   String get accessToken => get<String>("accessToken");
 }
 
-class CoderaPortal {
-  CoderaPortalClient api = CoderaPortalClient();
+class CoderaPortal implements CoderaPortalClientInterface {
+  final CoderaPortalClient _api = CoderaPortalClient();
 
+  @override
   Future<CoderaPortalUser?> login(String username, String password) async {
-    final res = await (api.login(username, password).resolve());
+    final res = await (_api.login(username, password).resolve());
     return res.success
         ? copyJsonAs<CoderaPortalUser>(res.body, CoderaPortalUser())
         : null;
   }
+
+  @override
+  Future<bool> register(String email, String username, String password) async =>
+      (await _api.register(email, username, password).resolve()).success;
+
+  @override
+  Future<bool> verify(String accessToken) async =>
+      (await _api.verify(accessToken).resolve()).success;
 }

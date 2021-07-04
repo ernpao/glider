@@ -1,21 +1,34 @@
 import 'src/data_layer.dart';
 
-class CoderaPortalClient extends WebClient {
-  CoderaPortalClient({
-    bool useHttps = true,
-  }) : super(
-          host: "portal.codera.tech",
-          useHttps: useHttps,
-        );
+abstract class CoderaPortalClientInterface {
+  login(String username, String password);
+  register(String email, String username, String password);
+  verify(String accessToken);
+}
 
-  POST login(String username, String password) => httpPOST("/login")
+class CoderaPortalClient
+    implements CoderaPortalClientInterface, WebClientInterface {
+  CoderaPortalClient({
+    this.useHttps = true,
+  });
+
+  final bool useHttps;
+
+  late WebClient _client = WebClient(
+    host: "portal.codera.tech",
+    useHttps: useHttps,
+  );
+
+  @override
+  POST login(String username, String password) => _client.httpPOST("/login")
     ..withJsonContentType()
     ..withBody(
       JSON()..set("username", username)..set("password", password),
     );
 
+  @override
   POST register(String email, String username, String password) =>
-      httpPOST("/register")
+      _client.httpPOST("/register")
         ..withJsonContentType()
         ..withBody(
           JSON()
@@ -24,6 +37,16 @@ class CoderaPortalClient extends WebClient {
             ..set("email", email),
         );
 
+  @override
   GET verify(String accessToken) =>
-      httpGET("/verify")..withHeader("x-access-token", accessToken);
+      _client.httpGET("/verify")..withHeader("x-access-token", accessToken);
+
+  @override
+  GET httpGET(String? path) => _client.httpGET(path);
+
+  @override
+  POST httpPOST(String? path) => _client.httpPOST(path);
+
+  @override
+  GET index() => _client.index();
 }

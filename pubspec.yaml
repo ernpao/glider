@@ -1,5 +1,5 @@
 name: glider
-description: Base Flutter app for use with a serverless backend. 
+description: A library for developing 3 layer architecture apps with Flutter. 
 publish_to: 'none'
 version: 1.0.0+1
 

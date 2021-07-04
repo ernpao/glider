@@ -1,44 +1,37 @@
 import 'src/data_layer.dart';
 
-const int _webserver_port = 6767;
-const int _websocket_port = 6868;
+const int _web_port = 6767;
+const int _socket_port = 6868;
 const String _host = "192.168.100.191";
 
-class WebtopClient {
-  final WebtopSocket _socket = WebtopSocket();
-  final WebtopWebClient _client = WebtopWebClient();
+class WebtopClient implements WebClientInterface, WebSocketInterface {
+  final WebSocket _socket = WebSocket(host: _host, port: _socket_port);
+  final WebClient _client = WebClient(host: _host, defaultPort: _web_port);
 
+  @override
   GET index() => _client.index();
 
-  void connectToSocket({
-    required WebSocketListener listener,
-    Duration? pingInterval,
-  }) =>
-      _socket.connect(listener: listener, pingInterval: pingInterval);
+  @override
+  void openSocket(
+          {required WebSocketListener listener, Duration? pingInterval}) =>
+      _socket.openSocket(listener: listener, pingInterval: pingInterval);
 
-  /// Send data to the web socket.
-  void sendToSocket(WebSocketMessage message) => _socket.sendMessage(message);
+  @override
+  void send(WebSocketMessage message) => _socket.send(message);
 
-  /// Send JSON data to the web socket.
-  void sendJsonToSocket(JSON data, {String? type, String? topic}) =>
-      _socket.sendJSON(data, type: type, topic: topic);
+  @override
+  void sendJson(JSON data, {String? type, String? topic}) =>
+      _socket.sendJson(data, type: type, topic: topic);
 
-  /// Sends a ping type message to the web socket.
-  void pingSocket() => _socket.sendMessage(WebSocketMessage(type: "ping"));
+  /// Sends a ping type message to the WebSocket.
+  void pingSocket() => _socket.send(WebSocketMessage(type: "ping"));
 
-  /// Closes the web socket connection.
-  void closeSocketConnection() => _socket.closeConnection();
-}
+  @override
+  void closeSocket() => _socket.closeSocket();
 
-class WebtopSocket extends WebSocket {
-  WebtopSocket() : super(host: _host, port: _websocket_port);
-}
+  @override
+  GET httpGET(String? path) => _client.httpGET(path);
 
-class WebtopWebClient extends WebClient {
-  WebtopWebClient()
-      : super(
-          host: _host,
-          useHttps: false,
-          defaultPort: _webserver_port,
-        );
+  @override
+  POST httpPOST(String? path) => _client.httpPOST(path);
 }

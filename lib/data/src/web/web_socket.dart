@@ -7,20 +7,37 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 import '../models/models.dart';
 import 'mixins.dart';
 
-abstract class WebSocket with WebHost {
+abstract class WebSocketInterface {
+  /// Establish a connection with the WebSocket server.
+  void openSocket(
+      {required WebSocketListener listener, Duration? pingInterval});
+
+  /// Close the WebSocket connection.
+  void closeSocket();
+
+  /// Send a message to the WebSocket server.
+  void send(WebSocketMessage message);
+
+  /// Send JSON data to the WebSocket server.
+  void sendJson(JSON data, {String? type, String? topic});
+}
+
+class WebSocket with WebHost implements WebSocketInterface {
   final String host;
   final int port;
 
-  WebSocket({required this.host, required this.port});
+  WebSocket({
+    required this.host,
+    required this.port,
+  });
 
   IOWebSocketChannel? _channel;
   Stream? get stream => _channel?.stream;
   WebSocketSink? get sink => _channel?.sink;
 
-  void connect({
-    required WebSocketListener listener,
-    Duration? pingInterval,
-  }) {
+  @override
+  void openSocket(
+      {required WebSocketListener listener, Duration? pingInterval}) {
     _channel = IOWebSocketChannel.connect(
       'ws://$host:$port',
       pingInterval: pingInterval,
@@ -33,23 +50,26 @@ abstract class WebSocket with WebHost {
     );
   }
 
-  void closeConnection() => _channel?.sink.close(status.goingAway);
+  @override
+  void closeSocket() => _channel?.sink.close(status.goingAway);
+
+  @override
+  void send(WebSocketMessage message) => sink?.add(message.encode());
+
+  @override
+  void sendJson(JSON data, {String? type, String? topic}) {
+    send(WebSocketMessage(
+      type: type,
+      topic: topic,
+      data: data.map(),
+    ));
+  }
 
   WebSocketMessage _convertStreamData(d) {
     final String jsonString = d is String ? d : jsonEncode(d);
     final JSON json = JSON.fromString(jsonString);
     final WebSocketMessage message = WebSocketMessage.fromJSON(json);
     return message;
-  }
-
-  void sendMessage(WebSocketMessage message) => sink?.add(message.encode());
-
-  void sendJSON(JSON data, {String? type, String? topic}) {
-    sendMessage(WebSocketMessage(
-      type: type,
-      topic: topic,
-      data: data.map(),
-    ));
   }
 }
 

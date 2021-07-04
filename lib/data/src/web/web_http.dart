@@ -6,15 +6,24 @@ import 'package:http/http.dart';
 import '../models/models.dart';
 import 'mixins.dart';
 
-class WebClient with WebHTTP, WebHost {
+abstract class WebClientInterface {
+  GET index();
+
+  /// Creates a GET request.
+  GET httpGET(String? path);
+
+  /// Creates a POST request.
+  POST httpPOST(String? path);
+}
+
+class WebClient with WebHTTP, WebHost implements WebClientInterface {
   final String host;
 
   /// A set of headers that will be included
   /// in all requests made by this client.
   final Map<String, String>? fixedHeaders;
 
-  /// If set, all requests will be made to
-  /// this port.
+  /// If set, all requests will be made to this port.
   final int? defaultPort;
 
   WebClient({
@@ -30,9 +39,11 @@ class WebClient with WebHTTP, WebHost {
   /// client use HTTPS (true by default).
   late final bool usesHttps;
 
-  GET index() => httpGET("/")..withHeaders(fixedHeaders ?? {});
+  GET index() => httpGET("/")
+    ..withHeaders(fixedHeaders ?? {})
+    ..withPort(defaultPort);
 
-  /// Generates a GET request.
+  @override
   GET httpGET(String? path) => GET(
         host,
         path,
@@ -41,7 +52,7 @@ class WebClient with WebHTTP, WebHost {
         ..withHeaders(fixedHeaders ?? {})
         ..withPort(defaultPort);
 
-  /// Generates a POST request.
+  @override
   POST httpPOST(String? path) => POST(
         host,
         path,

@@ -11,7 +11,7 @@ void main() {
   });
 
   test("Webtop Websocket Connection", () async {
-    client.connectToSocket(
+    client.openSocket(
       listener: WebSocketListener(onMessage: (j) {
         j.debug();
       }),
@@ -20,11 +20,11 @@ void main() {
     client.pingSocket();
 
     final json = JSON();
-    json.set("message", "Testing Webtop web socket connection.");
+    json.set("message", "Testing Webtop WebSocket connection.");
 
-    client.sendJsonToSocket(json);
+    client.sendJson(json);
 
     await Future.delayed(Duration(seconds: 3));
-    client.closeSocketConnection();
+    client.closeSocket();
   });
 }

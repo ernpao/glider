@@ -20,33 +20,39 @@ class CoderaPortalClient
   );
 
   @override
-  POST login(String username, String password) => _client.httpPOST("/login")
-    ..withJsonContentType()
-    ..withBody(
-      JSON()..set("username", username)..set("password", password),
-    );
+  Future<WebResponse> login(String username, String password) {
+    final post = _client.createPOST("/login")
+      ..withJsonContentType()
+      ..withBody(
+        JSON()..set("username", username)..set("password", password),
+      );
+    return post.resolve();
+  }
 
   @override
-  POST register(String email, String username, String password) =>
-      _client.httpPOST("/register")
-        ..withJsonContentType()
-        ..withBody(
-          JSON()
-            ..set("username", username)
-            ..set("password", password)
-            ..set("email", email),
-        );
+  Future<WebResponse> register(
+      String email, String username, String password) async {
+    final post = _client.createPOST("/register")
+      ..withJsonContentType()
+      ..withBody(
+        JSON()
+          ..set("username", username)
+          ..set("password", password)
+          ..set("email", email),
+      );
+    return post.resolve();
+  }
 
   @override
   GET verify(String accessToken) =>
-      _client.httpGET("/verify")..withHeader("x-access-token", accessToken);
+      _client.createGET("/verify")..withHeader("x-access-token", accessToken);
 
   @override
-  GET httpGET(String? path) => _client.httpGET(path);
+  Future<WebResponse> httpGET(String? path) => _client.httpGET(path);
 
   @override
-  POST httpPOST(String? path) => _client.httpPOST(path);
+  Future<WebResponse> httpPOST(String? path) => _client.httpPOST(path);
 
   @override
-  GET index() => _client.index();
+  Future<WebResponse> index() => _client.index();
 }

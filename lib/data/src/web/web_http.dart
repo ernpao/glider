@@ -7,13 +7,13 @@ import '../models/models.dart';
 import 'mixins.dart';
 
 abstract class WebClientInterface {
-  GET index();
+  Future<WebResponse> index();
 
   /// Creates a GET request.
-  GET httpGET(String? path);
+  Future<WebResponse> httpGET(String? path);
 
   /// Creates a POST request.
-  POST httpPOST(String? path);
+  Future<WebResponse> httpPOST(String? path);
 }
 
 class WebClient with WebHTTP, WebHost implements WebClientInterface {
@@ -39,27 +39,23 @@ class WebClient with WebHTTP, WebHost implements WebClientInterface {
   /// client use HTTPS (true by default).
   late final bool usesHttps;
 
-  GET index() => httpGET("/")
+  @override
+  Future<WebResponse> index() => createGET("/").resolve();
+
+  GET createGET(String? path) => GET(host, path, useHttps: usesHttps)
+    ..withHeaders(fixedHeaders ?? {})
+    ..withPort(defaultPort);
+
+  POST createPOST(String? path) => POST(host, path, useHttps: usesHttps)
     ..withHeaders(fixedHeaders ?? {})
     ..withPort(defaultPort);
 
   @override
-  GET httpGET(String? path) => GET(
-        host,
-        path,
-        useHttps: usesHttps,
-      )
-        ..withHeaders(fixedHeaders ?? {})
-        ..withPort(defaultPort);
+  Future<WebResponse> httpGET(String? path) => createGET(path).resolve();
 
   @override
-  POST httpPOST(String? path) => POST(
-        host,
-        path,
-        useHttps: usesHttps,
-      )
-        ..withHeaders(fixedHeaders ?? {})
-        ..withPort(defaultPort);
+  Future<WebResponse> httpPOST(String? path) async =>
+      createPOST(path).resolve();
 }
 
 abstract class WebRequest with WebHTTP, WebHost {

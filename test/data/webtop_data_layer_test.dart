@@ -5,8 +5,8 @@ import 'package:glider/data/webtop_data_layer.dart';
 void main() {
   final client = WebtopClient();
   test("Webtop Index", () async {
-    final response = await client.index().resolve();
-    response.debug();
+    final response = await client.index();
+    response.body.debug();
     assert(response.success);
   });
 

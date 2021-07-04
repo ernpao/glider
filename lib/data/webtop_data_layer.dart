@@ -9,10 +9,14 @@ abstract class WebtopClientInterface {}
 class WebtopClient
     implements WebtopClientInterface, WebClientInterface, WebSocketInterface {
   final WebSocket _socket = WebSocket(host: _host, port: _socket_port);
-  final WebClient _client = WebClient(host: _host, defaultPort: _web_port);
+  final WebClient _client = WebClient(
+    host: _host,
+    defaultPort: _web_port,
+    useHttps: false,
+  );
 
   @override
-  GET index() => _client.index();
+  Future<WebResponse> index() => _client.index();
 
   @override
   void openSocket(
@@ -33,8 +37,8 @@ class WebtopClient
   void closeSocket() => _socket.closeSocket();
 
   @override
-  GET httpGET(String? path) => _client.httpGET(path);
+  Future<WebResponse> httpGET(String? path) => _client.httpGET(path);
 
   @override
-  POST httpPOST(String? path) => _client.httpPOST(path);
+  Future<WebResponse> httpPOST(String? path) => _client.httpPOST(path);
 }

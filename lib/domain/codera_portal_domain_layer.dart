@@ -12,7 +12,7 @@ class CoderaPortal implements CoderaPortalClientInterface {
 
   @override
   Future<CoderaPortalUser?> login(String username, String password) async {
-    final res = await (_api.login(username, password).resolve());
+    final res = await (_api.login(username, password));
     return res.success
         ? copyJsonAs<CoderaPortalUser>(res.body, CoderaPortalUser())
         : null;
@@ -20,7 +20,7 @@ class CoderaPortal implements CoderaPortalClientInterface {
 
   @override
   Future<bool> register(String email, String username, String password) async =>
-      (await _api.register(email, username, password).resolve()).success;
+      (await _api.register(email, username, password)).success;
 
   @override
   Future<bool> verify(String accessToken) async =>

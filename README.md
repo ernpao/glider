@@ -1,3 +1,3 @@
-# flutter_with_serverless
+# Glider
 
-Base Flutter app for use with a serverless backend.
+A library for developing 3 layer architecture apps with Flutter. 

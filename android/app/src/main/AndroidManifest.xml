@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="tech.codera.glider">
    <application
-        android:label="Flutter With Serverless"
+        android:label="Glider Demo"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

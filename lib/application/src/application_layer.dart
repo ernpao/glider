@@ -16,12 +16,14 @@ class Application extends StatelessWidget {
   final List<InheritedProvider>? providers;
   final ApplicationState? appStateModel;
   final bool useMaterialAppWidget;
+  final ThemeData? theme;
 
   Application({
     required this.child,
     this.appStateModel,
     this.providers,
     this.useMaterialAppWidget = true,
+    this.theme,
   });
 
   @override
@@ -40,6 +42,7 @@ class Application extends StatelessWidget {
       content = MaterialApp(
         debugShowCheckedModeBanner: false,
         home: child,
+        theme: theme,
       );
     }
 

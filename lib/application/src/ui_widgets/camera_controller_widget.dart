@@ -1,8 +1,12 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 
+export 'package:camera/camera.dart';
+
 /// A widget that fetches a lists of cameras available on the device
 class CameraControllerWidget extends StatefulWidget {
+  /// Builder for the widget to display when the setup of cameras is
+  /// completed.
   final Widget Function(
     BuildContext context,
     CameraController controller,

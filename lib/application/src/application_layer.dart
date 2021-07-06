@@ -5,9 +5,9 @@ import 'package:provider/provider.dart';
 
 import 'state_management/state_management.dart';
 
+export 'hardware/sensors.dart';
 export 'state_management/state_management.dart';
 export 'ui_widgets/ui_widgets.dart';
-export 'hardware/hardware.dart';
 
 /// A MaterialApp wrapped with a MultiProvider widget used for
 /// general development of apps with state management
@@ -17,6 +17,7 @@ class Application extends StatelessWidget {
   final List<InheritedProvider>? providers;
   final ApplicationState? appStateModel;
   final bool useMaterialAppWidget;
+  final bool useSafeArea;
   final ThemeData? theme;
 
   Application({
@@ -24,6 +25,7 @@ class Application extends StatelessWidget {
     this.appStateModel,
     this.providers,
     this.useMaterialAppWidget = true,
+    this.useSafeArea = true,
     this.theme,
   });
 
@@ -40,9 +42,13 @@ class Application extends StatelessWidget {
     Widget content = child;
 
     if (useMaterialAppWidget) {
+      if (useSafeArea) {
+        content = SafeArea(child: child);
+      }
+
       content = MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: child,
+        home: content,
         theme: theme,
       );
     }

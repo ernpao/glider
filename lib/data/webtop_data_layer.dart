@@ -1,25 +1,27 @@
 import 'src/data_layer.dart';
 
-const int _web_port = 6767;
-const int _socket_port = 6868;
-
 abstract class WebtopClientInterface {}
 
 class WebtopClient
     with WebHost
     implements WebtopClientInterface, WebClientInterface, WebSocketInterface {
-  late WebSocket _socket = WebSocket(host: host, port: _socket_port);
+  late WebSocket _socket = WebSocket(host: host, port: socketPort);
   late WebClient _client = WebClient(
     host: host,
-    defaultPort: _web_port,
+    defaultPort: port,
     useHttps: false,
   );
+
+  final int port;
+  final int socketPort;
 
   @override
   final String host;
 
   WebtopClient({
     required this.host,
+    required this.port,
+    required this.socketPort,
   });
 
   @override

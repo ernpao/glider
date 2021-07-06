@@ -3,7 +3,7 @@ import 'package:glider/data/src/data_layer.dart';
 import 'package:glider/data/webtop_data_layer.dart';
 
 void main() {
-  final client = WebtopClient();
+  final client = WebtopClient(host: "192.168.100.191");
   test("Webtop Index", () async {
     final response = await client.index();
     response.body.debug();

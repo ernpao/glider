@@ -28,8 +28,7 @@ class WebtopClient
   Future<WebResponse> index() => _client.index();
 
   @override
-  void openSocket(
-          {required WebSocketListener listener, Duration? pingInterval}) =>
+  void openSocket({WebSocketListener? listener, Duration? pingInterval}) =>
       _socket.openSocket(listener: listener, pingInterval: pingInterval);
 
   @override

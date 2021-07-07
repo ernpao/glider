@@ -9,6 +9,7 @@ export 'mixins.dart';
 
 class JSON extends Mappable with DebugConsoleLogging {
   Map<String, dynamic> _content = {};
+  Map<String, dynamic> get content => _content;
 
   void set(String key, dynamic value) => _content[key] = value;
 

@@ -7,16 +7,32 @@ void main() {
     print(m.formatTime(DateTime.now()));
     print(m.formatDate(DateTime.now()));
   });
+
+  test("Data Layer Mixins Test - EnumToString", () async {
+    assert(m.enumToString(SampleEnum.enum1) == "enum1");
+    assert(m.enumToString(SampleEnum.enum2) == "enum2");
+  });
 }
 
+/// Instance of the MixinsTester class.
 final MixinsTester m = MixinsTester(
   email: "test@email.com",
   mobileNumber: "09123456789",
 );
 
+enum SampleEnum {
+  enum1,
+  enum2,
+}
+
 /// A class with all the mixins for testing purposes.
 class MixinsTester
-    with DateTimeFormatting, EmailAddress, MobileNumber, DebugConsoleLogging {
+    with
+        DateTimeFormatting,
+        EmailAddress,
+        MobileNumber,
+        DebugConsoleLogging,
+        EnumToString {
   @override
   final String email;
 

@@ -9,8 +9,7 @@ import 'mixins.dart';
 
 abstract class WebSocketInterface {
   /// Establish a connection with the WebSocket server.
-  void openSocket(
-      {required WebSocketListener listener, Duration? pingInterval});
+  void openSocket({WebSocketListener? listener, Duration? pingInterval});
 
   /// Close the WebSocket connection.
   void closeSocket();
@@ -36,18 +35,19 @@ class WebSocket with WebHost implements WebSocketInterface {
   WebSocketSink? get sink => _channel?.sink;
 
   @override
-  void openSocket(
-      {required WebSocketListener listener, Duration? pingInterval}) {
+  void openSocket({WebSocketListener? listener, Duration? pingInterval}) {
     _channel = IOWebSocketChannel.connect(
       'ws://$host:$port',
       pingInterval: pingInterval,
     );
 
-    _channel?.stream.listen(
-      (d) => listener.onMessage?.call(_convertStreamData(d)),
-      onError: listener.onError,
-      onDone: listener.onDone,
-    );
+    if (listener != null) {
+      _channel?.stream.listen(
+        (d) => listener.onMessage?.call(_convertStreamData(d)),
+        onError: listener.onError,
+        onDone: listener.onDone,
+      );
+    }
   }
 
   @override
@@ -61,7 +61,7 @@ class WebSocket with WebHost implements WebSocketInterface {
     send(WebSocketMessage(
       type: type,
       topic: topic,
-      data: data.map(),
+      data: data.content,
     ));
   }
 

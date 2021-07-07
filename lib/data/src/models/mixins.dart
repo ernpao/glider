@@ -45,3 +45,9 @@ mixin DateTimeFormatting {
   /// Formats a DateTime object and displays the time in [MMMM d, yyyy] format.
   String formatDate(DateTime d) => DateFormat("MMMM d, yyyy").format(d);
 }
+
+mixin EnumToString {
+  String enumToString(enumValue) {
+    return enumValue.toString().split('.').last;
+  }
+}

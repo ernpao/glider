@@ -16,17 +16,11 @@ void main() {
   });
 
   test("Webtop Websocket Connection", () async {
-    client.openSocket(
-      listener: WebSocketListener(onMessage: (j) {
-        j.debug();
-      }),
-    );
-
+    client.openSocket();
     client.pingSocket();
 
     final json = JSON();
     json.set("message", "Testing Webtop WebSocket connection.");
-
     client.sendJson(json);
 
     await Future.delayed(Duration(seconds: 3));

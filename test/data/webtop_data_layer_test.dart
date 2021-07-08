@@ -21,6 +21,8 @@ void main() {
 
     final json = JSON();
     json.set("message", "Testing Webtop WebSocket connection.");
+    json.set("date", DateTime.now().formattedDate);
+    json.set("time", DateTime.now().formattedTime);
     client.sendJson(json);
 
     await Future.delayed(Duration(seconds: 3));

@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:glider/data/src/models/mixins.dart';
+import 'package:glider/data/src/data_layer.dart';
 
 void main() {
   test("Data Layer Mixins Test - DateTimeFormatter", () async {
@@ -28,7 +28,7 @@ enum SampleEnum {
 /// A class with all the mixins for testing purposes.
 class MixinsTester
     with
-        DateTimeFormatting,
+        DateTimeFormatter,
         EmailAddress,
         MobileNumber,
         DebugConsoleLogging,

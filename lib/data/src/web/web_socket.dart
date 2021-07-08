@@ -151,7 +151,7 @@ class WebSocketMessage extends JSON {
   void setData(dynamic data) => set(_dataKey, data);
 }
 
-String _buildKey(String name) => "websocket_message_$name";
+String _buildKey(String name) => "_ws_$name";
 final String _typeKey = _buildKey("type");
 final String _topicKey = _buildKey("topic");
 final String _dataKey = _buildKey("data");

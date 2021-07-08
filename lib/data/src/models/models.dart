@@ -2,8 +2,10 @@ library async;
 
 import 'dart:convert';
 
+import 'abstracts.dart';
 import 'mixins.dart';
 
+export 'abstracts.dart';
 export 'extensions.dart';
 export 'mixins.dart';
 
@@ -56,17 +58,4 @@ abstract class Result with DebugConsoleLogging {
   @override
   String toString() =>
       "${this.runtimeType} is${success ? " " : " not "}successful. Message: $message";
-}
-
-abstract class Mappable {
-  Map<String, dynamic> map();
-  String encode() => jsonEncode(map());
-
-  bool contains(String key) => map()[key] != null;
-  T get<T>(String key) => map()[key] as T;
-
-  List<String> get keys => map().keys.toList();
-  List<dynamic> get values => map().values.toList();
-
-  void forEach(void Function(String, dynamic) action) => map().forEach(action);
 }

@@ -4,9 +4,9 @@ import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 
 import '../models/models.dart';
-import 'mixins.dart';
+import 'web_mixins.dart';
 
-abstract class WebClientInterface {
+abstract class WebHttpClient {
   Future<WebResponse> index();
 
   /// Creates a GET request.
@@ -16,7 +16,7 @@ abstract class WebClientInterface {
   Future<WebResponse> httpPOST(String? path);
 }
 
-class WebClient with WebHTTP, WebHost implements WebClientInterface {
+class WebClient with WebHttpScheme, WebHost implements WebHttpClient {
   final String host;
 
   /// A set of headers that will be included
@@ -32,21 +32,22 @@ class WebClient with WebHTTP, WebHost implements WebClientInterface {
     this.fixedHeaders,
     this.defaultPort,
   }) {
-    usesHttps = useHttps;
+    withHttps = useHttps;
   }
 
   /// Indicates whether requests made by this
   /// client use HTTPS (true by default).
-  late final bool usesHttps;
+  @override
+  late final bool withHttps;
 
   @override
   Future<WebResponse> index() => createGET("/").resolve();
 
-  GET createGET(String? path) => GET(host, path, useHttps: usesHttps)
+  GET createGET(String? path) => GET(host, path, useHttps: withHttps)
     ..withHeaders(fixedHeaders ?? {})
     ..withPort(defaultPort);
 
-  POST createPOST(String? path) => POST(host, path, useHttps: usesHttps)
+  POST createPOST(String? path) => POST(host, path, useHttps: withHttps)
     ..withHeaders(fixedHeaders ?? {})
     ..withPort(defaultPort);
 
@@ -58,14 +59,14 @@ class WebClient with WebHTTP, WebHost implements WebClientInterface {
       createPOST(path).resolve();
 }
 
-abstract class WebRequest with WebHTTP, WebHost {
+abstract class WebRequest with WebHttpScheme, WebHost {
   WebRequest(
     this.host,
     this.path, {
-    this.usesHttps = true,
+    this.withHttps = true,
   });
   final String host;
-  final bool usesHttps;
+  final bool withHttps;
 
   final String? path;
 
@@ -98,7 +99,7 @@ class GET extends WebRequest {
       : super(
           host,
           path,
-          usesHttps: useHttps,
+          withHttps: useHttps,
         );
 
   @override
@@ -120,7 +121,7 @@ class POST extends WebRequest {
       : super(
           host,
           path,
-          usesHttps: useHttps,
+          withHttps: useHttps,
         );
 
   Mappable? _body;

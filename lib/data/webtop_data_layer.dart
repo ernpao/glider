@@ -1,11 +1,9 @@
 import 'src/data_layer.dart';
 
-abstract class WebtopClientInterface {}
+abstract class WebtopAPI {}
 
-class WebtopClient
-    with WebHost
-    implements WebtopClientInterface, WebClientInterface, WebSocketInterface {
-  late WebSocket _socket = WebSocket(host: host, port: socketPort);
+class WebtopClient with WebHost implements WebtopAPI, WebHttpClient, WebSocket {
+  late WebSocketClient _socket = WebSocketClient(host: host, port: socketPort);
   late WebClient _client = WebClient(
     host: host,
     defaultPort: port,
@@ -28,8 +26,16 @@ class WebtopClient
   Future<WebResponse> index() => _client.index();
 
   @override
-  void openSocket({WebSocketListener? listener, Duration? pingInterval}) =>
-      _socket.openSocket(listener: listener, pingInterval: pingInterval);
+  void openSocket({
+    WebSocketListener? listener,
+    Duration? pingInterval,
+    bool? retryOnDone,
+  }) =>
+      _socket.openSocket(
+        listener: listener,
+        pingInterval: pingInterval,
+        retryOnDone: retryOnDone,
+      );
 
   @override
   void send(WebSocketMessage message) => _socket.send(message);

@@ -5,11 +5,15 @@ import 'package:web_socket_channel/status.dart' as status;
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 import '../models/models.dart';
-import 'mixins.dart';
+import 'web_mixins.dart';
 
-abstract class WebSocketInterface {
+abstract class WebSocket {
   /// Establish a connection with the WebSocket server.
-  void openSocket({WebSocketListener? listener, Duration? pingInterval});
+  void openSocket({
+    WebSocketListener? listener,
+    Duration? pingInterval,
+    bool? retryOnDone,
+  });
 
   /// Close the WebSocket connection.
   void closeSocket();
@@ -25,15 +29,11 @@ abstract class WebSocketInterface {
   bool get hasNoListener => !hasListener;
 }
 
-class WebSocket extends WebSocketInterface with WebHost {
+class WebSocketClient extends WebSocket with WebHost {
   final String host;
   final int port;
-  bool _hasListener = false;
 
-  @override
-  bool get hasListener => _hasListener;
-
-  WebSocket({
+  WebSocketClient({
     required this.host,
     required this.port,
   });
@@ -42,20 +42,42 @@ class WebSocket extends WebSocketInterface with WebHost {
   Stream? get stream => _channel?.stream;
   WebSocketSink? get sink => _channel?.sink;
 
+  WebSocketListener? get listener => _listener;
+  WebSocketListener? _listener;
+
   @override
-  void openSocket({WebSocketListener? listener, Duration? pingInterval}) {
+  bool get hasListener => listener != null;
+
+  @override
+  void openSocket({
+    WebSocketListener? listener,
+    Duration? pingInterval,
+    bool? retryOnDone,
+  }) {
     _channel = IOWebSocketChannel.connect(
       'ws://$host:$port',
       pingInterval: pingInterval,
     );
 
+    _listener = listener;
+
     if (listener != null) {
       _channel?.stream.listen(
-        (d) => listener.onMessage?.call(_convertStreamData(d)),
+        (d) => listener.onMessage(_convertStreamData(d)),
         onError: listener.onError,
-        onDone: listener.onDone,
+        onDone: () {
+          listener.onDone();
+          if (retryOnDone != null) {
+            if (retryOnDone) {
+              openSocket(
+                listener: listener,
+                pingInterval: pingInterval,
+                retryOnDone: retryOnDone,
+              );
+            }
+          }
+        },
       );
-      _hasListener = true;
     }
   }
 
@@ -84,14 +106,17 @@ class WebSocket extends WebSocketInterface with WebHost {
 
 class WebSocketListener {
   WebSocketListener({
-    this.onMessage,
-    this.onDone,
-    this.onError,
+    required this.onEvent,
   });
 
-  final Function(WebSocketMessage message)? onMessage;
-  final Function(Object? error)? onError;
-  final Function()? onDone;
+  final Function(WebSocketEvent event) onEvent;
+
+  void onMessage(WebSocketMessage message) =>
+      onEvent(WebSocketMessageEvent(message));
+
+  void onError(Object? error) => onEvent(WebSocketErrorEvent(error));
+
+  void onDone() => onEvent(WebSocketDoneEvent());
 }
 
 class WebSocketMessage extends JSON {
@@ -130,3 +155,22 @@ String _buildKey(String name) => "websocket_message_$name";
 final String _typeKey = _buildKey("type");
 final String _topicKey = _buildKey("topic");
 final String _dataKey = _buildKey("data");
+
+abstract class WebSocketEvent {
+  bool get isMessageEvent => this is WebSocketMessageEvent;
+  bool get isErrorEvent => this is WebSocketErrorEvent;
+  bool get isDoneEvent => this is WebSocketDoneEvent;
+}
+
+class WebSocketDoneEvent extends WebSocketEvent {}
+
+class WebSocketMessageEvent extends WebSocketEvent {
+  final WebSocketMessage message;
+  WebSocketMessageEvent(this.message);
+}
+
+class WebSocketErrorEvent extends WebSocketEvent {
+  final Object? error;
+  WebSocketErrorEvent(this.error);
+  bool get hasError => error != null;
+}

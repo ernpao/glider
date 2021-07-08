@@ -1,13 +1,12 @@
 import 'src/data_layer.dart';
 
-abstract class CoderaPortalClientInterface {
+abstract class CoderaPortalAPI {
   login(String username, String password);
   register(String email, String username, String password);
   verify(String accessToken);
 }
 
-class CoderaPortalClient
-    implements CoderaPortalClientInterface, WebClientInterface {
+class CoderaPortalClient implements CoderaPortalAPI, WebHttpClient {
   CoderaPortalClient({
     this.useHttps = true,
   });

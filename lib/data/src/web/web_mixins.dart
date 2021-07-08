@@ -1,9 +1,9 @@
 /// A mixin used to give an object an HTTP scheme (http or https).
-mixin WebHTTP {
-  bool get usesHttps;
+mixin WebHttpScheme {
+  bool get withHttps;
 
   /// Returns "http" or "https" based on the URI scheme being used.
-  String get webScheme => usesHttps ? "https" : "http";
+  String get webScheme => withHttps ? "https" : "http";
 }
 
 /// A mixin used to give an object a web host property.

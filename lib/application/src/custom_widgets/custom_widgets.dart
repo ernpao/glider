@@ -1,4 +1,4 @@
-library ui_widgets;
+library custom_widgets;
 
 export 'package:hover/widgets.dart';
 

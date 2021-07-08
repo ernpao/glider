@@ -5,9 +5,9 @@ import 'package:provider/provider.dart';
 
 import 'state_management/state_management.dart';
 
+export 'custom_widgets/custom_widgets.dart';
 export 'hardware/sensors.dart';
 export 'state_management/state_management.dart';
-export 'ui_widgets/ui_widgets.dart';
 
 /// A MaterialApp wrapped with a MultiProvider widget used for
 /// general development of apps with state management

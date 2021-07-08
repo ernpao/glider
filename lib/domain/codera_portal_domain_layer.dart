@@ -7,8 +7,8 @@ class CoderaPortalUser extends JSON with EmailAddress {
   String get accessToken => get<String>("accessToken");
 }
 
-class CoderaPortal implements CoderaPortalClientInterface {
-  final CoderaPortalClient _api = CoderaPortalClient();
+class CoderaPortal implements CoderaPortalAPI {
+  final CoderaPortalAPI _api = CoderaPortalClient();
 
   @override
   Future<CoderaPortalUser?> login(String username, String password) async {

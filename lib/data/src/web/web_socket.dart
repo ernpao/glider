@@ -98,7 +98,7 @@ class WebSocketClient extends WebSocket with WebHost {
 
   WebSocketMessage _convertStreamData(d) {
     final String jsonString = d is String ? d : jsonEncode(d);
-    final JSON json = JSON.fromString(jsonString);
+    final JSON json = JSON.parse(jsonString);
     final WebSocketMessage message = WebSocketMessage.fromJSON(json);
     return message;
   }

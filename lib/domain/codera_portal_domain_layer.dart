@@ -14,7 +14,7 @@ class CoderaPortal implements CoderaPortalAPI {
   Future<CoderaPortalUser?> login(String username, String password) async {
     final res = await (_api.login(username, password));
     return res.success
-        ? copyJsonAs<CoderaPortalUser>(res.body, CoderaPortalUser())
+        ? JSON.copyAs<CoderaPortalUser>(res.body, CoderaPortalUser())
         : null;
   }
 

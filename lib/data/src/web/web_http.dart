@@ -150,7 +150,7 @@ class WebResponse extends Result {
   final Response httpResponse;
   WebResponse(this.httpResponse);
 
-  JSON get body => JSON.fromMap(httpResponse.decodedBodyAsMap);
+  JSON get body => JSON.parseMap(httpResponse.decodedBodyAsMap);
 
   int get statusCode => httpResponse.statusCode;
   Map<String, String> get headers => httpResponse.headers;

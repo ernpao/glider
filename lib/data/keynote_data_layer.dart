@@ -4,7 +4,7 @@ abstract class KeynoteAPI {
   void moveMouse(int x, int y);
   void offsetMouse(int xOffset, int yOffset);
   void clickMouse(MouseClick click);
-  void sendKeystroke(String keys, KeyboardModifier modifier);
+  void sendKeystroke(String keys, {KeyboardModifier? modifier});
 }
 
 enum _Topic {
@@ -79,10 +79,10 @@ class KeynoteClient
   Future<WebResponse> httpPOST(String? path) => _client.httpPOST(path);
 
   @override
-  void sendKeystroke(String key, KeyboardModifier modifier) {
+  void sendKeystroke(String key, {KeyboardModifier? modifier}) {
     final data = JSON();
     data.set("key", key);
-    data.set("modifier", enumToString(modifier));
+    data.set("modifier", modifier != null ? enumToString(modifier) : null);
     sendJson(data, topic: enumToString(_Topic.keyboard));
   }
 

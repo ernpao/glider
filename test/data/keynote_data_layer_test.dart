@@ -54,7 +54,7 @@ void main() {
 
   test("Keynote Keystroke Test", () async {
     client.openSocket();
-    client.sendKeystroke("A", KeyboardModifier.shift);
+    client.sendKeystroke("A", modifier: KeyboardModifier.shift);
     client.closeSocket();
   });
 }

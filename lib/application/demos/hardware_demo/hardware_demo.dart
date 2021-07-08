@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:glider/data/webtop_data_layer.dart';
 
 import '../../src/application_layer.dart';
 
@@ -40,6 +41,31 @@ class _HardwareDemoState extends State<HardwareDemo> {
         : SizedBox.shrink();
   }
 
+  Widget _buildCameraControllerWidget() {
+    return CameraControllerWidget(
+      builder: (context, snapshot) {
+        switch (snapshot.status) {
+          case CameraControllerWidgetStatus.loading:
+            return CircularProgressIndicator();
+
+          case CameraControllerWidgetStatus.initialized:
+            final controller = snapshot.controller;
+            return SizedBox(
+              height: 300,
+              child:
+                  controller != null ? CameraPreview(controller) : Container(),
+            );
+
+          case CameraControllerWidgetStatus.setupFailed:
+            return Text("Setup Failed!");
+
+          default:
+            return SizedBox.shrink();
+        }
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Application(
@@ -51,27 +77,41 @@ class _HardwareDemoState extends State<HardwareDemo> {
           children: [
             HoverHeading("Hardware Demo",
                 bottomPadding: _defaultSpacing, topPadding: _defaultSpacing),
+            // _buildCameraControllerWidget(),
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    HoverText("Camera",
-                        bottomPadding: _defaultSpacing,
-                        topPadding: _defaultSpacing),
-                    CameraControllerWidget(
-                      builder: (_, controller, __) => SizedBox(
-                        height: 300,
-                        child: CameraPreview(controller),
-                      ),
-                      onSetupBuilder: (_) => CircularProgressIndicator(),
-                      onSetupFailedBuilder: (_) => Text("Setup Failed!"),
+                    HoverText(
+                      "Camera",
+                      bottomPadding: _defaultSpacing,
+                      topPadding: _defaultSpacing,
                     ),
+                    AccelerometerWidget(builder: _buildSensorWidget),
                     GyroscopeWidget(builder: _buildSensorWidget),
-                    AccelerometerWidget(builder: _buildSensorWidget),
-                    AccelerometerWidget(builder: _buildSensorWidget),
-                    AccelerometerWidget(builder: _buildSensorWidget),
-                    AccelerometerWidget(builder: _buildSensorWidget),
-                    AccelerometerWidget(builder: _buildSensorWidget),
+                    HoverText(
+                      "WebSocket",
+                      bottomPadding: _defaultSpacing,
+                      topPadding: _defaultSpacing,
+                    ),
+                    WebSocketWidget(
+                        webSocket: WebtopClient(
+                          host: "192.168.100.191",
+                          port: 6767,
+                          socketPort: 6868,
+                        ),
+                        builder: (context, snapshot) {
+                          switch (snapshot.status) {
+                            case WebSocketWidgetStatus.messageReceived:
+                              snapshot.message?.debug();
+                              return Text(
+                                snapshot.message?.data ?? "",
+                              );
+                            default:
+                          }
+
+                          return Container();
+                        })
                   ],
                 ),
               ),

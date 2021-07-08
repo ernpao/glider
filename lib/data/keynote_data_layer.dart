@@ -106,4 +106,10 @@ class KeynoteClient
     data.set("y", yOffset);
     _sendMouseCommand(data, _Type.offset);
   }
+
+  @override
+  bool get hasListener => _socket.hasListener;
+
+  @override
+  bool get hasNoListener => _socket.hasNoListener;
 }

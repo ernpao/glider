@@ -3,37 +3,37 @@ import 'package:flutter/material.dart';
 
 export 'package:camera/camera.dart';
 
+enum CameraControllerWidgetStatus {
+  loading,
+  initialized,
+  setupFailed,
+}
+
+class CameraControllerWidgetSnapshot {
+  final CameraControllerWidgetStatus status;
+  final CameraController? controller;
+  final List<CameraDescription>? availableCameras;
+
+  CameraControllerWidgetSnapshot({
+    required this.status,
+    this.controller,
+    this.availableCameras,
+  });
+}
+
 /// A widget that fetches a lists of cameras available on the device
 class CameraControllerWidget extends StatefulWidget {
-  /// Builder for the widget to display when the setup of cameras is
-  /// completed.
-  final Widget Function(
-    BuildContext context,
-    CameraController controller,
-    List<CameraDescription> availableCameras,
-  ) builder;
+  CameraControllerWidget({required this.builder});
 
-  /// Builder for the widget to display while the cameras
-  /// are being setup.
-  final Widget Function(BuildContext context) onSetupBuilder;
-
-  /// Builder for the widget to display when the setup of cameras fails.
-  /// An empty widget (i.e. SizedBox.shrink()) is displayed by default.
-  final Widget Function(BuildContext context)? onSetupFailedBuilder;
-
-  CameraControllerWidget({
-    required this.builder,
-    required this.onSetupBuilder,
-    this.onSetupFailedBuilder,
-  });
+  final Widget Function(BuildContext, CameraControllerWidgetSnapshot) builder;
 
   @override
   State<StatefulWidget> createState() => _CameraControllerWidgetState();
 }
 
 class _CameraControllerWidgetState extends State<CameraControllerWidget> {
-  late CameraController _controller;
-  late List<CameraDescription> _availableCameras;
+  CameraController? _controller;
+  List<CameraDescription>? _availableCameras;
   bool _setupFailed = false;
   bool _setupComplete = false;
 
@@ -56,7 +56,7 @@ class _CameraControllerWidgetState extends State<CameraControllerWidget> {
   void _initCameras() async {
     final deviceCameras = await availableCameras();
     _controller = _createDefaultController(deviceCameras);
-    _controller.initialize().then((_) {
+    _controller?.initialize().then((_) {
       if (!mounted) {
         _setupFailed = true;
       } else {
@@ -71,20 +71,31 @@ class _CameraControllerWidgetState extends State<CameraControllerWidget> {
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller?.dispose();
     super.dispose();
   }
 
+  bool get _isLoading => !_setupComplete;
+
   @override
   Widget build(BuildContext context) {
-    if (!_setupComplete) {
-      return widget.onSetupBuilder(context);
+    CameraControllerWidgetStatus state;
+    if (_isLoading) {
+      state = CameraControllerWidgetStatus.loading;
     } else {
       if (_setupFailed) {
-        return widget.onSetupFailedBuilder?.call(context) ?? SizedBox.shrink();
+        state = CameraControllerWidgetStatus.setupFailed;
       } else {
-        return widget.builder.call(context, _controller, _availableCameras);
+        state = CameraControllerWidgetStatus.initialized;
       }
     }
+
+    CameraControllerWidgetSnapshot snapshot = CameraControllerWidgetSnapshot(
+      status: state,
+      availableCameras: _availableCameras,
+      controller: _controller,
+    );
+
+    return widget.builder(context, snapshot);
   }
 }

@@ -49,4 +49,10 @@ class WebtopClient
 
   @override
   Future<WebResponse> httpPOST(String? path) => _client.httpPOST(path);
+
+  @override
+  bool get hasListener => _socket.hasListener;
+
+  @override
+  bool get hasNoListener => _socket.hasNoListener;
 }

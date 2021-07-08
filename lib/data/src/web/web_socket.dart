@@ -19,11 +19,19 @@ abstract class WebSocketInterface {
 
   /// Send JSON data to the WebSocket server.
   void sendJson(JSON data, {String? type, String? topic});
+
+  /// Indicates if the WebSocket already has a listener attached to the stream.
+  bool get hasListener;
+  bool get hasNoListener => !hasListener;
 }
 
-class WebSocket with WebHost implements WebSocketInterface {
+class WebSocket extends WebSocketInterface with WebHost {
   final String host;
   final int port;
+  bool _hasListener = false;
+
+  @override
+  bool get hasListener => _hasListener;
 
   WebSocket({
     required this.host,
@@ -47,6 +55,7 @@ class WebSocket with WebHost implements WebSocketInterface {
         onError: listener.onError,
         onDone: listener.onDone,
       );
+      _hasListener = true;
     }
   }
 
@@ -100,6 +109,7 @@ class WebSocketMessage extends JSON {
     return WebSocketMessage(
       type: json.get(_typeKey),
       topic: json.get(_topicKey),
+      data: json.get(_dataKey),
     );
   }
 

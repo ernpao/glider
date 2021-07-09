@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hover/framework.dart';
 
 import '../../../data/src/data_layer.dart';
 import '../../../data/webtop_data_layer.dart';
@@ -127,7 +128,12 @@ class _SensorsDemo extends StatelessWidget {
   }
 }
 
-class _WebWidgetsDemo extends StatelessWidget {
+class _WebWidgetsDemo extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() => _WebWidgetsDemoState();
+}
+
+class _WebWidgetsDemoState extends State<_WebWidgetsDemo> {
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -137,43 +143,37 @@ class _WebWidgetsDemo extends StatelessWidget {
           bottomPadding: 8.0,
           topPadding: 8.0,
         ),
-        WebSocketWidget(
-          webSocket: WebtopClient(
-            host: "192.168.100.191",
-            port: 6767,
-            socketPort: 6868,
+        SizedBox(
+          width: Hover.getScreenWidth(context),
+          child: WebSocketWidget(
+            webSocket: WebtopClient(
+              host: "192.168.100.191",
+              port: 6767,
+              socketPort: 6868,
+            ),
+            retryOnDone: true,
+            builder: (context, event, socket) {
+              if (event != null) {
+                if (event is WebSocketMessageEvent) {
+                  final message = event.message;
+
+                  if (message.type == "buffer") {
+                    final bytes = message.data;
+                    return Image.memory(
+                      bytes,
+                      errorBuilder: (_, err, ___) => SizedBox.shrink(),
+                    );
+                  }
+                  return Text(message.data ?? "");
+                }
+
+                if (event is WebSocketErrorEvent) {
+                  return Text(event.error?.toString() ?? "");
+                }
+              }
+              return Column(children: [Text(event.runtimeType.toString())]);
+            },
           ),
-          retryOnDone: true,
-          builder: (context, event, socket) {
-            print('Is message? ${event?.isMessageEvent}');
-            print('Is error? ${event?.isErrorEvent}');
-            print('Is done? ${event?.isDoneEvent}');
-
-            if (event != null) {
-              if (event is WebSocketMessageEvent) {
-                event.message.debug();
-                return Text(event.message.data ?? "");
-              }
-
-              if (event is WebSocketDoneEvent) {
-                return Column(
-                  children: [
-                    Text(event.runtimeType.toString()),
-                    HoverCallToActionButton(
-                      text: "Restart",
-                      onPressed: () {},
-                    )
-                  ],
-                );
-              }
-
-              if (event is WebSocketErrorEvent) {
-                return Text(event.error?.toString() ?? "");
-              }
-            }
-
-            return Container();
-          },
         ),
       ],
     );

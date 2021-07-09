@@ -5,5 +5,8 @@ import 'application/demos/demos.dart';
 void main() {
   // runApp(AuthFlowDemo());
   // runApp(CounterAppDemo());
-  runApp(CustomWidgetsDemo());
+  runApp(CustomWidgetsDemo(
+    demoCamera: false,
+    demoSensors: false,
+  ));
 }

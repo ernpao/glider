@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:glider/data/src/data_layer.dart';
 import 'package:glider/data/keynote_data_layer.dart';
+import 'package:glider/data/src/data_layer.dart';
 
 void main() {
   final client = KeynoteClient(

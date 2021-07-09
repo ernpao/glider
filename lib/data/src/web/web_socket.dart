@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/status.dart' as status;
@@ -97,8 +98,20 @@ class WebSocketClient extends WebSocket with WebHost {
   }
 
   WebSocketMessage _convertStreamData(d) {
-    final String jsonString = d is String ? d : jsonEncode(d);
-    final JSON json = JSON.parse(jsonString);
+    final String jsonStr = d is String ? d : jsonEncode(d);
+    final JSON json = JSON.parse(jsonStr);
+    if (json.contains("type")) {
+      switch (json.get("type")) {
+        case "Buffer":
+          final List<dynamic> data = json.get("data");
+          final List<int> ints = data.map((i) => i as int).toList();
+          final bytes = Uint8List.fromList(ints);
+          final message = WebSocketMessage(type: "buffer", data: bytes);
+          return message;
+        default:
+          break;
+      }
+    }
     final WebSocketMessage message = WebSocketMessage.fromJSON(json);
     return message;
   }

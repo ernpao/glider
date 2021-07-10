@@ -114,6 +114,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  glider_models:
+    dependency: "direct main"
+    description:
+      path: glider_models
+      relative: true
+    source: path
+    version: "1.0.0+1"
   hover:
     dependency: "direct main"
     description:

@@ -5,13 +5,11 @@ void main() {
   final client = CoderaPortalClient();
   test("CoderaPortalAPI Index", () async {
     final response = await client.index();
-    response.body.debug();
     assert(response.success);
   });
 
   test("CoderaPortalAPI Login", () async {
     final response = await client.login("ernpao", "Zero1928!");
-    response.body.debug();
     assert(response.success);
   });
 
@@ -19,7 +17,6 @@ void main() {
     var response = await client.login("ernpao", "Zero1928!");
     final token = response.body.get("accessToken");
     response = await client.verify(token).resolve();
-    response.body.debug();
     assert(response.success);
   });
 }

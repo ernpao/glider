@@ -3,9 +3,11 @@ import 'package:glider_models/glider_models.dart';
 
 void main() {
   test("Glider Models Mixins Test - DateTimeFormatter", () async {
-    print(m.formatDateTime(DateTime.now()));
-    print(m.formatTime(DateTime.now()));
-    print(m.formatDate(DateTime.now()));
+    const String sampleTime = "2021-07-10 20:36:16.716579";
+    final DateTime dt = DateTime.parse(sampleTime);
+    assert(m.formatTime(dt) == "8:36:16 PM");
+    assert(m.formatDate(dt) == "July 10, 2021");
+    assert(m.formatDateTime(dt) == "July 10, 2021 8:36:16 PM");
   });
 
   test("Glider Models Mixins Test - EnumToString", () async {
@@ -27,12 +29,7 @@ enum SampleEnum {
 
 /// A class with all the mixins for testing purposes.
 class MixinsTester
-    with
-        DateTimeFormatter,
-        EmailAddress,
-        MobileNumber,
-        DebugConsoleLogging,
-        EnumToString {
+    with DateTimeFormatter, EmailAddress, MobileNumber, EnumToString {
   @override
   final String email;
 

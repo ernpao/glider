@@ -10,7 +10,6 @@ void main() {
 
   test("Webtop Index", () async {
     final response = await client.index();
-    response.body.debug();
     assert(response.success);
   });
 
@@ -24,7 +23,7 @@ void main() {
     json.set("time", DateTime.now().formattedTime);
     client.sendJson(json);
 
-    await Future.delayed(Duration(seconds: 3));
+    await Future.delayed(const Duration(seconds: 3));
     client.closeSocket();
   });
 }

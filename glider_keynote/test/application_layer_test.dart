@@ -10,7 +10,6 @@ void main() {
 
   test("Keynote Index", () async {
     final response = await client.index();
-    response.body.debug();
     assert(response.success);
   });
 

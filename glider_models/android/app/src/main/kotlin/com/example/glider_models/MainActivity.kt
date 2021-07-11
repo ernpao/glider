@@ -1,4 +1,4 @@
-package com.example.glider_models
+package tech.codera.glider.models
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.glider_models">
+    package="tech.codera.glider.models">
    <application
-        android:label="glider_models"
+        android:label="Glider Models"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

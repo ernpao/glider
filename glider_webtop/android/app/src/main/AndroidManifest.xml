@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.glider_webtop">
+    package="tech.codera.glider.webtop">
    <application
-        android:label="glider_webtop"
+        android:label="Webtop Glider Library"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

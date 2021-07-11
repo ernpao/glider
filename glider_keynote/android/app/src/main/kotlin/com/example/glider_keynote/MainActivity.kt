@@ -1,4 +1,4 @@
-package com.example.glider_keynote
+package tech.codera.glider.keynote
 
 import io.flutter.embedding.android.FlutterActivity
 

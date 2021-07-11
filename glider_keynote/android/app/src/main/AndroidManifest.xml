@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.glider_keynote">
+    package="tech.codera.glider.keynote">
    <application
-        android:label="glider_keynote"
+        android:label="Keynote Glider Library"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

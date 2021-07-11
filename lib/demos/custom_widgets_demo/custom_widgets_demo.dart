@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hover/framework.dart';
-import 'package:hover/widgets.dart';
+import 'package:hover/hover.dart';
 
 import '../../glider.dart';
 
@@ -48,6 +47,10 @@ class CustomWidgetsDemo extends StatelessWidget {
 }
 
 class _CameraDemo extends StatelessWidget {
+  final bool demoStreaming;
+  _CameraDemo({
+    this.demoStreaming = true,
+  });
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -57,36 +60,43 @@ class _CameraDemo extends StatelessWidget {
           bottomPadding: 8.0,
           topPadding: 8.0,
         ),
-        CameraControllerWidget(
-          builder: (context, initialization) {
-            switch (initialization.status) {
-              case CameraInitializationState.loading:
-                return CircularProgressIndicator();
+        demoStreaming
+            ? CameraStreamWidget(
+                onImage: (image) {
+                  final timestamp = image.timestamp.formattedTime;
+                  print("CameraStreamWidget image on: $timestamp");
+                },
+              )
+            : CameraControllerWidget(
+                builder: (context, initialization) {
+                  switch (initialization.status) {
+                    case CameraInitializationState.loading:
+                      return CircularProgressIndicator();
 
-              case CameraInitializationState.initialized:
-                final controller = initialization.controller;
-                return SizedBox(
-                  height: 300,
-                  child: controller != null
-                      ? CameraPreview(controller)
-                      : Container(),
-                );
+                    case CameraInitializationState.initialized:
+                      final controller = initialization.controller;
+                      return SizedBox(
+                        height: 300,
+                        child: controller != null
+                            ? CameraPreview(controller)
+                            : Container(),
+                      );
 
-              case CameraInitializationState.setupFailed:
-                return Text("Setup Failed!");
+                    case CameraInitializationState.setupFailed:
+                      return Text("Setup Failed!");
 
-              default:
-                return SizedBox.shrink();
-            }
-          },
-        ),
+                    default:
+                      return SizedBox.shrink();
+                  }
+                },
+              ),
       ],
     );
   }
 }
 
 class _SensorsDemo extends StatelessWidget {
-  Widget _buildSensorWidget(
+  Widget _buildSensorInfo(
     BuildContext context,
     dynamic sensorData,
     SensorMonitor? controller,
@@ -109,7 +119,10 @@ class _SensorsDemo extends StatelessWidget {
                   "Z:" + (sensorData != null ? sensorData.z.toString() : "")),
               HoverCallToActionButton(
                 text: controller.isWatching ? "Stop" : "Start",
-                onPressed: controller.toggleMonitoring,
+                onPressed: () {
+                  print("asd");
+                  controller.toggleMonitoring();
+                },
               )
             ],
           )
@@ -120,8 +133,8 @@ class _SensorsDemo extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        AccelerometerWidget(builder: _buildSensorWidget),
-        GyroscopeWidget(builder: _buildSensorWidget),
+        AccelerometerWidget(builder: _buildSensorInfo),
+        GyroscopeWidget(builder: _buildSensorInfo),
       ],
     );
   }

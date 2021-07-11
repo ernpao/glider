@@ -6,7 +6,15 @@ import 'camera_initialization_data.dart';
 /// A widget that fetches a lists of cameras available on the device
 /// and provides [CameraInitializationData] to a builder function.
 class CameraControllerWidget extends StatefulWidget {
-  CameraControllerWidget({required this.builder});
+  CameraControllerWidget({
+    required this.builder,
+    this.resolution = ResolutionPreset.low,
+    this.imageFormatGroup = ImageFormatGroup.yuv420,
+  });
+  final ResolutionPreset resolution;
+
+  /// When null the imageFormat will fallback to the platforms default.
+  final ImageFormatGroup imageFormatGroup;
 
   final Widget Function(BuildContext, CameraInitializationData) builder;
 
@@ -26,27 +34,22 @@ class _CameraControllerWidgetState extends State<CameraControllerWidget> {
     super.initState();
   }
 
-  CameraController _createDefaultController(
-      List<CameraDescription> availableCameras) {
+  CameraController _createController(List<CameraDescription> availableCameras) {
     final controller = CameraController(
       availableCameras.first,
-      ResolutionPreset.max,
-      imageFormatGroup: ImageFormatGroup.yuv420,
+      widget.resolution,
+      imageFormatGroup: widget.imageFormatGroup,
     );
     return controller;
   }
 
   void _initCameras() async {
     final deviceCameras = await availableCameras();
-    _controller = _createDefaultController(deviceCameras);
+    _controller = _createController(deviceCameras);
     _controller?.initialize().then((_) {
-      if (!mounted) {
-        _setupFailed = true;
-      } else {
-        _setupFailed = false;
-        _availableCameras = deviceCameras;
-      }
       setState(() {
+        _setupFailed = !mounted;
+        _availableCameras = deviceCameras;
         _setupComplete = true;
       });
     });

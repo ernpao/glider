@@ -1,4 +1,5 @@
 library hardware;
 
-export 'camera_controller_widget.dart';
-export 'sensor_monitor_widget.dart';
+export 'battery/battery.dart';
+export 'camera/camera.dart';
+export 'sensors/sensors.dart';

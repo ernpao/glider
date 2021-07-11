@@ -11,6 +11,8 @@ dependencies:
     sdk: flutter
   glider:
     path: ../../glider
+  hover:
+    path: ../../glider/hover
 
   cupertino_icons: ^1.0.2
 

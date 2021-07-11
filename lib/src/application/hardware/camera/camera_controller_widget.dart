@@ -1,31 +1,14 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 
-export 'package:camera/camera.dart';
-
-enum CameraControllerWidgetStatus {
-  loading,
-  initialized,
-  setupFailed,
-}
-
-class CameraControllerWidgetSnapshot {
-  final CameraControllerWidgetStatus status;
-  final CameraController? controller;
-  final List<CameraDescription>? availableCameras;
-
-  CameraControllerWidgetSnapshot({
-    required this.status,
-    this.controller,
-    this.availableCameras,
-  });
-}
+import 'camera_initialization_data.dart';
 
 /// A widget that fetches a lists of cameras available on the device
+/// and provides [CameraInitializationData] to a builder function.
 class CameraControllerWidget extends StatefulWidget {
   CameraControllerWidget({required this.builder});
 
-  final Widget Function(BuildContext, CameraControllerWidgetSnapshot) builder;
+  final Widget Function(BuildContext, CameraInitializationData) builder;
 
   @override
   State<StatefulWidget> createState() => _CameraControllerWidgetState();
@@ -79,23 +62,23 @@ class _CameraControllerWidgetState extends State<CameraControllerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    CameraControllerWidgetStatus state;
+    CameraInitializationState state;
     if (_isLoading) {
-      state = CameraControllerWidgetStatus.loading;
+      state = CameraInitializationState.loading;
     } else {
       if (_setupFailed) {
-        state = CameraControllerWidgetStatus.setupFailed;
+        state = CameraInitializationState.setupFailed;
       } else {
-        state = CameraControllerWidgetStatus.initialized;
+        state = CameraInitializationState.initialized;
       }
     }
 
-    CameraControllerWidgetSnapshot snapshot = CameraControllerWidgetSnapshot(
+    CameraInitializationData data = CameraInitializationData(
       status: state,
       availableCameras: _availableCameras,
       controller: _controller,
     );
 
-    return widget.builder(context, snapshot);
+    return widget.builder(context, data);
   }
 }

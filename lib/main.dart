@@ -5,8 +5,11 @@ import 'demos/demos.dart';
 void main() {
   // runApp(AuthFlowDemo());
   // runApp(CounterAppDemo());
-  runApp(CustomWidgetsDemo(
-    demoCamera: false,
-    demoSensors: false,
-  ));
+  runApp(
+    CustomWidgetsDemo(
+        // demoCamera: false,
+        // demoSensors: false,
+        // demoWebWidgets: false,
+        ),
+  );
 }

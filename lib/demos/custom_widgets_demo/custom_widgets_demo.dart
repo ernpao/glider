@@ -58,13 +58,13 @@ class _CameraDemo extends StatelessWidget {
           topPadding: 8.0,
         ),
         CameraControllerWidget(
-          builder: (context, snapshot) {
-            switch (snapshot.status) {
-              case CameraControllerWidgetStatus.loading:
+          builder: (context, initialization) {
+            switch (initialization.status) {
+              case CameraInitializationState.loading:
                 return CircularProgressIndicator();
 
-              case CameraControllerWidgetStatus.initialized:
-                final controller = snapshot.controller;
+              case CameraInitializationState.initialized:
+                final controller = initialization.controller;
                 return SizedBox(
                   height: 300,
                   child: controller != null
@@ -72,7 +72,7 @@ class _CameraDemo extends StatelessWidget {
                       : Container(),
                 );
 
-              case CameraControllerWidgetStatus.setupFailed:
+              case CameraInitializationState.setupFailed:
                 return Text("Setup Failed!");
 
               default:

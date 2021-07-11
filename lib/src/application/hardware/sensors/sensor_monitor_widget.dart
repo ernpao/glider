@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
+import 'package:sensors_plus/sensors_plus.dart';
 
-import 'sensors.dart';
+import 'sensor_monitor.dart';
 
 abstract class _SensorMonitorWidget<T extends SensorMonitor>
     extends StatefulWidget {

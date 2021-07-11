@@ -1,8 +1,6 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:glider/glider.dart';
-import 'package:hover/widgets.dart';
+import 'package:hover/hover.dart';
 
 void main() {
   runApp(const WebtopGliderDemo());

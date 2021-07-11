@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hover/widgets.dart';
+import 'package:hover/hover.dart';
 
 import '../../glider.dart';
 import 'auth_flow_demo_state.dart';

@@ -1,6 +1,6 @@
 library mixins;
 
-import 'package:hover/widgets.dart';
+import 'package:hover/hover.dart';
 
 /// A mixin that gives an object the
 /// [mobileNumber] string property.

@@ -18,8 +18,14 @@ mixin EmailAddress {
       HoverFluentValidator().validateAsEmail().check(email);
 }
 
+/// A mixin for converting enum values
+/// to strings.
 mixin EnumToString {
-  String enumToString(enumValue) {
-    return enumValue.toString().split('.').last;
-  }
+  String enumToString(enumValue) => enumValue.toString().split('.').last;
+}
+
+/// A mixin that gives an object the
+/// [uuid] string property.
+mixin UUID {
+  String get uuid;
 }

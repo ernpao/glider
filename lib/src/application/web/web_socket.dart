@@ -135,10 +135,14 @@ class WebSocketMessage extends JSON {
     setCategory(category);
     setTopic(topic);
     setBody(body);
+    _setCreated(DateTime.now());
   }
 
   final String sender;
   void _setSender(String sender) => _set("sender", sender);
+
+  DateTime get created => _get<DateTime>("created");
+  void _setCreated(DateTime created) => _set("created", created.toString());
 
   String? get category => _get("category");
   bool get hasCategory => _contains("category");
@@ -168,7 +172,7 @@ class WebSocketMessage extends JSON {
       category: _extract("category"),
       topic: _extract("topic"),
       body: _extract("body"),
-    );
+    ).._setCreated(DateTime.parse(_extract("created").toString()));
   }
 }
 

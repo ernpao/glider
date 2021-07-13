@@ -17,8 +17,8 @@ extension ResponseExtensions on Response {
 
 extension MapExtensions on Map {
   dynamic keyOf(dynamic value) {
-    dynamic s;
-    forEach((k, v) => (v == value) ? s = k : s);
-    return s;
+    dynamic r;
+    forEach((k, v) => (v == value) ? r = k : r);
+    return r;
   }
 }

@@ -3,6 +3,7 @@ import 'package:glider_webtop/glider_webtop.dart';
 
 void main() {
   final client = WebtopClient(
+    name: "Glider Webtop Test Client",
     host: "192.168.100.191",
     port: 6767,
     socketPort: 6868,
@@ -15,7 +16,6 @@ void main() {
 
   test("Webtop Websocket Connection", () async {
     client.openSocket();
-    client.pingSocket();
 
     final json = JSON();
     json.set("message", "Testing Webtop WebSocket connection.");

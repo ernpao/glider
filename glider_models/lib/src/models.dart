@@ -22,14 +22,15 @@ class JSON extends Mappable {
   void _setContent(Map<String, dynamic> content) => _content = content;
 
   static JSON parse(String jsonString) {
-    final Map<String, dynamic> map =
-        jsonDecode(jsonString) as Map<String, dynamic>;
+    final map = jsonDecode(jsonString) as Map<String, dynamic>;
     return JSON().._setContent(map);
   }
 
   static JSON parseMap(Map<String, dynamic> map) => JSON().._setContent(map);
 
   String get prettified => const JsonEncoder.withIndent('  ').convert(_content);
+
+  String stringify() => encode();
 
   @override
   String toString() => prettified;

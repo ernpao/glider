@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:hover/hover.dart';
 
@@ -159,23 +162,24 @@ class _WebWidgetsDemoState extends State<_WebWidgetsDemo> {
           width: Hover.getScreenWidth(context),
           child: WebSocketWidget(
             webSocket: WebSocketClient(
+              name: "web_widgets_demo",
               host: "192.168.100.191",
               port: 6868,
             ),
-            retryOnDone: true,
             builder: (context, event, socket) {
               if (event != null) {
                 if (event is WebSocketMessageEvent) {
                   final message = event.message;
-
                   if (message.type == "buffer") {
-                    final bytes = message.data;
+                    final List<dynamic> data = jsonDecode(message.body!);
+                    final List<int> ints = data.map((i) => i as int).toList();
+                    final bytes = Uint8List.fromList(ints);
                     return Image.memory(
                       bytes,
                       errorBuilder: (_, err, ___) => SizedBox.shrink(),
                     );
                   }
-                  return Text(message.data ?? "");
+                  return Text(message.body ?? "");
                 }
 
                 if (event is WebSocketErrorEvent) {

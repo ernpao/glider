@@ -26,13 +26,14 @@ class KeynoteClient
     with WebHost, EnumToString
     implements KeynoteAPI, WebHttpClient, WebSocket {
   late final WebSocketClient _socket =
-      WebSocketClient(host: host, port: socketPort);
+      WebSocketClient(name: name, host: host, port: socketPort);
   late final WebClient _client = WebClient(
     host: host,
     defaultPort: port,
     useHttps: false,
   );
 
+  final String name;
   final int port;
   final int socketPort;
 
@@ -40,6 +41,7 @@ class KeynoteClient
   final String host;
 
   KeynoteClient({
+    required this.name,
     required this.host,
     required this.port,
     required this.socketPort,
@@ -52,23 +54,17 @@ class KeynoteClient
   void openSocket({
     WebSocketListener? listener,
     Duration? pingInterval,
-    bool? retryOnDone,
+    bool reconnectOnDone = true,
   }) =>
       _socket.openSocket(
         listener: listener,
         pingInterval: pingInterval,
-        retryOnDone: retryOnDone,
+        reconnectOnDone: reconnectOnDone,
       );
 
   @override
-  void send(WebSocketMessage message) => _socket.send(message);
-
-  @override
-  void sendJson(JSON data, {String? type, String? topic}) =>
-      _socket.sendJson(data, type: type, topic: topic);
-
-  /// Sends a ping type message to the WebSocket.
-  void pingSocket() => _socket.send(WebSocketMessage(type: "ping"));
+  void sendJson(JSON data, {String? type, String? category, String? topic}) =>
+      _socket.sendJson(data, type: type, category: category, topic: topic);
 
   @override
   void closeSocket() => _socket.closeSocket();
@@ -87,20 +83,16 @@ class KeynoteClient
     sendJson(data, topic: enumToString(_Topic.keyboard));
   }
 
-  void _sendMouseCommand(dynamic data, _Type type) {
-    send(WebSocketMessage(
-      type: enumToString(type),
-      topic: enumToString(_Topic.mouse),
-      data: (data is Mappable) ? data.map() : data,
-    ));
+  void _sendMouseCommand(String command, _Type type) {
+    send(command, type: enumToString(type), topic: enumToString(_Topic.mouse));
   }
 
   @override
   void moveMouse(int x, int y) {
-    final data = JSON();
-    data.set("x", x);
-    data.set("y", y);
-    _sendMouseCommand(data, _Type.move);
+    final command = JSON();
+    command.set("x", x);
+    command.set("y", y);
+    _sendMouseCommand(command.stringify(), _Type.move);
   }
 
   @override
@@ -110,10 +102,10 @@ class KeynoteClient
 
   @override
   void offsetMouse(int xOffset, int yOffset) {
-    final data = JSON();
-    data.set("x", xOffset);
-    data.set("y", yOffset);
-    _sendMouseCommand(data, _Type.offset);
+    final command = JSON();
+    command.set("x", xOffset);
+    command.set("y", yOffset);
+    _sendMouseCommand(command.stringify(), _Type.offset);
   }
 
   @override
@@ -121,4 +113,9 @@ class KeynoteClient
 
   @override
   bool get hasNoListener => _socket.hasNoListener;
+
+  @override
+  void send(String data, {String? type, String? category, String? topic}) {
+    _socket.send(data, type: type, category: category, topic: topic);
+  }
 }

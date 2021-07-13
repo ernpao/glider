@@ -3,8 +3,13 @@ import 'package:glider/glider.dart';
 abstract class WebtopAPI {}
 
 class WebtopClient with WebHost implements WebtopAPI, WebHttpClient, WebSocket {
-  late final WebSocketClient _socket =
-      WebSocketClient(host: host, port: socketPort);
+  final String name;
+
+  late final WebSocketClient _socket = WebSocketClient(
+    name: name,
+    host: host,
+    port: socketPort,
+  );
   late final WebClient _client = WebClient(
     host: host,
     defaultPort: port,
@@ -18,6 +23,7 @@ class WebtopClient with WebHost implements WebtopAPI, WebHttpClient, WebSocket {
   final String host;
 
   WebtopClient({
+    required this.name,
     required this.host,
     required this.port,
     required this.socketPort,
@@ -30,23 +36,17 @@ class WebtopClient with WebHost implements WebtopAPI, WebHttpClient, WebSocket {
   void openSocket({
     WebSocketListener? listener,
     Duration? pingInterval,
-    bool? retryOnDone,
+    bool reconnectOnDone = true,
   }) =>
       _socket.openSocket(
         listener: listener,
         pingInterval: pingInterval,
-        retryOnDone: retryOnDone,
+        reconnectOnDone: reconnectOnDone,
       );
-
-  @override
-  void send(WebSocketMessage message) => _socket.send(message);
 
   @override
   void sendJson(JSON data, {String? type, String? topic}) =>
       _socket.sendJson(data, type: type, topic: topic);
-
-  /// Sends a ping type message to the WebSocket.
-  void pingSocket() => _socket.send(WebSocketMessage(type: "ping"));
 
   @override
   void closeSocket() => _socket.closeSocket();
@@ -62,12 +62,8 @@ class WebtopClient with WebHost implements WebtopAPI, WebHttpClient, WebSocket {
 
   @override
   bool get hasNoListener => _socket.hasNoListener;
-}
 
-class Webtop {
-  final WebtopAPI api = WebtopClient(
-    host: "192.168.100.191",
-    port: 6767,
-    socketPort: 6868,
-  );
+  @override
+  void send(data, {String? category, String? type, String? topic}) =>
+      _socket.send(data, type: type, category: category, topic: topic);
 }

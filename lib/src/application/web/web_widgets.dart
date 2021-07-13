@@ -6,10 +6,10 @@ class WebSocketWidget extends StatefulWidget {
   WebSocketWidget({
     required this.webSocket,
     required this.builder,
-    this.retryOnDone,
+    this.reconnectOnDone = true,
   }) : assert(webSocket.hasNoListener);
 
-  final bool? retryOnDone;
+  final bool reconnectOnDone;
   final WebSocket webSocket;
   final Widget Function(BuildContext, WebSocketEvent?, WebSocket) builder;
 
@@ -23,7 +23,7 @@ class _WebSocketWidgetState extends State<WebSocketWidget> {
   @override
   void initState() {
     widget.webSocket.openSocket(
-      retryOnDone: widget.retryOnDone,
+      reconnectOnDone: widget.reconnectOnDone,
       listener: WebSocketListener(
         onEvent: (e) => setState(() => this.lastEvent = e),
       ),

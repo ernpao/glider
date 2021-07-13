@@ -1,5 +1,6 @@
 import 'dart:convert';
-import 'dart:typed_data';
+
+// import 'dart:typed_data';
 
 import 'package:glider_models/glider_models.dart';
 import 'package:web_socket_channel/io.dart';
@@ -13,14 +14,14 @@ abstract class WebSocket {
   void openSocket({
     WebSocketListener? listener,
     Duration? pingInterval,
-    bool? retryOnDone,
+    bool reconnectOnDone = true,
   });
 
   /// Close the WebSocket connection.
   void closeSocket();
 
   /// Send a message to the WebSocket server.
-  void send(WebSocketMessage message);
+  void send(String data, {String? type, String? category, String? topic});
 
   /// Send JSON data to the WebSocket server.
   void sendJson(JSON data, {String? type, String? topic});
@@ -31,10 +32,12 @@ abstract class WebSocket {
 }
 
 class WebSocketClient extends WebSocket with WebHost {
+  final String name;
   final String host;
   final int port;
 
   WebSocketClient({
+    required this.name,
     required this.host,
     required this.port,
   });
@@ -53,29 +56,25 @@ class WebSocketClient extends WebSocket with WebHost {
   void openSocket({
     WebSocketListener? listener,
     Duration? pingInterval,
-    bool? retryOnDone,
+    bool reconnectOnDone = true,
   }) {
-    _channel = IOWebSocketChannel.connect(
-      'ws://$host:$port',
-      pingInterval: pingInterval,
-    );
+    final url = 'ws://$host:$port';
+    _channel = IOWebSocketChannel.connect(url, pingInterval: pingInterval);
 
     _listener = listener;
 
-    if (listener != null) {
+    if (_listener != null) {
       _channel?.stream.listen(
-        (d) => listener.onMessage(_convertStreamData(d)),
-        onError: listener.onError,
+        (d) => _listener?.onMessage(_parseStreamData(d)),
+        onError: _listener?.onError,
         onDone: () {
-          listener.onDone();
-          if (retryOnDone != null) {
-            if (retryOnDone) {
-              openSocket(
-                listener: listener,
-                pingInterval: pingInterval,
-                retryOnDone: retryOnDone,
-              );
-            }
+          _listener?.onDone();
+          if (reconnectOnDone) {
+            openSocket(
+              listener: _listener,
+              pingInterval: pingInterval,
+              reconnectOnDone: reconnectOnDone,
+            );
           }
         },
       );
@@ -86,32 +85,23 @@ class WebSocketClient extends WebSocket with WebHost {
   void closeSocket() => _channel?.sink.close(status.goingAway);
 
   @override
-  void send(WebSocketMessage message) => sink?.add(message.encode());
-
-  @override
-  void sendJson(JSON data, {String? type, String? topic}) {
-    send(WebSocketMessage(
+  void send(String message, {String? type, String? category, String? topic}) {
+    sink?.add(WebSocketMessage(
+      sender: name,
+      category: category,
       type: type,
       topic: topic,
-      data: data.content,
-    ));
+      body: message,
+    ).encode());
   }
 
-  WebSocketMessage _convertStreamData(d) {
+  @override
+  void sendJson(JSON data, {String? type, String? category, String? topic}) =>
+      send(data.encode(), type: type, category: category, topic: topic);
+
+  WebSocketMessage _parseStreamData(d) {
     final String jsonStr = d is String ? d : jsonEncode(d);
     final JSON json = JSON.parse(jsonStr);
-    if (json.contains("type")) {
-      switch (json.get("type")) {
-        case "Buffer":
-          final List<dynamic> data = json.get("data");
-          final List<int> ints = data.map((i) => i as int).toList();
-          final bytes = Uint8List.fromList(ints);
-          final message = WebSocketMessage(type: "buffer", data: bytes);
-          return message;
-        default:
-          break;
-      }
-    }
     final WebSocketMessage message = WebSocketMessage.fromJSON(json);
     return message;
   }
@@ -134,40 +124,53 @@ class WebSocketListener {
 
 class WebSocketMessage extends JSON {
   WebSocketMessage({
+    required this.sender,
+    String? category,
     String? type,
     String? topic,
-    dynamic data,
+    String? body,
   }) {
+    _setSender(sender);
     setType(type);
+    setCategory(category);
     setTopic(topic);
-    setData(data);
+    setBody(body);
   }
+
+  final String sender;
+  void _setSender(String sender) => _set("sender", sender);
+
+  String? get category => _get("category");
+  bool get hasCategory => _contains("category");
+  void setCategory(String? category) => _set("category", category);
+
+  String? get type => _get("type");
+  bool get hasType => _contains("type");
+  void setType(String? type) => _set("type", type);
+
+  String? get topic => _get("topic");
+  bool get hasTopic => _contains("topic");
+  void setTopic(String? topic) => _set("topic", topic);
+
+  String? get body => _get("body");
+  bool get hasBody => _contains("body");
+  void setBody(String? body) => _set("body", body);
+
+  dynamic _get<T>(String key) => get<T>("_ws_$key");
+  void _set(String key, dynamic value) => set("_ws_$key", value);
+  bool _contains(String key) => contains("_ws_$key");
 
   static WebSocketMessage fromJSON(JSON json) {
+    String _extract(String key) => _extract("$key");
     return WebSocketMessage(
-      type: json.get(_typeKey),
-      topic: json.get(_topicKey),
-      data: json.get(_dataKey),
+      sender: _extract("sender"),
+      type: _extract("type"),
+      category: _extract("category"),
+      topic: _extract("topic"),
+      body: _extract("body"),
     );
   }
-
-  String? get type => get(_typeKey);
-  bool get hasType => contains(_typeKey);
-  void setType(String? type) => set(_typeKey, type);
-
-  String? get topic => get(_topicKey);
-  bool get hasTopic => contains(_topicKey);
-  void setTopic(String? topic) => set(_topicKey, topic);
-
-  dynamic get data => get(_dataKey);
-  bool get hasData => contains(_dataKey);
-  void setData(dynamic data) => set(_dataKey, data);
 }
-
-String _buildKey(String name) => "_ws_$name";
-final String _typeKey = _buildKey("type");
-final String _topicKey = _buildKey("topic");
-final String _dataKey = _buildKey("data");
 
 abstract class WebSocketEvent {
   bool get isMessageEvent => this is WebSocketMessageEvent;

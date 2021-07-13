@@ -1,3 +1,5 @@
+import 'package:flutter/cupertino.dart';
+
 import '../../glider.dart';
 
 class AuthFlowDemoUser {
@@ -5,7 +7,7 @@ class AuthFlowDemoUser {
   AuthFlowDemoUser(this.username);
 }
 
-class AuthFlowDemoState extends ApplicationState with AuthFlowMixin {
+class AuthFlowDemoState extends ChangeNotifier with ApplicationState, AuthFlow {
   AuthFlowDemoState({
     this.otpRequired = true,
   });

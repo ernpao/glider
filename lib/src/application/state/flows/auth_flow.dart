@@ -1,22 +1,22 @@
-enum AuthFlowStatus {
+enum AuthFlowState {
   LOGGED_IN,
   LOGGED_OUT,
   SIGNING_UP,
   AWAITING_OTP,
 }
 
-mixin AuthFlowMixin {
-  AuthFlowStatus _currentState = AuthFlowStatus.LOGGED_OUT;
+mixin AuthFlow {
+  AuthFlowState _currentState = AuthFlowState.LOGGED_OUT;
 
   /// Current state of the authentication flow.
   /// Can either be [LOGGED_IN], [LOGGED_OUT],
   /// [SIGNING_UP], or [AWAITING_OTP].
-  AuthFlowStatus get currentState => _currentState;
+  AuthFlowState get currentState => _currentState;
 
-  bool get isLoggedIn => currentState == AuthFlowStatus.LOGGED_IN;
-  bool get isLoggedOut => currentState == AuthFlowStatus.LOGGED_OUT;
-  bool get isSigningUp => currentState == AuthFlowStatus.SIGNING_UP;
-  bool get isAwaitingOTP => currentState == AuthFlowStatus.AWAITING_OTP;
+  bool get isLoggedIn => currentState == AuthFlowState.LOGGED_IN;
+  bool get isLoggedOut => currentState == AuthFlowState.LOGGED_OUT;
+  bool get isSigningUp => currentState == AuthFlowState.SIGNING_UP;
+  bool get isAwaitingOTP => currentState == AuthFlowState.AWAITING_OTP;
 
   bool get otpRequired;
 
@@ -65,11 +65,11 @@ mixin AuthFlowMixin {
 
   String get currentStateAsString {
     switch (currentState) {
-      case AuthFlowStatus.LOGGED_IN:
+      case AuthFlowState.LOGGED_IN:
         return "Logged In";
-      case AuthFlowStatus.SIGNING_UP:
+      case AuthFlowState.SIGNING_UP:
         return "Signing Up";
-      case AuthFlowStatus.AWAITING_OTP:
+      case AuthFlowState.AWAITING_OTP:
         return "Awaiting OTP";
       default:
     }
@@ -86,16 +86,16 @@ mixin AuthFlowMixin {
   }) {
     String? message;
     switch (currentState) {
-      case AuthFlowStatus.LOGGED_IN:
+      case AuthFlowState.LOGGED_IN:
         message = whenLoggedIn;
         break;
-      case AuthFlowStatus.LOGGED_OUT:
+      case AuthFlowState.LOGGED_OUT:
         message = whenLoggedOut;
         break;
-      case AuthFlowStatus.SIGNING_UP:
+      case AuthFlowState.SIGNING_UP:
         message = whenSigningUp;
         break;
-      case AuthFlowStatus.AWAITING_OTP:
+      case AuthFlowState.AWAITING_OTP:
         message = whileAwaitingOTP;
         break;
       default:
@@ -123,7 +123,7 @@ mixin AuthFlowMixin {
       success = await logOutHandler();
       if (success) {
         onLogoutSuccess();
-        _currentState = AuthFlowStatus.LOGGED_OUT;
+        _currentState = AuthFlowState.LOGGED_OUT;
       } else {
         onLogoutFail();
       }
@@ -159,9 +159,8 @@ mixin AuthFlowMixin {
       success = await logInHandler(email, password);
       if (success) {
         onLoginWithEmailSuccess();
-        _currentState = otpRequired
-            ? AuthFlowStatus.AWAITING_OTP
-            : AuthFlowStatus.LOGGED_IN;
+        _currentState =
+            otpRequired ? AuthFlowState.AWAITING_OTP : AuthFlowState.LOGGED_IN;
       } else {
         onLoginWithEmailFail();
       }
@@ -198,9 +197,8 @@ mixin AuthFlowMixin {
       success = await signUpHandler(email, password);
       if (success) {
         onSignUpWithEmailSuccess();
-        _currentState = otpRequired
-            ? AuthFlowStatus.AWAITING_OTP
-            : AuthFlowStatus.LOGGED_IN;
+        _currentState =
+            otpRequired ? AuthFlowState.AWAITING_OTP : AuthFlowState.LOGGED_IN;
       } else {
         onSignUpWithEmailFail();
       }
@@ -236,7 +234,7 @@ mixin AuthFlowMixin {
       success = await onOtpSubmitted(otp);
       if (success) {
         onSubmitOTPSuccess();
-        _currentState = AuthFlowStatus.LOGGED_IN;
+        _currentState = AuthFlowState.LOGGED_IN;
       } else {
         onSubmitOTPFail();
       }
@@ -268,7 +266,7 @@ mixin AuthFlowMixin {
       /// OTP can only be requested when logged out (i.e. during login or sign up)
       /// therefore cancelling the AWAITING_OTP state should set the state back
       /// to LOGGED_OUT.
-      _currentState = AuthFlowStatus.LOGGED_OUT;
+      _currentState = AuthFlowState.LOGGED_OUT;
     } catch (e) {
       _executeErrorHandler(e, onError);
       success = false;
@@ -286,7 +284,7 @@ mixin AuthFlowMixin {
     if (!isLoggedOut) return;
     try {
       onStartSignUp();
-      _currentState = AuthFlowStatus.SIGNING_UP;
+      _currentState = AuthFlowState.SIGNING_UP;
     } catch (e) {
       _executeErrorHandler(e, onError);
     }
@@ -303,7 +301,7 @@ mixin AuthFlowMixin {
     if (!isSigningUp) return;
     try {
       onCancelSignUp();
-      _currentState = AuthFlowStatus.LOGGED_OUT;
+      _currentState = AuthFlowState.LOGGED_OUT;
     } catch (e) {
       _executeErrorHandler(e, onError);
     }

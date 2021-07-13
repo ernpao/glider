@@ -3,9 +3,6 @@ import 'package:provider/provider.dart';
 
 import '../../glider.dart';
 
-/// An app to demonstrate state management using
-/// the core library.
-
 class CounterAppDemo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -14,10 +11,10 @@ class CounterAppDemo extends StatelessWidget {
       theme: ThemeData.dark(),
       home: Application(
         child: _CounterApp(),
-        appStateModel: _CounterState(),
         providers: [
           Provider(create: (_) => _DependencyA()),
           Provider(create: (_) => _DependencyB()),
+          Provider(create: (_) => _CounterState()),
         ],
       ),
     );
@@ -27,7 +24,7 @@ class CounterAppDemo extends StatelessWidget {
 class _CounterApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final counterState = Provider.of<_CounterState>(context);
+    final counterState = context.read<_CounterState>();
     final depA = context.read<_DependencyA>();
     final depB = context.read<_DependencyB>();
     return Scaffold(
@@ -54,7 +51,7 @@ class _CounterApp extends StatelessWidget {
   }
 }
 
-class _CounterState extends ApplicationState {
+class _CounterState extends ChangeNotifier {
   int _count = 0;
   int get count => _count;
 
@@ -62,9 +59,6 @@ class _CounterState extends ApplicationState {
     _count++;
     notifyListeners();
   }
-
-  @override
-  bool get isAppAuthenticated => false;
 }
 
 class _DependencyA {

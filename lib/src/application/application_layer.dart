@@ -15,14 +15,12 @@ export 'web/web.dart';
 class Application extends StatelessWidget {
   final Widget child;
   final List<InheritedProvider>? providers;
-  final ApplicationState? appStateModel;
   final bool useMaterialAppWidget;
   final bool useSafeArea;
   final ThemeData? theme;
 
   Application({
     required this.child,
-    this.appStateModel,
     this.providers,
     this.useMaterialAppWidget = true,
     this.useSafeArea = true,
@@ -31,34 +29,18 @@ class Application extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<InheritedProvider> providersList = [];
+    Widget app = child;
 
-    if (appStateModel != null) {
-      providersList.add(AppStateProvider(appStateModel!));
-    }
+    if (useSafeArea) app = SafeArea(child: app);
 
-    providersList..addAll(providers ?? []);
+    if (useMaterialAppWidget)
+      app = MaterialApp(
+          debugShowCheckedModeBanner: false, home: app, theme: theme);
 
-    Widget content = child;
+    final pList = <InheritedProvider>[]..addAll(providers ?? []);
+    if (pList.isNotEmpty) app = MultiProvider(providers: pList, child: app);
 
-    if (useMaterialAppWidget) {
-      if (useSafeArea) {
-        content = SafeArea(child: child);
-      }
-
-      content = MaterialApp(
-        debugShowCheckedModeBanner: false,
-        home: content,
-        theme: theme,
-      );
-    }
-
-    return providersList.isNotEmpty
-        ? MultiProvider(
-            providers: providersList,
-            child: content,
-          )
-        : content;
+    return app;
   }
 }
 

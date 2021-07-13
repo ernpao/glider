@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hover/hover.dart';
+import 'package:provider/provider.dart';
 
 import '../../glider.dart';
 import 'auth_flow_demo_state.dart';
@@ -8,13 +9,17 @@ class AuthFlowDemo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Application(
-      appStateModel: AuthFlowDemoState(),
-      child: AuthFlowDemoBody(),
+      providers: [
+        Provider(
+          create: (context) => AuthFlowDemoState(),
+        ),
+      ],
+      child: _AppBody(),
     );
   }
 }
 
-class AuthFlowDemoBody extends StatelessWidget {
+class _AppBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = getAppStateAs<AuthFlowDemoState>(context);
@@ -22,13 +27,13 @@ class AuthFlowDemoBody extends StatelessWidget {
     Widget content;
 
     if (state.isLoggedOut) {
-      content = LoginPage();
+      content = _LoginPage();
     } else if (state.isAwaitingOTP) {
-      content = OTPConfirmationPage();
+      content = _OTPConfirmationPage();
     } else if (state.isSigningUp) {
-      content = SignUpPage();
+      content = _SignUpPage();
     } else {
-      content = HomePage();
+      content = _HomePage();
     }
 
     return Scaffold(
@@ -37,7 +42,7 @@ class AuthFlowDemoBody extends StatelessWidget {
   }
 }
 
-class SignUpPage extends StatelessWidget {
+class _SignUpPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = getAppStateAs<AuthFlowDemoState>(context);
@@ -64,7 +69,7 @@ class SignUpPage extends StatelessWidget {
   }
 }
 
-class LoginPage extends StatelessWidget {
+class _LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = getAppStateAs<AuthFlowDemoState>(context);
@@ -88,7 +93,7 @@ class LoginPage extends StatelessWidget {
   }
 }
 
-class OTPConfirmationPage extends StatelessWidget {
+class _OTPConfirmationPage extends StatelessWidget {
   final TextEditingController otpFieldController = TextEditingController();
 
   @override
@@ -119,7 +124,7 @@ class OTPConfirmationPage extends StatelessWidget {
   }
 }
 
-class HomePage extends StatelessWidget {
+class _HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = getAppStateAs<AuthFlowDemoState>(context);

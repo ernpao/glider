@@ -1,7 +1,9 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/widgets.dart';
+import 'package:glider_models/glider_models.dart';
 
 import 'camera_mixins.dart';
 
@@ -97,18 +99,26 @@ class _CameraStreamWidgetState extends State<CameraStreamWidget> {
   }
 }
 
-class CameraStreamData {
+class CameraStreamData extends JSON with EnumToString {
   final int width;
   final int height;
   final Uint8List bytes;
   final ImageFormatGroup imageFormatGroup;
   final ResolutionPreset resolution;
   final DateTime timestamp = DateTime.now();
+  String get encodedBytes => jsonEncode(bytes);
   CameraStreamData({
     required this.width,
     required this.height,
     required this.bytes,
     required this.imageFormatGroup,
     required this.resolution,
-  });
+  }) {
+    set("width", width);
+    set("height", width);
+    // set("bytes", encodedBytes);
+    set("imageFormatGroup", enumToString(imageFormatGroup));
+    set("resolution", enumToString(resolution));
+    set("timestamp", timestamp.toString());
+  }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:glider/glider.dart';
-import 'package:hover/hover.dart';
+import 'package:glider_webtop/glider_webtop.dart';
 
 void main() {
   runApp(const WebtopGliderDemo());
@@ -14,28 +14,29 @@ class WebtopGliderDemo extends StatefulWidget {
 }
 
 class _WebtopGliderDemoState extends State<WebtopGliderDemo> {
+  final socket = WebtopClient(
+    host: "192.168.100.191",
+    port: 6767,
+    socketPort: 6868,
+  );
+
   @override
   Widget build(BuildContext context) {
+    socket.openSocket();
     return Application(
       theme: ThemeData.dark(),
       child: Column(
         children: [
-          CameraControllerWidget(
-            builder: (context, data) {
-              switch (data.status) {
-                case CameraInitializationState.initialized:
-                  final controller = data.controller;
-                  return CameraPreview(controller!);
-                default:
-                  return const Center(child: CircularProgressIndicator());
+          CameraStreamWidget(
+            onImage: (image) async {
+              if (image.timestamp.millisecond % 100 == 0) {
+                // socket.sendJson(image);
+                socket.send(WebSocketMessage(
+                  data: image.encodedBytes,
+                ));
               }
             },
           ),
-          HoverCallToActionButton(
-              text: "Test",
-              onPressed: () {
-                setState(() {});
-              })
         ],
       ),
       useMaterialAppWidget: true,

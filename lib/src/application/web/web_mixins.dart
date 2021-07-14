@@ -8,6 +8,6 @@ mixin WebHttpScheme {
 
 /// A mixin used to give an object a web host property.
 mixin WebHost {
-  /// Host/IP address of the web server.
+  /// Name/IP address of the host server.
   String get host;
 }

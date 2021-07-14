@@ -2,39 +2,37 @@ import 'package:flutter/material.dart';
 
 import 'web_socket.dart';
 
-class WebSocketWidget extends StatefulWidget {
-  WebSocketWidget({
+class WebSocketMonitor extends StatefulWidget {
+  WebSocketMonitor({
     required this.webSocket,
     required this.builder,
-    this.reconnectOnDone = true,
-  }) : assert(webSocket.hasNoListener);
+    this.reopenOnDone = true,
+  }) : assert(webSocket.isClosed);
 
-  final bool reconnectOnDone;
-  final WebSocket webSocket;
-  final Widget Function(BuildContext, WebSocketEvent?, WebSocket) builder;
+  /// Reopen the connection when the done event is fired.
+  final bool reopenOnDone;
+
+  /// An object that implements the [WebSocketClient] interface or an instance of the [WebSocket] class.
+  final WebSocketClient webSocket;
+  final Widget Function(BuildContext, WebSocketEvent?) builder;
 
   @override
-  _WebSocketWidgetState createState() => _WebSocketWidgetState();
+  _WebSocketMonitorState createState() => _WebSocketMonitorState();
 }
 
-class _WebSocketWidgetState extends State<WebSocketWidget> {
-  WebSocketEvent? lastEvent;
+class _WebSocketMonitorState extends State<WebSocketMonitor> {
+  WebSocketEvent? _event;
 
   @override
   void initState() {
     widget.webSocket.openSocket(
-      reconnectOnDone: widget.reconnectOnDone,
-      listener: WebSocketListener(
-        onEvent: (e) => setState(() => this.lastEvent = e),
-      ),
+      reopenOnDone: widget.reopenOnDone,
+      eventHandler:
+          WebSocketEventHandler(onEvent: (e) => setState(() => _event = e)),
     );
     super.initState();
   }
 
   @override
-  Widget build(BuildContext context) => widget.builder(
-        context,
-        lastEvent,
-        widget.webSocket,
-      );
+  Widget build(BuildContext context) => widget.builder(context, _event);
 }

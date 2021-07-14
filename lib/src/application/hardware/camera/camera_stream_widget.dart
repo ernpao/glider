@@ -122,3 +122,17 @@ class CameraStreamData extends JSON with EnumToString {
     set("timestamp", timestamp.toString());
   }
 }
+
+class CameraStreamDataRenderer extends StatelessWidget {
+  CameraStreamDataRenderer({
+    required this.data,
+  });
+  final CameraStreamData data;
+  @override
+  Widget build(BuildContext context) {
+    return Image.memory(
+      data.bytes,
+      errorBuilder: (context, error, stackTrace) => SizedBox.shrink(),
+    );
+  }
+}

@@ -9,12 +9,12 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 
 import 'web_mixins.dart';
 
-abstract class WebSocket {
+abstract class WebSocketClient {
   /// Establish a connection with the WebSocket server.
   void openSocket({
-    WebSocketListener? listener,
+    WebSocketEventHandler? eventHandler,
     Duration? pingInterval,
-    bool reconnectOnDone = true,
+    bool reopenOnDone = true,
   });
 
   /// Close the WebSocket connection.
@@ -26,54 +26,67 @@ abstract class WebSocket {
   /// Send JSON data to the WebSocket server.
   void sendJson(JSON data, {String? type, String? topic});
 
-  /// Indicates if the WebSocket already has a listener attached to the stream.
+  /// Indicates if the WebSocket has a listener attached to the stream.
   bool get hasListener;
+
+  /// Indicates if the WebSocket doesn't have a listener attached to the stream.
   bool get hasNoListener => !hasListener;
+
+  /// Indicates if the WebSocket connection is open.
+  bool get isOpen;
+
+  /// Indicates if the WebSocket connection is closed.
+  bool get isClosed => !isOpen;
 }
 
-class WebSocketClient extends WebSocket with WebHost {
-  final String name;
-  final String host;
-  final int port;
-
-  WebSocketClient({
-    required this.name,
+class WebSocket extends WebSocketClient with WebHost, UUID {
+  WebSocket({
     required this.host,
     required this.port,
   });
+
+  final String host;
+  final int port;
 
   IOWebSocketChannel? _channel;
   Stream? get stream => _channel?.stream;
   WebSocketSink? get sink => _channel?.sink;
 
-  WebSocketListener? get listener => _listener;
-  WebSocketListener? _listener;
+  WebSocketEventHandler? get listener => _eventHandler;
+  WebSocketEventHandler? _eventHandler;
 
   @override
   bool get hasListener => listener != null;
 
+  bool _isOpen = false;
+
+  @override
+  bool get isOpen => _isOpen;
+
   @override
   void openSocket({
-    WebSocketListener? listener,
+    WebSocketEventHandler? eventHandler,
     Duration? pingInterval,
-    bool reconnectOnDone = true,
+    bool reopenOnDone = true,
   }) {
     final url = 'ws://$host:$port';
     _channel = IOWebSocketChannel.connect(url, pingInterval: pingInterval);
 
-    _listener = listener;
+    _isOpen = true;
+    _eventHandler = eventHandler;
 
-    if (_listener != null) {
+    if (_eventHandler != null) {
       _channel?.stream.listen(
-        (d) => _listener?.onMessage(_parseStreamData(d)),
-        onError: _listener?.onError,
+        (d) => _eventHandler?.onMessage(_parseStreamData(d)),
+        onError: _eventHandler?.onError,
         onDone: () {
-          _listener?.onDone();
-          if (reconnectOnDone) {
+          _isOpen = false;
+          _eventHandler?.onDone();
+          if (reopenOnDone) {
             openSocket(
-              listener: _listener,
+              eventHandler: _eventHandler,
               pingInterval: pingInterval,
-              reconnectOnDone: reconnectOnDone,
+              reopenOnDone: reopenOnDone,
             );
           }
         },
@@ -82,12 +95,17 @@ class WebSocketClient extends WebSocket with WebHost {
   }
 
   @override
-  void closeSocket() => _channel?.sink.close(status.goingAway);
+  void closeSocket() {
+    _isOpen = false;
+    _eventHandler = null;
+    _channel?.sink.close(status.goingAway);
+  }
 
   @override
   void send(String message, {String? type, String? category, String? topic}) {
+    assert(this.isOpen);
     sink?.add(WebSocketMessage(
-      sender: name,
+      sender: uuid,
       category: category,
       type: type,
       topic: topic,
@@ -107,10 +125,8 @@ class WebSocketClient extends WebSocket with WebHost {
   }
 }
 
-class WebSocketListener {
-  WebSocketListener({
-    required this.onEvent,
-  });
+class WebSocketEventHandler {
+  WebSocketEventHandler({required this.onEvent});
 
   final Function(WebSocketEvent event) onEvent;
 
@@ -120,6 +136,25 @@ class WebSocketListener {
   void onError(Object? error) => onEvent(WebSocketErrorEvent(error));
 
   void onDone() => onEvent(WebSocketDoneEvent());
+}
+
+abstract class WebSocketEvent {
+  bool get isMessageEvent => this is WebSocketMessageEvent;
+  bool get isErrorEvent => this is WebSocketErrorEvent;
+  bool get isDoneEvent => this is WebSocketDoneEvent;
+}
+
+class WebSocketDoneEvent extends WebSocketEvent {}
+
+class WebSocketMessageEvent extends WebSocketEvent {
+  final WebSocketMessage message;
+  WebSocketMessageEvent(this.message);
+}
+
+class WebSocketErrorEvent extends WebSocketEvent {
+  final Object? error;
+  WebSocketErrorEvent(this.error);
+  bool get hasError => error != null;
 }
 
 class WebSocketMessage extends JSON {
@@ -165,32 +200,13 @@ class WebSocketMessage extends JSON {
   bool _contains(String key) => contains("_ws_$key");
 
   static WebSocketMessage fromJSON(JSON json) {
-    String _extract(String key) => _extract("$key");
+    String? _extract(String key) => json.content["_ws_$key"];
     return WebSocketMessage(
-      sender: _extract("sender"),
+      sender: _extract("sender")!,
       type: _extract("type"),
       category: _extract("category"),
       topic: _extract("topic"),
       body: _extract("body"),
     ).._setCreated(DateTime.parse(_extract("created").toString()));
   }
-}
-
-abstract class WebSocketEvent {
-  bool get isMessageEvent => this is WebSocketMessageEvent;
-  bool get isErrorEvent => this is WebSocketErrorEvent;
-  bool get isDoneEvent => this is WebSocketDoneEvent;
-}
-
-class WebSocketDoneEvent extends WebSocketEvent {}
-
-class WebSocketMessageEvent extends WebSocketEvent {
-  final WebSocketMessage message;
-  WebSocketMessageEvent(this.message);
-}
-
-class WebSocketErrorEvent extends WebSocketEvent {
-  final Object? error;
-  WebSocketErrorEvent(this.error);
-  bool get hasError => error != null;
 }

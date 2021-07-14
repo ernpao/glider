@@ -2,11 +2,15 @@ import 'package:glider/glider.dart';
 
 abstract class WebtopAPI {}
 
-class WebtopClient with WebHost implements WebtopAPI, WebHttpClient, WebSocket {
-  final String name;
-
-  late final WebSocketClient _socket = WebSocketClient(
-    name: name,
+class WebtopClient
+    with WebHost
+    implements WebtopAPI, WebHttpClient, WebSocketClient {
+  WebtopClient({
+    required this.host,
+    required this.port,
+    required this.socketPort,
+  });
+  late final WebSocket _socket = WebSocket(
     host: host,
     port: socketPort,
   );
@@ -22,26 +26,19 @@ class WebtopClient with WebHost implements WebtopAPI, WebHttpClient, WebSocket {
   @override
   final String host;
 
-  WebtopClient({
-    required this.name,
-    required this.host,
-    required this.port,
-    required this.socketPort,
-  });
-
   @override
   Future<WebResponse> index() => _client.index();
 
   @override
   void openSocket({
-    WebSocketListener? listener,
+    WebSocketEventHandler? eventHandler,
     Duration? pingInterval,
-    bool reconnectOnDone = true,
+    bool reopenOnDone = true,
   }) =>
       _socket.openSocket(
-        listener: listener,
+        eventHandler: eventHandler,
         pingInterval: pingInterval,
-        reconnectOnDone: reconnectOnDone,
+        reopenOnDone: reopenOnDone,
       );
 
   @override
@@ -66,4 +63,10 @@ class WebtopClient with WebHost implements WebtopAPI, WebHttpClient, WebSocket {
   @override
   void send(data, {String? category, String? type, String? topic}) =>
       _socket.send(data, type: type, category: category, topic: topic);
+
+  @override
+  bool get isClosed => _socket.isClosed;
+
+  @override
+  bool get isOpen => _socket.isOpen;
 }

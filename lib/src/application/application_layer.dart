@@ -3,8 +3,6 @@ library application_layer;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'state/state.dart';
-
 export 'hardware/hardware.dart';
 export 'state/state.dart';
 export 'web/web.dart';
@@ -42,8 +40,4 @@ class Application extends StatelessWidget {
 
     return app;
   }
-}
-
-T getAppStateAs<T>(BuildContext context) {
-  return Provider.of<ApplicationState>(context) as T;
 }

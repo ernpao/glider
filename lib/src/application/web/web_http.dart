@@ -16,16 +16,7 @@ abstract class WebHttpClient {
   Future<WebResponse> httpPOST(String? path);
 }
 
-class WebClient with WebHttpScheme, WebHost implements WebHttpClient {
-  final String host;
-
-  /// A set of headers that will be included
-  /// in all requests made by this client.
-  final Map<String, String>? fixedHeaders;
-
-  /// If set, all requests will be made to this port.
-  final int? defaultPort;
-
+class WebClient extends WebHttpClient with WebHttpScheme, WebHost, UUID {
   WebClient({
     required this.host,
     bool useHttps = true,
@@ -34,6 +25,15 @@ class WebClient with WebHttpScheme, WebHost implements WebHttpClient {
   }) {
     withHttps = useHttps;
   }
+
+  final String host;
+
+  /// A set of headers that will be included
+  /// in all requests made by this client.
+  final Map<String, String>? fixedHeaders;
+
+  /// If set, all requests will be made to this port.
+  final int? defaultPort;
 
   /// Indicates whether requests made by this
   /// client use HTTPS (true by default).

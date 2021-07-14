@@ -160,13 +160,9 @@ class _WebWidgetsDemoState extends State<_WebWidgetsDemo> {
         ),
         SizedBox(
           width: Hover.getScreenWidth(context),
-          child: WebSocketWidget(
-            webSocket: WebSocketClient(
-              name: "web_widgets_demo",
-              host: "192.168.100.191",
-              port: 6868,
-            ),
-            builder: (context, event, socket) {
+          child: WebSocketMonitor(
+            webSocket: WebSocket(host: "192.168.100.191", port: 6868),
+            builder: (context, event) {
               if (event != null) {
                 if (event is WebSocketMessageEvent) {
                   final message = event.message;

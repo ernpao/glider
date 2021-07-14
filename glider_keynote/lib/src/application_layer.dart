@@ -24,9 +24,8 @@ enum KeyboardModifier { alt, control, shift }
 
 class KeynoteClient
     with WebHost, EnumToString
-    implements KeynoteAPI, WebHttpClient, WebSocket {
-  late final WebSocketClient _socket =
-      WebSocketClient(name: name, host: host, port: socketPort);
+    implements KeynoteAPI, WebHttpClient, WebSocketClient {
+  late final WebSocket _socket = WebSocket(host: host, port: socketPort);
   late final WebClient _client = WebClient(
     host: host,
     defaultPort: port,
@@ -52,14 +51,14 @@ class KeynoteClient
 
   @override
   void openSocket({
-    WebSocketListener? listener,
+    WebSocketEventHandler? eventHandler,
     Duration? pingInterval,
-    bool reconnectOnDone = true,
+    bool reopenOnDone = true,
   }) =>
       _socket.openSocket(
-        listener: listener,
+        eventHandler: eventHandler,
         pingInterval: pingInterval,
-        reconnectOnDone: reconnectOnDone,
+        reopenOnDone: reopenOnDone,
       );
 
   @override
@@ -118,4 +117,10 @@ class KeynoteClient
   void send(String data, {String? type, String? category, String? topic}) {
     _socket.send(data, type: type, category: category, topic: topic);
   }
+
+  @override
+  bool get isClosed => _socket.isClosed;
+
+  @override
+  bool get isOpen => _socket.isOpen;
 }

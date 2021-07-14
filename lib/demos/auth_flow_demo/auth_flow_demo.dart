@@ -22,7 +22,7 @@ class AuthFlowDemo extends StatelessWidget {
 class _AppBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final state = getAppStateAs<AuthFlowDemoState>(context);
+    final state = context.read<AuthFlowDemoState>();
 
     Widget content;
 
@@ -45,7 +45,7 @@ class _AppBody extends StatelessWidget {
 class _SignUpPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final state = getAppStateAs<AuthFlowDemoState>(context);
+    final state = context.read<AuthFlowDemoState>();
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -72,7 +72,7 @@ class _SignUpPage extends StatelessWidget {
 class _LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final state = getAppStateAs<AuthFlowDemoState>(context);
+    final state = context.read<AuthFlowDemoState>();
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -98,7 +98,7 @@ class _OTPConfirmationPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final state = getAppStateAs<AuthFlowDemoState>(context);
+    final state = context.read<AuthFlowDemoState>();
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -127,7 +127,7 @@ class _OTPConfirmationPage extends StatelessWidget {
 class _HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final state = getAppStateAs<AuthFlowDemoState>(context);
+    final state = context.read<AuthFlowDemoState>();
     final currentUser = state.currentUser;
 
     return Column(

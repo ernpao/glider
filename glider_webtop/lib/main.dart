@@ -12,9 +12,10 @@ class GliderWebtopDemo extends StatefulWidget {
   State<GliderWebtopDemo> createState() => _GliderWebtopDemoState();
 }
 
+int _sample = 0;
+
 class _GliderWebtopDemoState extends State<GliderWebtopDemo> {
   final socket = WebtopClient(
-    name: "glider_webtop_demo",
     host: "192.168.100.191",
     port: 6767,
     socketPort: 6868,
@@ -22,17 +23,40 @@ class _GliderWebtopDemoState extends State<GliderWebtopDemo> {
 
   @override
   Widget build(BuildContext context) {
-    socket.openSocket(reconnectOnDone: true);
+    if (socket.isClosed) {
+      socket.openSocket();
+    }
     return Application(
       theme: ThemeData.dark(),
       child: Column(
         children: [
           CameraStreamWidget(
             onImage: (image) async {
-              if (image.timestamp.millisecond % 100 == 0) {
-                // socket.send(image.encodedBytes);
-                socket.send("test");
+              if (_sample++ > 100) {
+                socket.send("test", type: "bus");
+                _sample = 0;
               }
+            },
+            // showPreview: false,
+          ),
+          WebSocketMonitor(
+            webSocket: WebtopClient(
+              host: "192.168.100.191",
+              port: 6767,
+              socketPort: 6868,
+            ),
+            builder: (context, event) {
+              print("WebSocket rebuild triggered.");
+              if (event != null) {
+                print(event.runtimeType);
+                if (event.isMessageEvent) {
+                  final e = event as WebSocketMessageEvent;
+                  print(e.message.body);
+                }
+              } else {
+                print("Null WebSocket event on rebuild.");
+              }
+              return const SizedBox.shrink();
             },
           ),
         ],

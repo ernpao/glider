@@ -1,5 +1,6 @@
 library mixins;
 
+import 'package:uuid/uuid.dart';
 import 'package:hover/hover.dart';
 
 /// A mixin that gives an object the
@@ -27,5 +28,5 @@ mixin EnumToString {
 /// A mixin that gives an object the
 /// [uuid] string property.
 mixin UUID {
-  String get uuid;
+  final String uuid = const Uuid().v4();
 }

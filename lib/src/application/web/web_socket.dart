@@ -142,6 +142,20 @@ abstract class WebSocketEvent {
   bool get isMessageEvent => this is WebSocketMessageEvent;
   bool get isErrorEvent => this is WebSocketErrorEvent;
   bool get isDoneEvent => this is WebSocketDoneEvent;
+
+  T _as<T>() {
+    assert(this is T);
+    return this as T;
+  }
+
+  /// Casts self as a [WebSocketMessageEvent]
+  WebSocketMessageEvent asMessageEvent() => _as<WebSocketMessageEvent>();
+
+  /// Casts self as a [WebSocketDoneEvent]
+  WebSocketDoneEvent asDoneEvent() => _as<WebSocketDoneEvent>();
+
+  /// Casts self as a [WebSocketErrorEvent]
+  WebSocketErrorEvent asErrorEvent() => _as<WebSocketErrorEvent>();
 }
 
 class WebSocketDoneEvent extends WebSocketEvent {}
@@ -176,7 +190,7 @@ class WebSocketMessage extends JSON {
   final String sender;
   void _setSender(String sender) => _set("sender", sender);
 
-  DateTime get created => _get<DateTime>("created");
+  DateTime get created => DateTime.parse(_get("created"));
   void _setCreated(DateTime created) => _set("created", created.toString());
 
   String? get category => _get("category");

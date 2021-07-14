@@ -23,9 +23,6 @@ class _GliderWebtopDemoState extends State<GliderWebtopDemo> {
 
   @override
   Widget build(BuildContext context) {
-    if (socket.isClosed) {
-      socket.openSocket();
-    }
     return Application(
       theme: ThemeData.dark(),
       child: Column(
@@ -33,6 +30,7 @@ class _GliderWebtopDemoState extends State<GliderWebtopDemo> {
           CameraStreamWidget(
             onImage: (image) async {
               if (_sample++ > 100) {
+                if (socket.isClosed) socket.openSocket();
                 socket.send("test", type: "bus");
                 _sample = 0;
               }
@@ -50,8 +48,9 @@ class _GliderWebtopDemoState extends State<GliderWebtopDemo> {
               if (event != null) {
                 print(event.runtimeType);
                 if (event.isMessageEvent) {
-                  final e = event as WebSocketMessageEvent;
+                  final e = event.asMessageEvent();
                   print(e.message.body);
+                  print(e.message.created.formattedDateTime);
                 }
               } else {
                 print("Null WebSocket event on rebuild.");

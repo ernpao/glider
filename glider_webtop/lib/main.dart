@@ -29,7 +29,7 @@ class _GliderWebtopDemoState extends State<GliderWebtopDemo> {
         children: [
           CameraStreamWidget(
             onImage: (image) async {
-              if (_sample++ > 100) {
+              if (_sample++ > 5) {
                 if (socket.isClosed) socket.openSocket();
                 socket.send(image.encodedBytes, type: "bus");
                 _sample = 0;
@@ -49,7 +49,7 @@ class _GliderWebtopDemoState extends State<GliderWebtopDemo> {
                 print(event.runtimeType);
                 if (event.isMessageEvent) {
                   final e = event.asMessageEvent();
-                  print(e.message.body);
+                  // print(e.message.body);
                   print(e.message.created.formattedDateTime);
                 }
               } else {

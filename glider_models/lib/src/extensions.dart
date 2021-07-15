@@ -30,6 +30,10 @@ extension ListExtensions on List<dynamic> {
 }
 
 extension StringExtensions on String {
-  List<int> toIntList() => jsonDecode(this).map((e) => e as int).toList();
+  List<int> toIntList() {
+    List l = jsonDecode(this);
+    return l.map((e) => e as int).toList();
+  }
+
   Uint8List toUint8List() => Uint8List.fromList(toIntList());
 }

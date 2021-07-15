@@ -180,7 +180,7 @@ packages:
   glider_models:
     dependency: "direct main"
     description:
-      path: glider_models
+      path: "../glider_models"
       relative: true
     source: path
     version: "1.0.0+1"
@@ -194,10 +194,10 @@ packages:
   hover:
     dependency: "direct main"
     description:
-      path: hover
+      path: "../hover"
       relative: true
     source: path
-    version: "0.3.2+2"
+    version: "0.4.0"
   http:
     dependency: "direct main"
     description:

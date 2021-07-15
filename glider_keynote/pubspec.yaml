@@ -10,7 +10,7 @@ dependencies:
   flutter:
     sdk: flutter
   glider:
-    path: ../../glider
+    path: ../glider
   cupertino_icons: ^1.0.2
 
 dev_dependencies:

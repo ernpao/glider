@@ -122,10 +122,7 @@ class _SensorsDemo extends StatelessWidget {
                   "Z:" + (sensorData != null ? sensorData.z.toString() : "")),
               HoverCallToActionButton(
                 text: controller.isWatching ? "Stop" : "Start",
-                onPressed: () {
-                  print("asd");
-                  controller.toggleMonitoring();
-                },
+                onPressed: controller.toggleMonitoring,
               )
             ],
           )

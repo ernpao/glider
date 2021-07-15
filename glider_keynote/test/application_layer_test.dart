@@ -3,7 +3,6 @@ import 'package:glider_keynote/glider_keynote.dart';
 
 void main() {
   final client = KeynoteClient(
-    name: "Glider Keynote Test Client",
     host: "192.168.100.191",
     port: 7982,
     socketPort: 8082,

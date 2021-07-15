@@ -7,12 +7,12 @@ abstract class KeynoteAPI {
   void sendKeystroke(String keys, {KeyboardModifier? modifier});
 }
 
-enum _Topic {
+enum _KeynoteTopic {
   mouse,
   keyboard,
 }
 
-enum _Type {
+enum _MouseCommandType {
   click,
   move,
   offset,
@@ -32,7 +32,6 @@ class KeynoteClient
     useHttps: false,
   );
 
-  final String name;
   final int port;
   final int socketPort;
 
@@ -40,7 +39,6 @@ class KeynoteClient
   final String host;
 
   KeynoteClient({
-    required this.name,
     required this.host,
     required this.port,
     required this.socketPort,
@@ -79,11 +77,12 @@ class KeynoteClient
     final data = JSON();
     data.set("key", key);
     data.set("modifier", modifier != null ? enumToString(modifier) : null);
-    sendJson(data, topic: enumToString(_Topic.keyboard));
+    sendJson(data, topic: enumToString(_KeynoteTopic.keyboard));
   }
 
-  void _sendMouseCommand(String command, _Type type) {
-    send(command, type: enumToString(type), topic: enumToString(_Topic.mouse));
+  void _sendMouseCommand(String command, _MouseCommandType type) {
+    send(command,
+        type: enumToString(type), topic: enumToString(_KeynoteTopic.mouse));
   }
 
   @override
@@ -91,12 +90,12 @@ class KeynoteClient
     final command = JSON();
     command.set("x", x);
     command.set("y", y);
-    _sendMouseCommand(command.stringify(), _Type.move);
+    _sendMouseCommand(command.stringify(), _MouseCommandType.move);
   }
 
   @override
   void clickMouse(MouseClick click) {
-    _sendMouseCommand(enumToString(click), _Type.click);
+    _sendMouseCommand(enumToString(click), _MouseCommandType.click);
   }
 
   @override
@@ -104,7 +103,7 @@ class KeynoteClient
     final command = JSON();
     command.set("x", xOffset);
     command.set("y", yOffset);
-    _sendMouseCommand(command.stringify(), _Type.offset);
+    _sendMouseCommand(command.stringify(), _MouseCommandType.offset);
   }
 
   @override

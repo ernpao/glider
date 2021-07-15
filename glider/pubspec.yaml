@@ -12,9 +12,9 @@ dependencies:
   cupertino_icons: ^1.0.2
   provider: ^5.0.0
   hover: 
-    path: ./hover
+    path: ../hover
   glider_models: 
-    path: ./glider_models
+    path: ../glider_models
   http: ^0.13.3
   intl: ^0.17.0
   web_socket_channel: ^2.1.0

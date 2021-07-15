@@ -31,7 +31,7 @@ class _GliderWebtopDemoState extends State<GliderWebtopDemo> {
             onImage: (image) async {
               if (_sample++ > 100) {
                 if (socket.isClosed) socket.openSocket();
-                socket.send("test", type: "bus");
+                socket.send(image.encodedBytes, type: "bus");
                 _sample = 0;
               }
             },

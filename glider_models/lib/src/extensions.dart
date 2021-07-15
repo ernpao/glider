@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:http/http.dart';
 
@@ -21,4 +22,14 @@ extension MapExtensions on Map {
     forEach((k, v) => (v == value) ? r = k : r);
     return r;
   }
+}
+
+extension ListExtensions on List<dynamic> {
+  List<int> toIntList() => map((e) => e as int).toList();
+  Uint8List toUint8List() => Uint8List.fromList(toIntList());
+}
+
+extension StringExtensions on String {
+  List<int> toIntList() => jsonDecode(this).map((e) => e as int).toList();
+  Uint8List toUint8List() => Uint8List.fromList(toIntList());
 }

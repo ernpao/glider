@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 // import 'dart:typed_data';
 
@@ -208,6 +209,9 @@ class WebSocketMessage extends JSON {
   String? get body => _get("body");
   bool get hasBody => _contains("body");
   void setBody(String? body) => _set("body", body);
+
+  /// Attempts to convert the [body] string to a [Uint8List] object.
+  Uint8List? bodyAsUint8List() => (body != null) ? body!.toUint8List() : null;
 
   dynamic _get<T>(String key) => get<T>("_ws_$key");
   void _set(String key, dynamic value) => set("_ws_$key", value);

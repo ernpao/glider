@@ -28,6 +28,7 @@ class _CameraStreamWidgetState extends State<CameraStreamWidget> {
   CameraController? _controller;
   bool _setupFailed = false;
   bool _setupComplete = false;
+  bool _platformUnsupported = false;
 
   bool _isListening = true;
   @override
@@ -94,7 +95,8 @@ class _CameraStreamWidgetState extends State<CameraStreamWidget> {
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading || _setupFailed) return SizedBox.shrink();
+    if (_isLoading || _setupFailed || _platformUnsupported)
+      return SizedBox.shrink();
     return widget.showPreview ? CameraPreview(_controller!) : SizedBox.shrink();
   }
 }

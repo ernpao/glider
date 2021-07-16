@@ -27,6 +27,7 @@ class _CameraControllerWidgetState extends State<CameraControllerWidget> {
   List<CameraDescription>? _availableCameras;
   bool _setupFailed = false;
   bool _setupComplete = false;
+  bool _platformUnsupported = false;
 
   @override
   void initState() {
@@ -66,13 +67,18 @@ class _CameraControllerWidgetState extends State<CameraControllerWidget> {
   @override
   Widget build(BuildContext context) {
     CameraInitializationState state;
-    if (_isLoading) {
-      state = CameraInitializationState.loading;
+
+    if (_platformUnsupported) {
+      state = CameraInitializationState.unsupported;
     } else {
-      if (_setupFailed) {
-        state = CameraInitializationState.setupFailed;
+      if (_isLoading) {
+        state = CameraInitializationState.loading;
       } else {
-        state = CameraInitializationState.initialized;
+        if (_setupFailed) {
+          state = CameraInitializationState.setupFailed;
+        } else {
+          state = CameraInitializationState.initialized;
+        }
       }
     }
 

@@ -7,6 +7,7 @@ enum CameraInitializationState {
   loading,
   initialized,
   setupFailed,
+  unsupported, // Currently not used
 }
 
 /// Describes the current state of initialization for the cameras.
@@ -24,6 +25,7 @@ class CameraInitializationData {
   bool get isInitialized => status == CameraInitializationState.initialized;
   bool get isLoading => status == CameraInitializationState.loading;
   bool get failed => status == CameraInitializationState.setupFailed;
+  bool get isUnsupported => status == CameraInitializationState.unsupported;
   bool get withController => controller != null;
   bool get camerasAvailable => availableCameras?.isNotEmpty ?? false;
 }

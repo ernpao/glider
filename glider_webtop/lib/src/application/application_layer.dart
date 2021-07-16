@@ -32,12 +32,10 @@ class WebtopClient
   @override
   void openSocket({
     WebSocketEventHandler? eventHandler,
-    Duration? pingInterval,
     bool reopenOnDone = true,
   }) =>
       _socket.openSocket(
         eventHandler: eventHandler,
-        pingInterval: pingInterval,
         reopenOnDone: reopenOnDone,
       );
 

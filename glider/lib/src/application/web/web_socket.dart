@@ -4,7 +4,6 @@ import 'dart:typed_data';
 // import 'dart:typed_data';
 
 import 'package:glider_models/glider_models.dart';
-import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/status.dart' as status;
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -14,7 +13,6 @@ abstract class WebSocketClient {
   /// Establish a connection with the WebSocket server.
   void openSocket({
     WebSocketEventHandler? eventHandler,
-    Duration? pingInterval,
     bool reopenOnDone = true,
   });
 
@@ -49,7 +47,7 @@ class WebSocket extends WebSocketClient with WebHost, UUID {
   final String host;
   final int port;
 
-  IOWebSocketChannel? _channel;
+  WebSocketChannel? _channel;
   Stream? get stream => _channel?.stream;
   WebSocketSink? get sink => _channel?.sink;
 
@@ -67,11 +65,10 @@ class WebSocket extends WebSocketClient with WebHost, UUID {
   @override
   void openSocket({
     WebSocketEventHandler? eventHandler,
-    Duration? pingInterval,
     bool reopenOnDone = true,
   }) {
     final url = 'ws://$host:$port';
-    _channel = IOWebSocketChannel.connect(url, pingInterval: pingInterval);
+    _channel = WebSocketChannel.connect(Uri.parse(url));
 
     _isOpen = true;
     _eventHandler = eventHandler;
@@ -86,7 +83,6 @@ class WebSocket extends WebSocketClient with WebHost, UUID {
           if (reopenOnDone) {
             openSocket(
               eventHandler: _eventHandler,
-              pingInterval: pingInterval,
               reopenOnDone: reopenOnDone,
             );
           }

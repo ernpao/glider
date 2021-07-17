@@ -17,6 +17,7 @@ class PortalApp extends StatelessWidget {
         PortalAppAuthStateProvider(
             model: PortalAppAuthState(api: PortalAuthAPI())),
       ],
+      theme: HoverThemeData.dark.data,
       child: PortalAppAuthStateConsumer(
         builder: (context, authState) {
           switch (authState.currentState) {
@@ -80,13 +81,7 @@ class PortalAppLoginPage extends StatelessWidget {
                         ),
                         HoverLinkText(
                           "Create An Account",
-                          onTap: () {
-                            authState.startSignUp();
-                            // authState.logInWithEmail(
-                            //   "ernpao@gmail.com",
-                            //   "Zero1928!",
-                            // );
-                          },
+                          onTap: authState.startSignUp,
                         ),
                       ],
                     ),
@@ -125,9 +120,7 @@ class PortalAppSignUpPage extends StatelessWidget {
                         ),
                         HoverLinkText(
                           "Log In With Existing Account",
-                          onTap: () {
-                            authState.cancelSignUp();
-                          },
+                          onTap: authState.cancelSignUp,
                         ),
                       ],
                     ),
@@ -154,9 +147,10 @@ class PortalAppContent extends StatelessWidget {
               Center(
                 child: Text("Welcome ${authState.activeUser!.username}"),
               ),
-              HoverLinkText("Logout", onTap: () {
-                authState.logOut();
-              })
+              HoverLinkText(
+                "Logout",
+                onTap: authState.logOut,
+              )
             ],
           ),
         );

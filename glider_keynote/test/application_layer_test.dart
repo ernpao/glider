@@ -10,7 +10,7 @@ void main() {
 
   test("Keynote Index", () async {
     final response = await client.index();
-    assert(response.success);
+    assert(response.isSuccessful);
   });
 
   test("Keynote Websocket Connection", () async {

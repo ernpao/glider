@@ -46,15 +46,16 @@ class PortalAppAuthState extends ChangeNotifier
   Future<bool> logInHandler(String username, String password) async {
     _clearErrorMessage();
     _triggerLoadingState();
-    final response = await api.logIn(username, password);
-    _activeUser = response.success
-        ? JSON.copyAs<PortalUser>(response.body, PortalUser())
+    final result = await api.logIn(username, password);
+    _activeUser = result.isSuccessful
+        ? JSON.copyAs<PortalUser>(result.bodyAsJson, PortalUser())
         : null;
 
-    if (response.isNotSuccessful && response.withMessage) {
-      _errorMessage = response.message;
+    if (result.isNotSuccessful && result.withMessage) {
+      final responseJson = result.bodyAsJson;
+      _setErrorMessage(responseJson.get<String>("error"));
     }
-    return response.success;
+    return result.isSuccessful;
   }
 
   @override
@@ -87,13 +88,12 @@ class PortalAppAuthState extends ChangeNotifier
   Future<bool> signUpHandler(String username, String password) async {
     _clearErrorMessage();
     _triggerLoadingState();
-    final response = await api.register(username, password);
-    if (response.success) {
+    final result = await api.register(username, password);
+    if (result.isSuccessful) {
       return true;
     } else {
-      if (response.withMessage) {
-        _errorMessage = response.message;
-      }
+      final responseJson = result.bodyAsJson;
+      _errorMessage = responseJson.get<String>("error");
       return false;
     }
   }

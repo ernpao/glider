@@ -147,8 +147,18 @@ class PortalAppContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return PortalAppAuthStateConsumer(
       builder: (context, authState) {
-        return Center(
-          child: Text("Welcome ${authState.activeUser!.username}"),
+        return Scaffold(
+          body: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Center(
+                child: Text("Welcome ${authState.activeUser!.username}"),
+              ),
+              HoverLinkText("Logout", onTap: () {
+                authState.logOut();
+              })
+            ],
+          ),
         );
       },
     );

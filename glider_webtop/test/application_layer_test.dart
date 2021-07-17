@@ -9,8 +9,8 @@ void main() {
   );
 
   test("Webtop Index", () async {
-    final response = await client.index();
-    assert(response.success);
+    final result = await client.index();
+    assert(result.isSuccessful);
   });
 
   test("Webtop Websocket Connection", () async {

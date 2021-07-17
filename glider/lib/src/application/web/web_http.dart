@@ -148,16 +148,20 @@ class POST extends WebRequest {
 
 class WebResponse extends Result {
   final Response httpResponse;
-  WebResponse(this.httpResponse);
+  WebResponse(this.httpResponse)
+      : super(
+          isSuccessful: httpResponse.isSuccessful,
+          message: 'WebResponse Body: ${httpResponse.body}',
+        );
 
-  JSON get body => JSON.parseMap(httpResponse.decodedBodyAsMap);
+  /// The body of the response as a string.
+  String get body => httpResponse.body;
 
+  /// The body of the response as a [JSON] object.
+  JSON get bodyAsJson => JSON.parseMap(httpResponse.decodedBodyAsMap);
+
+  /// The HTTP status code for this response.
   int get statusCode => httpResponse.statusCode;
+
   Map<String, String> get headers => httpResponse.headers;
-
-  @override
-  String get message => httpResponse.body;
-
-  @override
-  bool get success => httpResponse.isSuccessful;
 }

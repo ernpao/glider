@@ -4,8 +4,8 @@ import 'package:glider_portal/glider_portal.dart';
 void main() {
   final api = PortalAuthAPI();
   test("Portal API Index", () async {
-    final response = await api.index();
-    assert(response.success);
+    final result = await api.index();
+    assert(result.isSuccessful);
   });
 
   test("Portal API Login", () async {
@@ -21,7 +21,7 @@ void main() {
   test("Portal API Verify", () async {
     var response = await api.logIn("ernpao", "Zero1928!");
     assert(response.isSuccessful);
-    final user = JSON.copyAs<PortalUser>(response.body, PortalUser());
+    final user = JSON.copyAs<PortalUser>(response.bodyAsJson, PortalUser());
     final token = user.accessToken;
     response = await api.verify(token);
     assert(response.isSuccessful);

@@ -4,10 +4,7 @@ abstract class PortalAuthInterface extends WebClient {
   PortalAuthInterface()
       : super(
           host: "portal.codera.tech",
-          useHttps: false,
-          fixedHeaders: {
-            "Access-Control-Allow-Origin": "*",
-          },
+          useHttps: true,
         );
 
   /// Generate and resolve a POST request for login.

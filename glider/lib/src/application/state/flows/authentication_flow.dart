@@ -55,14 +55,23 @@ mixin AuthenticationFlow {
   /// Success/Fail Callbacks
   void onLogoutFail();
   void onLogoutSuccess();
+  void onLogoutException(Object error);
+
   void onLoginWithEmailSuccess();
   void onLoginWithEmailFail();
+  void onLoginWithEmailException(Object error);
+
   void onSignUpWithEmailSuccess();
   void onSignUpWithEmailFail();
+  void onSignUpWithEmailException(Object error);
+
   void onCancelOtpSuccess();
   void onCancelOtpFail();
+  void onCancelOtpException(Object error);
+
   void onSubmitOTPSuccess();
   void onSubmitOTPFail();
+  void onSubmitOTPException(Object error);
 
   String get currentStateAsString {
     switch (currentState) {
@@ -103,15 +112,15 @@ mixin AuthenticationFlow {
         return;
     }
     print("Current Auth Flow State: $currentStateAsString");
-    message ?? print(message);
+    if (message != null) {
+      print(message);
+    }
   }
 
   /// Should only be called if [currentState] is [LOGGED_IN].
   /// Changes the [currentState] to [LOGGED_OUT] if [logOutHandler]
   /// returned true. Doesn't change [currentState] otherwise.
-  Future<bool> logOut({
-    Function(Object) onError = print,
-  }) async {
+  Future<bool> logOut() async {
     _printBasedOnCurrentState(
       whileAwaitingOTP: "Can't log out while waiting for OTP.",
       whenLoggedOut: "Already logged out!",
@@ -130,7 +139,7 @@ mixin AuthenticationFlow {
         onLogoutFail();
       }
     } catch (e) {
-      _executeErrorHandler(e, onError);
+      _executeErrorHandler(e, onLogoutException);
     }
     return success;
   }
@@ -144,11 +153,7 @@ mixin AuthenticationFlow {
   ///
   /// Doesn't change [currentState] if an error
   /// or exception occured.
-  Future<bool> logInWithEmail(
-    String email,
-    String password, {
-    Function(Object) onError = print,
-  }) async {
+  Future<bool> logInWithEmail(String email, String password) async {
     _printBasedOnCurrentState(
       whileAwaitingOTP: "Can't log in while waiting for OTP.",
       whenLoggedIn: "Already logged in!",
@@ -168,7 +173,7 @@ mixin AuthenticationFlow {
         onLoginWithEmailFail();
       }
     } catch (e) {
-      _executeErrorHandler(e, onError);
+      _executeErrorHandler(e, onLoginWithEmailException);
       success = false;
     }
     return success;
@@ -183,11 +188,7 @@ mixin AuthenticationFlow {
   ///
   /// Doesn't change [currentState] if an error
   /// or exception occured.
-  Future<bool> signUpWithEmail(
-    String email,
-    String password, {
-    Function(Object) onError = print,
-  }) async {
+  Future<bool> signUpWithEmail(String email, String password) async {
     _printBasedOnCurrentState(
       whileAwaitingOTP: "Can't sign up while waiting for OTP.",
       whenSigningUp: "Already signing up!",
@@ -207,7 +208,7 @@ mixin AuthenticationFlow {
         onSignUpWithEmailFail();
       }
     } catch (e) {
-      _executeErrorHandler(e, onError);
+      _executeErrorHandler(e, onSignUpWithEmailException);
       success = false;
     }
     return success;
@@ -222,10 +223,7 @@ mixin AuthenticationFlow {
   ///
   /// Doesn't change [currentState] if an error
   /// or exception occured.
-  Future<bool> submitOTP(
-    String otp, {
-    Function(Object) onError = print,
-  }) async {
+  Future<bool> submitOTP(String otp) async {
     _printBasedOnCurrentState(
       whenSigningUp: "Can't submit OTP while not waiting for OTP.",
       whenLoggedIn: "Can't submit OTP while not waiting for OTP.",
@@ -243,7 +241,7 @@ mixin AuthenticationFlow {
         onSubmitOTPFail();
       }
     } catch (e) {
-      _executeErrorHandler(e, onError);
+      _executeErrorHandler(e, onSubmitOTPException);
       success = false;
     }
     return success;
@@ -251,7 +249,7 @@ mixin AuthenticationFlow {
 
   /// Cancels the [AWAITING_OTP] state and changes the state to [LOGGED_OUT].
   /// Should only be called if [currentState] is [AWAITING_OTP].
-  Future<bool> cancelOTP({Function(Object) onError = print}) async {
+  Future<bool> cancelOTP() async {
     _printBasedOnCurrentState(
       whenSigningUp:
           "Can't cancel AWAITING_OTP state while not waiting for OTP.",
@@ -272,14 +270,14 @@ mixin AuthenticationFlow {
       /// to LOGGED_OUT.
       _currentState = AuthenticationFlowState.LOGGED_OUT;
     } catch (e) {
-      _executeErrorHandler(e, onError);
+      _executeErrorHandler(e, onCancelOtpException);
       success = false;
     }
     return success;
   }
 
   /// Calls [onStartSignUp] and changes [currentState] to [SIGNING_UP].
-  void startSignUp({Function(Object) onError = print}) {
+  void startSignUp({Function(Object error) onException = print}) {
     _printBasedOnCurrentState(
       whileAwaitingOTP: "Can't sign up while waiting for OTP.",
       whenSigningUp: "Already signing up!",
@@ -290,13 +288,13 @@ mixin AuthenticationFlow {
       onStartSignUp();
       _currentState = AuthenticationFlowState.SIGNING_UP;
     } catch (e) {
-      _executeErrorHandler(e, onError);
+      _executeErrorHandler(e, onException);
     }
   }
 
   /// Calls [onCancelSignUp] and changes [currentState] to [LOGGED_OUT].
   /// Should only be called when [currentState] is [SIGNING_UP].
-  void cancelSignUp({Function(Object) onError = print}) {
+  void cancelSignUp({Function(Object error) onException = print}) {
     _printBasedOnCurrentState(
       whileAwaitingOTP: "No sign up flow to cancel.",
       whenLoggedIn: "No sign up flow to cancel.",
@@ -307,7 +305,7 @@ mixin AuthenticationFlow {
       onCancelSignUp();
       _currentState = AuthenticationFlowState.LOGGED_OUT;
     } catch (e) {
-      _executeErrorHandler(e, onError);
+      _executeErrorHandler(e, onException);
     }
   }
 
@@ -317,7 +315,7 @@ mixin AuthenticationFlow {
     try {
       errorHandler(error);
     } catch (e) {
-      print("Error with errorHandler:");
+      print("Exception with errorHandler:");
       print(e);
     }
   }

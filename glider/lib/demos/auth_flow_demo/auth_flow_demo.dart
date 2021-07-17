@@ -10,9 +10,8 @@ class AuthFlowDemo extends StatelessWidget {
   Widget build(BuildContext context) {
     return Application(
       providers: [
-        Provider(
-          create: (context) => AuthFlowDemoState(),
-        ),
+        ChangeNotifierProvider<AuthFlowDemoState>(
+            create: (context) => AuthFlowDemoState()),
       ],
       child: _AppBody(),
     );
@@ -22,7 +21,7 @@ class AuthFlowDemo extends StatelessWidget {
 class _AppBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final state = context.read<AuthFlowDemoState>();
+    final state = Provider.of<AuthFlowDemoState>(context);
 
     Widget content;
 

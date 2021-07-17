@@ -29,7 +29,9 @@ class AuthFlowDemoState extends ChangeNotifier
   }
 
   @override
-  void onStartSignUp() => this.notifyListeners;
+  void onStartSignUp() {
+    this.notifyListeners();
+  }
 
   @override
   Future<bool> signUpHandler(String username, String password) async {
@@ -48,37 +50,84 @@ class AuthFlowDemoState extends ChangeNotifier
   }
 
   @override
-  void onCancelOtpFail() => this.notifyListeners;
+  void onCancelOtpFail() {
+    this.notifyListeners();
+  }
 
   @override
-  void onCancelOtpSuccess() => this.notifyListeners;
+  void onCancelOtpSuccess() {
+    this.notifyListeners();
+  }
 
   @override
-  void onLoginWithEmailFail() => this.notifyListeners;
+  void onLoginWithEmailFail() {
+    this.notifyListeners();
+  }
 
   @override
-  void onLoginWithEmailSuccess() => this.notifyListeners;
+  void onLoginWithEmailSuccess() {
+    this.notifyListeners();
+  }
 
   @override
-  void onLogoutFail() => this.notifyListeners;
+  void onLogoutFail() {
+    this.notifyListeners();
+  }
 
   @override
-  void onLogoutSuccess() => this.notifyListeners;
+  void onLogoutSuccess() {
+    this.notifyListeners();
+  }
 
   @override
-  void onSignUpWithEmailFail() => this.notifyListeners;
+  void onSignUpWithEmailFail() {
+    this.notifyListeners();
+  }
 
   @override
-  void onSignUpWithEmailSuccess() => this.notifyListeners;
+  void onSignUpWithEmailSuccess() {
+    this.notifyListeners();
+  }
 
   @override
-  void onSubmitOTPFail() => this.notifyListeners;
+  void onSubmitOTPFail() {
+    this.notifyListeners();
+  }
 
   @override
-  void onSubmitOTPSuccess() => this.notifyListeners;
+  void onSubmitOTPSuccess() {
+    this.notifyListeners();
+  }
 
   @override
-  void onCancelSignUp() => this.notifyListeners;
+  void onCancelSignUp() {
+    this.notifyListeners();
+  }
+
+  @override
+  void onCancelOtpException(Object error) {
+    // Demo only - no errors expected.
+  }
+
+  @override
+  void onLoginWithEmailException(Object error) {
+    // Demo only - no errors expected.
+  }
+
+  @override
+  void onLogoutException(Object error) {
+    // Demo only - no errors expected.
+  }
+
+  @override
+  void onSignUpWithEmailException(Object error) {
+    // Demo only - no errors expected.
+  }
+
+  @override
+  void onSubmitOTPException(Object error) {
+    // Demo only - no errors expected.
+  }
 }
 
 class AuthFlowDemoUser with Username {

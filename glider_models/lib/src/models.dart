@@ -51,7 +51,7 @@ class JSON extends Mappable {
 abstract class Result {
   bool get success;
   bool get isSuccessful => success;
-  bool get isNotSuccessful => success;
+  bool get isNotSuccessful => !success;
 
   String? get message;
   bool get withMessage => message != null;

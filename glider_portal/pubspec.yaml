@@ -11,6 +11,8 @@ dependencies:
     sdk: flutter
   glider:
     path: ../glider
+  hover:
+    path: ../hover
 
 dev_dependencies:
   flutter_test:

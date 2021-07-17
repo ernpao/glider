@@ -1,14 +1,17 @@
 import 'package:glider/glider.dart';
 
-abstract class PortalWebClient extends WebClient {
-  PortalWebClient()
+abstract class PortalAuthInterface extends WebClient {
+  PortalAuthInterface()
       : super(
           host: "portal.codera.tech",
-          useHttps: true,
+          useHttps: false,
+          fixedHeaders: {
+            "Access-Control-Allow-Origin": "*",
+          },
         );
 
   /// Generate and resolve a POST request for login.
-  Future<WebResponse> login(String username, String password);
+  Future<WebResponse> logIn(String username, String password);
 
   /// Register a new user to Portal. The [username]
   /// parameter is optional. If it is not provided,
@@ -21,9 +24,9 @@ abstract class PortalWebClient extends WebClient {
   Future<WebResponse> verify(String accessToken);
 }
 
-class PortalWebAPI extends PortalWebClient {
+class PortalAuthAPI extends PortalAuthInterface {
   @override
-  Future<WebResponse> login(String username, String password) {
+  Future<WebResponse> logIn(String username, String password) {
     final request = createPOST("/login")
       ..withJsonContentType()
       ..withBody(

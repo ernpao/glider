@@ -1,75 +1,76 @@
-enum AuthFlowState {
+enum AuthenticationFlowState {
   LOGGED_IN,
   LOGGED_OUT,
   SIGNING_UP,
   AWAITING_OTP,
 }
 
-mixin AuthFlow {
-  AuthFlowState _currentState = AuthFlowState.LOGGED_OUT;
+mixin AuthenticationFlow {
+  AuthenticationFlowState _currentState = AuthenticationFlowState.LOGGED_OUT;
 
   /// Current state of the authentication flow.
   /// Can either be [LOGGED_IN], [LOGGED_OUT],
   /// [SIGNING_UP], or [AWAITING_OTP].
-  AuthFlowState get currentState => _currentState;
+  AuthenticationFlowState get currentState => _currentState;
 
-  bool get isLoggedIn => currentState == AuthFlowState.LOGGED_IN;
-  bool get isLoggedOut => currentState == AuthFlowState.LOGGED_OUT;
-  bool get isSigningUp => currentState == AuthFlowState.SIGNING_UP;
-  bool get isAwaitingOTP => currentState == AuthFlowState.AWAITING_OTP;
+  bool get isLoggedIn => currentState == AuthenticationFlowState.LOGGED_IN;
+  bool get isLoggedOut => currentState == AuthenticationFlowState.LOGGED_OUT;
+  bool get isSigningUp => currentState == AuthenticationFlowState.SIGNING_UP;
+  bool get isAwaitingOTP =>
+      currentState == AuthenticationFlowState.AWAITING_OTP;
 
   bool get otpRequired;
 
   /// Callback when the sign up flow is triggered.
-  Function get onStartSignUp;
+  void onStartSignUp();
 
   /// Callback when the sign up flow is cancelled.
-  Function get onCancelSignUp;
+  void onCancelSignUp();
 
-  /// Function for handling logouts.
+  /// Logout function.
   /// Asynchonously returns a boolean flag that determines
   /// if the operation was successful.
-  Future<bool> Function() get logOutHandler;
+  Future<bool> logOutHandler();
 
-  /// Function for handling logins.
+  /// Login function that accepts [username] and [password] as inputs.
   /// Asynchonously returns a boolean flag that determines
   /// if the operation was successful.
-  Future<bool> Function(String, String) get logInHandler;
+  Future<bool> logInHandler(String username, String password);
 
-  /// Function for handling email sign ups.
+  /// Function for handling email/username sign ups.
   /// Asynchonously returns a boolean flag that determines
   /// if the operation was successful.
-  Future<bool> Function(String, String) get signUpHandler;
+  Future<bool> signUpHandler(String username, String password);
 
   /// The function used to validate a OTP when it is submitted.
   /// Asynchonously returns a boolean flag that determines
   /// if the OTP is valid.
-  Future<bool> Function(String) get onOtpSubmitted;
+  Future<bool> onOtpSubmitted(String otp);
 
   /// The function used to cancel the current OTP transaction.
   /// Asynchonously returns a boolean flag that determines
   /// if the operation is successful.
-  Future<bool> Function() get onOtpCancelled;
+  Future<bool> onOtpCancelled();
 
   /// Success/Fail Callbacks
-  Function get onLogoutFail;
-  Function get onLogoutSuccess;
-  Function get onLoginWithEmailSuccess;
-  Function get onLoginWithEmailFail;
-  Function get onSignUpWithEmailSuccess;
-  Function get onSignUpWithEmailFail;
-  Function get onCancelOtpSuccess;
-  Function get onCancelOtpFail;
-  Function get onSubmitOTPSuccess;
-  Function get onSubmitOTPFail;
+  void onLogoutFail();
+  void onLogoutSuccess();
+  void onLoginWithEmailSuccess();
+  void onLoginWithEmailFail();
+  void onSignUpWithEmailSuccess();
+  void onSignUpWithEmailFail();
+  void onCancelOtpSuccess();
+  void onCancelOtpFail();
+  void onSubmitOTPSuccess();
+  void onSubmitOTPFail();
 
   String get currentStateAsString {
     switch (currentState) {
-      case AuthFlowState.LOGGED_IN:
+      case AuthenticationFlowState.LOGGED_IN:
         return "Logged In";
-      case AuthFlowState.SIGNING_UP:
+      case AuthenticationFlowState.SIGNING_UP:
         return "Signing Up";
-      case AuthFlowState.AWAITING_OTP:
+      case AuthenticationFlowState.AWAITING_OTP:
         return "Awaiting OTP";
       default:
     }
@@ -86,19 +87,20 @@ mixin AuthFlow {
   }) {
     String? message;
     switch (currentState) {
-      case AuthFlowState.LOGGED_IN:
+      case AuthenticationFlowState.LOGGED_IN:
         message = whenLoggedIn;
         break;
-      case AuthFlowState.LOGGED_OUT:
+      case AuthenticationFlowState.LOGGED_OUT:
         message = whenLoggedOut;
         break;
-      case AuthFlowState.SIGNING_UP:
+      case AuthenticationFlowState.SIGNING_UP:
         message = whenSigningUp;
         break;
-      case AuthFlowState.AWAITING_OTP:
+      case AuthenticationFlowState.AWAITING_OTP:
         message = whileAwaitingOTP;
         break;
       default:
+        return;
     }
     print("Current Auth Flow State: $currentStateAsString");
     message ?? print(message);
@@ -123,7 +125,7 @@ mixin AuthFlow {
       success = await logOutHandler();
       if (success) {
         onLogoutSuccess();
-        _currentState = AuthFlowState.LOGGED_OUT;
+        _currentState = AuthenticationFlowState.LOGGED_OUT;
       } else {
         onLogoutFail();
       }
@@ -159,8 +161,9 @@ mixin AuthFlow {
       success = await logInHandler(email, password);
       if (success) {
         onLoginWithEmailSuccess();
-        _currentState =
-            otpRequired ? AuthFlowState.AWAITING_OTP : AuthFlowState.LOGGED_IN;
+        _currentState = otpRequired
+            ? AuthenticationFlowState.AWAITING_OTP
+            : AuthenticationFlowState.LOGGED_IN;
       } else {
         onLoginWithEmailFail();
       }
@@ -197,8 +200,9 @@ mixin AuthFlow {
       success = await signUpHandler(email, password);
       if (success) {
         onSignUpWithEmailSuccess();
-        _currentState =
-            otpRequired ? AuthFlowState.AWAITING_OTP : AuthFlowState.LOGGED_IN;
+        _currentState = otpRequired
+            ? AuthenticationFlowState.AWAITING_OTP
+            : AuthenticationFlowState.LOGGED_IN;
       } else {
         onSignUpWithEmailFail();
       }
@@ -234,7 +238,7 @@ mixin AuthFlow {
       success = await onOtpSubmitted(otp);
       if (success) {
         onSubmitOTPSuccess();
-        _currentState = AuthFlowState.LOGGED_IN;
+        _currentState = AuthenticationFlowState.LOGGED_IN;
       } else {
         onSubmitOTPFail();
       }
@@ -245,7 +249,7 @@ mixin AuthFlow {
     return success;
   }
 
-  /// Cancels the current [AWAITING_OTP] state.
+  /// Cancels the [AWAITING_OTP] state and changes the state to [LOGGED_OUT].
   /// Should only be called if [currentState] is [AWAITING_OTP].
   Future<bool> cancelOTP({Function(Object) onError = print}) async {
     _printBasedOnCurrentState(
@@ -266,7 +270,7 @@ mixin AuthFlow {
       /// OTP can only be requested when logged out (i.e. during login or sign up)
       /// therefore cancelling the AWAITING_OTP state should set the state back
       /// to LOGGED_OUT.
-      _currentState = AuthFlowState.LOGGED_OUT;
+      _currentState = AuthenticationFlowState.LOGGED_OUT;
     } catch (e) {
       _executeErrorHandler(e, onError);
       success = false;
@@ -284,7 +288,7 @@ mixin AuthFlow {
     if (!isLoggedOut) return;
     try {
       onStartSignUp();
-      _currentState = AuthFlowState.SIGNING_UP;
+      _currentState = AuthenticationFlowState.SIGNING_UP;
     } catch (e) {
       _executeErrorHandler(e, onError);
     }
@@ -301,7 +305,7 @@ mixin AuthFlow {
     if (!isSigningUp) return;
     try {
       onCancelSignUp();
-      _currentState = AuthFlowState.LOGGED_OUT;
+      _currentState = AuthenticationFlowState.LOGGED_OUT;
     } catch (e) {
       _executeErrorHandler(e, onError);
     }

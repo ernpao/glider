@@ -1,3 +1,3 @@
 library flows;
 
-export 'auth_flow.dart';
+export 'authentication_flow.dart';

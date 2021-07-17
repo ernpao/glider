@@ -128,7 +128,7 @@ class _HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = context.read<AuthFlowDemoState>();
-    final currentUser = state.currentUser;
+    final currentUser = state.activeUser!;
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,

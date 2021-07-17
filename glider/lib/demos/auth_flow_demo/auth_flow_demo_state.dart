@@ -2,88 +2,86 @@ import 'package:flutter/cupertino.dart';
 
 import '../../glider.dart';
 
-class AuthFlowDemoUser {
-  final String username;
-  AuthFlowDemoUser(this.username);
-}
-
-class AuthFlowDemoState extends ChangeNotifier with ApplicationState, AuthFlow {
+class AuthFlowDemoState extends ChangeNotifier
+    with ActiveUser, AuthenticationFlow {
   AuthFlowDemoState({
     this.otpRequired = true,
   });
 
-  AuthFlowDemoUser? _currentUser;
-  AuthFlowDemoUser get currentUser => _currentUser!;
+  AuthFlowDemoUser? _activeUser;
+
+  @override
+  AuthFlowDemoUser? get activeUser => _activeUser;
 
   @override
   final bool otpRequired;
 
   @override
-  bool get isAppAuthenticated => isLoggedIn;
+  Future<bool> logInHandler(String username, String password) async {
+    _activeUser = AuthFlowDemoUser(username);
+    return true;
+  }
 
   @override
-  Future<bool> Function(String, String) get logInHandler =>
-      (username, password) async {
-        _currentUser = AuthFlowDemoUser(username);
-        return true;
-      };
+  Future<bool> logOutHandler() async {
+    _activeUser = null;
+    return true;
+  }
 
   @override
-  Future<bool> Function() get logOutHandler => () async {
-        _currentUser = null;
-        return true;
-      };
+  void onStartSignUp() => this.notifyListeners;
 
   @override
-  void Function() get onStartSignUp => this.notifyListeners;
+  Future<bool> signUpHandler(String username, String password) async {
+    _activeUser = AuthFlowDemoUser(username);
+    return true;
+  }
 
   @override
-  Future<bool> Function(String, String) get signUpHandler =>
-      (username, password) async {
-        _currentUser = AuthFlowDemoUser(username);
-        return true;
-      };
+  Future<bool> onOtpSubmitted(String otp) async {
+    return true;
+  }
 
   @override
-  Future<bool> Function(String) get onOtpSubmitted => (otp) async {
-        return true;
-      };
+  Future<bool> onOtpCancelled() async {
+    return true;
+  }
 
   @override
-  Future<bool> Function() get onOtpCancelled => () async {
-        return true;
-      };
+  void onCancelOtpFail() => this.notifyListeners;
 
   @override
-  Function get onCancelOtpFail => this.notifyListeners;
+  void onCancelOtpSuccess() => this.notifyListeners;
 
   @override
-  Function get onCancelOtpSuccess => this.notifyListeners;
+  void onLoginWithEmailFail() => this.notifyListeners;
 
   @override
-  Function get onLoginWithEmailFail => this.notifyListeners;
+  void onLoginWithEmailSuccess() => this.notifyListeners;
 
   @override
-  Function get onLoginWithEmailSuccess => this.notifyListeners;
+  void onLogoutFail() => this.notifyListeners;
 
   @override
-  Function get onLogoutFail => this.notifyListeners;
+  void onLogoutSuccess() => this.notifyListeners;
 
   @override
-  Function get onLogoutSuccess => this.notifyListeners;
+  void onSignUpWithEmailFail() => this.notifyListeners;
 
   @override
-  Function get onSignUpWithEmailFail => this.notifyListeners;
+  void onSignUpWithEmailSuccess() => this.notifyListeners;
 
   @override
-  Function get onSignUpWithEmailSuccess => this.notifyListeners;
+  void onSubmitOTPFail() => this.notifyListeners;
 
   @override
-  Function get onSubmitOTPFail => this.notifyListeners;
+  void onSubmitOTPSuccess() => this.notifyListeners;
 
   @override
-  Function get onSubmitOTPSuccess => this.notifyListeners;
+  void onCancelSignUp() => this.notifyListeners;
+}
 
-  @override
-  Function get onCancelSignUp => this.notifyListeners;
+class AuthFlowDemoUser with Username {
+  final String username;
+  AuthFlowDemoUser(this.username);
 }

@@ -15,7 +15,7 @@ class GliderWebtopDemo extends StatefulWidget {
 int _sample = 0;
 
 class _GliderWebtopDemoState extends State<GliderWebtopDemo> {
-  final socket = WebtopClient(
+  final socket = WebtopAPI(
     host: "192.168.100.191",
     port: 6767,
     socketPort: 6868,
@@ -38,7 +38,7 @@ class _GliderWebtopDemoState extends State<GliderWebtopDemo> {
             // showPreview: false,
           ),
           WebSocketMonitor(
-            webSocket: WebtopClient(
+            webSocket: WebtopAPI(
               host: "192.168.100.191",
               port: 6767,
               socketPort: 6868,

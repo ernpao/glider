@@ -1,11 +1,11 @@
 import 'package:glider/glider.dart';
 
-abstract class WebtopAPI {}
+abstract class WebtopClient {}
 
-class WebtopClient
+class WebtopAPI
     with WebHost
-    implements WebtopAPI, WebHttpClient, WebSocketClient {
-  WebtopClient({
+    implements WebtopClient, WebHttpClient, WebSocketClient {
+  WebtopAPI({
     required this.host,
     required this.port,
     required this.socketPort,

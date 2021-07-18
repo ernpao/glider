@@ -18,7 +18,7 @@ enum _MouseCommandType {
   offset,
 }
 
-enum MouseClick { left, right }
+enum MouseClick { left, middle, right }
 
 enum KeyboardModifier { alt, control, shift }
 
@@ -78,9 +78,12 @@ class KeynoteClient
     sendJson(data, topic: enumToString(_KeynoteTopic.keyboard));
   }
 
-  void _sendMouseCommand(String command, _MouseCommandType type) {
-    send(command,
-        type: enumToString(type), topic: enumToString(_KeynoteTopic.mouse));
+  void _sendMouseCommand(JSON data, _MouseCommandType type) {
+    sendJson(
+      data,
+      type: enumToString(type),
+      topic: enumToString(_KeynoteTopic.mouse),
+    );
   }
 
   @override
@@ -88,12 +91,14 @@ class KeynoteClient
     final command = JSON();
     command.set("x", x);
     command.set("y", y);
-    _sendMouseCommand(command.stringify(), _MouseCommandType.move);
+    _sendMouseCommand(command, _MouseCommandType.move);
   }
 
   @override
   void clickMouse(MouseClick click) {
-    _sendMouseCommand(enumToString(click), _MouseCommandType.click);
+    final command = JSON();
+    command.set("button", enumToString(click));
+    _sendMouseCommand(command, _MouseCommandType.click);
   }
 
   @override
@@ -101,7 +106,7 @@ class KeynoteClient
     final command = JSON();
     command.set("x", xOffset);
     command.set("y", yOffset);
-    _sendMouseCommand(command.stringify(), _MouseCommandType.offset);
+    _sendMouseCommand(command, _MouseCommandType.offset);
   }
 
   @override

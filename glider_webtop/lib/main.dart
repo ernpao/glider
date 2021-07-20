@@ -49,16 +49,8 @@ class _GliderWebtopDemoState extends State<GliderWebtopDemo> {
               socketPort: 6868,
             ),
             builder: (context, event) {
-              print("WebSocket rebuild triggered.");
               if (event != null) {
-                print(event.runtimeType);
-                if (event.isMessageEvent) {
-                  final e = event.asMessageEvent();
-                  // print(e.message.body);
-                  print(e.message.created.formattedDateTime);
-                }
-              } else {
-                print("Null WebSocket event on rebuild.");
+                if (event.isMessageEvent) {}
               }
               return const SizedBox.shrink();
             },

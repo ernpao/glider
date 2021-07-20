@@ -125,7 +125,7 @@ class _TextDetectorOverlay extends StatelessWidget {
 
         final layoutWidth = constraints.smallest.width;
         final layoutHeight = constraints.smallest.height;
-        print("Overlay W: ${layoutWidth} H: ${layoutHeight}");
+        print("Overlay W: $layoutWidth H: $layoutHeight");
 
         if (data != null) {
           final imageData = data.inputImage.inputImageData!;

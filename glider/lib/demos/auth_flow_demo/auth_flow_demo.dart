@@ -11,7 +11,8 @@ class AuthFlowDemo extends StatelessWidget {
     return Application(
       providers: [
         ChangeNotifierProvider<AuthFlowDemoState>(
-            create: (context) => AuthFlowDemoState()),
+          create: (_) => AuthFlowDemoState(),
+        ),
       ],
       child: _AppBody(),
     );
@@ -50,11 +51,7 @@ class _SignUpPage extends StatelessWidget {
       children: [
         HoverEmailSignUpForm(
           title: "Create A New Account",
-          onSubmit: (email, password) {
-            if (email != null && password != null) {
-              state.signUpWithEmail(email, password);
-            }
-          },
+          onSubmit: state.signUpWithEmail,
           formName: "aws-cognito-sign-up",
         ),
         HoverCallToActionButton(
@@ -76,9 +73,7 @@ class _LoginPage extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         HoverEmailLoginForm(
-          onSubmit: (email, password) {
-            state.logInWithEmail(email, password);
-          },
+          onSubmit: state.logInWithEmail,
           formName: "aws-cognito-login",
         ),
         HoverCallToActionButton(
@@ -134,9 +129,7 @@ class _HomePage extends StatelessWidget {
       children: [
         Text("Welcome ${currentUser.username}"),
         ElevatedButton(
-          onPressed: () {
-            state.logOut();
-          },
+          onPressed: state.logOut,
           child: Text("Logout"),
         )
       ],

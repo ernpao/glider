@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'glider_webtop.dart';
 
@@ -27,15 +29,18 @@ class _GliderWebtopDemoState extends State<GliderWebtopDemo> {
       theme: ThemeData.dark(),
       child: Column(
         children: [
-          CameraStreamWidget(
+          CameraViewBuilder(
             onImage: (image) async {
               if (_sample++ > 5) {
+                final bytes = image.cameraImage.bytes;
                 if (socket.isClosed) socket.openSocket();
-                socket.send(image.encodedBytes, type: "bus");
-                _sample = 0;
+                socket.send(jsonEncode(bytes), type: "bus");
               }
+              _sample = 0;
             },
-            // showPreview: false,
+            builder: (context, viewController) {
+              return CameraPreview(viewController.cameraController);
+            },
           ),
           WebSocketMonitor(
             webSocket: WebtopAPI(

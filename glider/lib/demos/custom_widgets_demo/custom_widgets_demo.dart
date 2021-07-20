@@ -50,10 +50,6 @@ class CustomWidgetsDemo extends StatelessWidget {
 }
 
 class _CameraDemo extends StatelessWidget {
-  final bool demoStreaming;
-  _CameraDemo({
-    this.demoStreaming = true,
-  });
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -63,36 +59,11 @@ class _CameraDemo extends StatelessWidget {
           bottomPadding: 8.0,
           topPadding: 8.0,
         ),
-        demoStreaming
-            ? CameraStreamWidget(
-                onImage: (image) {
-                  final timestamp = image.timestamp.formattedTime;
-                  print("CameraStreamWidget image on: $timestamp");
-                },
-              )
-            : CameraControllerWidget(
-                builder: (context, initialization) {
-                  switch (initialization.status) {
-                    case CameraInitializationState.loading:
-                      return CircularProgressIndicator();
-
-                    case CameraInitializationState.initialized:
-                      final controller = initialization.controller;
-                      return SizedBox(
-                        height: 300,
-                        child: controller != null
-                            ? CameraPreview(controller)
-                            : Container(),
-                      );
-
-                    case CameraInitializationState.setupFailed:
-                      return Text("Setup Failed!");
-
-                    default:
-                      return SizedBox.shrink();
-                  }
-                },
-              ),
+        CameraViewBuilder(
+          builder: (context, viewController) {
+            return CameraPreview(viewController.cameraController);
+          },
+        ),
       ],
     );
   }

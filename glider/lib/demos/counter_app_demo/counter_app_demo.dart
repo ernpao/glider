@@ -10,12 +10,12 @@ class CounterAppDemo extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark(),
       home: Application(
-        child: _CounterApp(),
         providers: [
-          Provider(create: (_) => _DependencyA()),
-          Provider(create: (_) => _DependencyB()),
-          Provider(create: (_) => _CounterState()),
+          Provider<_DependencyA>.value(value: _DependencyA()),
+          Provider<_DependencyB>.value(value: _DependencyB()),
+          ChangeNotifierProvider<_CounterState>(create: (_) => _CounterState()),
         ],
+        child: _CounterApp(),
       ),
     );
   }
@@ -32,13 +32,13 @@ class _CounterApp extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text('Dependency A:${depA.value}'),
-            Text('Dependency B:${depB.value}'),
             Text('You have pushed the button this many times:'),
             Text(
               '${counterState.count}',
               style: Theme.of(context).textTheme.headline4,
             ),
+            Text('Dependency A:${depA.value}'),
+            Text('Dependency B:${depB.value}'),
           ],
         ),
       ),

@@ -2,14 +2,20 @@ import 'package:flutter/widgets.dart';
 
 import 'demos/demos.dart';
 
+final AuthFlowDemo authFlowDemo = AuthFlowDemo();
+final CounterAppDemo counterAppDemo = CounterAppDemo();
+
+const bool kDemoCamera = true;
+const bool kDemoSensors = true;
+const bool kDemoWidgets = true;
+final CustomWidgetsDemo customWidgetsDemo = CustomWidgetsDemo(
+  demoCamera: kDemoCamera,
+  demoSensors: kDemoSensors,
+  demoWebWidgets: kDemoWidgets,
+);
+
+final ComputerVisionDemo computerVisionDemo = ComputerVisionDemo();
+
 void main() {
-  // runApp(AuthFlowDemo());
-  // runApp(CounterAppDemo());
-  runApp(
-    CustomWidgetsDemo(
-        // demoCamera: false,
-        // demoSensors: false,
-        // demoWebWidgets: false,
-        ),
-  );
+  runApp(computerVisionDemo);
 }

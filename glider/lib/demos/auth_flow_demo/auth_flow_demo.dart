@@ -77,7 +77,7 @@ class _LoginPage extends StatelessWidget {
       children: [
         HoverEmailLoginForm(
           onSubmit: (email, password) {
-            state.logInWithEmail(email!, password!);
+            state.logInWithEmail(email, password);
           },
           formName: "aws-cognito-login",
         ),

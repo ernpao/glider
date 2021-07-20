@@ -6,21 +6,27 @@ final _textDetector = GoogleMlKit.vision.textDetector();
 final _imageLabeler = GoogleMlKit.vision.imageLabeler();
 
 class MachineLearningHelper {
+  /// Creates an [InputImage] from the
+  /// camera package's [CameraImage] and [CameraDescription]
+  /// for use with the Google ML Kit package.
   static InputImage convertCameraImage(
-    CameraImage image,
-    CameraDescription camera,
-  ) {
+      CameraImage image, CameraDescription camera) {
     final imageSize = image.size;
     final bytes = image.bytes;
 
-    final imageRotation =
-        InputImageRotationMethods.fromRawValue(camera.sensorOrientation) ??
-            InputImageRotation.Rotation_0deg;
+    /// Determine the image rotation
+    final sensorRotation = InputImageRotationMethods.fromRawValue(
+      camera.sensorOrientation,
+    );
+    final imageRotation = sensorRotation ?? InputImageRotation.Rotation_0deg;
 
-    final inputImageFormat =
-        InputImageFormatMethods.fromRawValue(image.format.raw) ??
-            InputImageFormat.NV21;
+    /// Determine the image format
+    final rawImageFormat = InputImageFormatMethods.fromRawValue(
+      image.format.raw,
+    );
+    final inputImageFormat = rawImageFormat ?? InputImageFormat.NV21;
 
+    /// Translate the image plane data
     final planeData = image.planes.map(
       (Plane plane) {
         return InputImagePlaneMetadata(
@@ -31,6 +37,7 @@ class MachineLearningHelper {
       },
     ).toList();
 
+    /// Create the [InputImageData] metadata
     final inputImageData = InputImageData(
       size: imageSize,
       imageRotation: imageRotation,
@@ -38,6 +45,7 @@ class MachineLearningHelper {
       planeData: planeData,
     );
 
+    /// Create the [InputImage] to return
     final inputImage = InputImage.fromBytes(
       bytes: bytes,
       inputImageData: inputImageData,
@@ -46,10 +54,12 @@ class MachineLearningHelper {
     return inputImage;
   }
 
+  /// Google ML Kit text recognition.
   static Future<RecognisedText> recognizeText(InputImage inputImage) {
     return _textDetector.processImage(inputImage);
   }
 
+  /// Google ML Kit image labeler.
   static Future<List<ImageLabel>> labelImage(InputImage inputImage) {
     return _imageLabeler.processImage(inputImage);
   }

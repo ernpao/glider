@@ -10,7 +10,14 @@ class MachineLearningDemo extends StatelessWidget {
       theme: HoverThemeData.dark.data,
       child: Builder(builder: (context) {
         return Scaffold(
-          body: TextDetectorView(),
+          body: TextDetectorView(
+            overlayBuilder: (context, detectedText) {
+              return HoverBaseCard(
+                color: Colors.black.withOpacity(0.5),
+                child: HoverText(detectedText),
+              );
+            },
+          ),
         );
       }),
     );

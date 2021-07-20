@@ -43,6 +43,9 @@ class _AppBody extends StatelessWidget {
 }
 
 class _SignUpPage extends StatelessWidget {
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+  final passwordConfirmationController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     final state = context.read<AuthFlowDemoState>();
@@ -53,6 +56,9 @@ class _SignUpPage extends StatelessWidget {
           title: "Create A New Account",
           onSubmit: state.signUpWithEmail,
           formName: "aws-cognito-sign-up",
+          emailController: emailController,
+          passwordController: passwordController,
+          passwordConfirmationController: passwordConfirmationController,
         ),
         HoverCallToActionButton(
           text: "Log In Instead",
@@ -66,6 +72,8 @@ class _SignUpPage extends StatelessWidget {
 }
 
 class _LoginPage extends StatelessWidget {
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     final state = context.read<AuthFlowDemoState>();
@@ -75,6 +83,8 @@ class _LoginPage extends StatelessWidget {
         HoverEmailLoginForm(
           onSubmit: state.logInWithEmail,
           formName: "aws-cognito-login",
+          emailController: emailController,
+          passwordController: passwordController,
         ),
         HoverCallToActionButton(
           maxWidth: 418,

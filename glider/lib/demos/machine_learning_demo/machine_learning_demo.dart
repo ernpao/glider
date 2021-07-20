@@ -3,7 +3,7 @@ import 'package:hover/hover.dart';
 
 import '../../glider.dart';
 
-class ComputerVisionDemo extends StatelessWidget {
+class MachineLearningDemo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Application(

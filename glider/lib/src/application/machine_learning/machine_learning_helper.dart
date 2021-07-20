@@ -5,7 +5,7 @@ import '../components/hardware/camera/camera.dart';
 final _textDetector = GoogleMlKit.vision.textDetector();
 final _imageLabeler = GoogleMlKit.vision.imageLabeler();
 
-class ComputerVisionHelper {
+class MachineLearningHelper {
   static InputImage convertCameraImage(
     CameraImage image,
     CameraDescription camera,

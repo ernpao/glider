@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../components/hardware/camera/camera.dart';
-import 'computer_vision_helper.dart';
+import 'machine_learning_helper.dart';
 
 class TextDetectorView extends StatelessWidget {
   const TextDetectorView({
@@ -50,11 +50,12 @@ class _TextDetectorModel extends ChangeNotifier {
 
       final image = imageData.cameraImage;
       final camera = imageData.cameraDescription;
-      final inputImage = ComputerVisionHelper.convertCameraImage(image, camera);
+      final inputImage =
+          MachineLearningHelper.convertCameraImage(image, camera);
 
       print("Processing image");
       final recognizedText =
-          await ComputerVisionHelper.recognizeText(inputImage);
+          await MachineLearningHelper.recognizeText(inputImage);
 
       final processingEnd = DateTime.now();
       final processingMs =

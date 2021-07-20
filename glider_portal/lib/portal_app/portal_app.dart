@@ -24,9 +24,9 @@ class PortalApp extends StatelessWidget {
             case AuthenticationFlowState.LOGGED_IN:
               return const PortalAppContent();
             case AuthenticationFlowState.LOGGED_OUT:
-              return const PortalAppLoginPage();
+              return PortalAppLoginPage();
             case AuthenticationFlowState.SIGNING_UP:
-              return const PortalAppSignUpPage();
+              return PortalAppSignUpPage();
             default:
               return const Text("Invalid State");
           }
@@ -56,7 +56,10 @@ class PortalAppAuthStateErrorMessage extends StatelessWidget {
 }
 
 class PortalAppLoginPage extends StatelessWidget {
-  const PortalAppLoginPage({
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+
+  PortalAppLoginPage({
     Key? key,
   }) : super(key: key);
 
@@ -73,11 +76,9 @@ class PortalAppLoginPage extends StatelessWidget {
                       children: [
                         const PortalAppAuthStateErrorMessage(),
                         HoverEmailLoginForm(
-                          onSubmit: (email, password) {
-                            if (email != null && password != null) {
-                              authState.logInWithEmail(email, password);
-                            }
-                          },
+                          onSubmit: authState.logInWithEmail,
+                          emailController: emailController,
+                          passwordController: passwordController,
                         ),
                         HoverLinkText(
                           "Create An Account",
@@ -95,7 +96,11 @@ class PortalAppLoginPage extends StatelessWidget {
 }
 
 class PortalAppSignUpPage extends StatelessWidget {
-  const PortalAppSignUpPage({
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+  final passwordConfirmationController = TextEditingController();
+
+  PortalAppSignUpPage({
     Key? key,
   }) : super(key: key);
 
@@ -112,11 +117,11 @@ class PortalAppSignUpPage extends StatelessWidget {
                       children: [
                         const PortalAppAuthStateErrorMessage(),
                         HoverEmailSignUpForm(
-                          onSubmit: (email, password) {
-                            if (email != null && password != null) {
-                              authState.signUpWithEmail(email, password);
-                            }
-                          },
+                          onSubmit: authState.signUpWithEmail,
+                          emailController: emailController,
+                          passwordController: passwordController,
+                          passwordConfirmationController:
+                              passwordConfirmationController,
                         ),
                         HoverLinkText(
                           "Log In With Existing Account",

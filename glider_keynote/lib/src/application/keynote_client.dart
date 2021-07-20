@@ -1,29 +1,11 @@
 import 'package:glider/glider.dart';
+import 'package:glider_keynote/src/application/models/keynote_command.dart';
 
-abstract class KeynoteAPI {
-  void moveMouse(int x, int y);
-  void offsetMouse(int xOffset, int yOffset);
-  void clickMouse(MouseClick click);
-  void sendKeystroke(String keys, {KeyboardModifier? modifier});
-}
-
-enum _KeynoteTopic {
-  mouse,
-  keyboard,
-}
-
-enum _MouseCommandType {
-  click,
-  move,
-  offset,
-}
-
-enum MouseClick { left, middle, right }
-
-enum KeyboardModifier { alt, control, shift }
+import 'keynote_api.dart';
+import 'models/models.dart';
 
 class KeynoteClient
-    with WebHost, EnumToString
+    with WebHost
     implements KeynoteAPI, WebHttpClient, WebSocketClient {
   late final WebSocket _socket = WebSocket(host: host, port: socketPort);
   late final WebClient _client = WebClient(
@@ -72,41 +54,33 @@ class KeynoteClient
 
   @override
   void sendKeystroke(String key, {KeyboardModifier? modifier}) {
-    final data = JSON();
-    data.set("key", key);
-    data.set("modifier", modifier != null ? enumToString(modifier) : null);
-    sendJson(data, topic: enumToString(_KeynoteTopic.keyboard));
-  }
-
-  void _sendMouseCommand(JSON data, _MouseCommandType type) {
-    sendJson(
-      data,
-      type: enumToString(type),
-      topic: enumToString(_KeynoteTopic.mouse),
-    );
+    sendWebSocketMessage(KeyboardKeystrokeCommand(
+      sender: _socket.uuid,
+      key: key,
+    ));
   }
 
   @override
   void moveMouse(int x, int y) {
-    final command = JSON();
-    command.set("x", x);
-    command.set("y", y);
-    _sendMouseCommand(command, _MouseCommandType.move);
+    sendWebSocketMessage(
+        KeynoteMouseMoveCommand(sender: _socket.uuid, x: x, y: y));
   }
 
   @override
-  void clickMouse(MouseClick click) {
-    final command = JSON();
-    command.set("button", enumToString(click));
-    _sendMouseCommand(command, _MouseCommandType.click);
+  void clickMouse(MouseButton button) {
+    sendWebSocketMessage(KeynoteMouseClickCommand(
+      sender: _socket.uuid,
+      button: button,
+    ));
   }
 
   @override
   void offsetMouse(int xOffset, int yOffset) {
-    final command = JSON();
-    command.set("x", xOffset);
-    command.set("y", yOffset);
-    _sendMouseCommand(command, _MouseCommandType.offset);
+    sendWebSocketMessage(KeynoteMouseOffsetCommand(
+      sender: _socket.uuid,
+      xOffset: xOffset,
+      yOffset: yOffset,
+    ));
   }
 
   @override
@@ -125,4 +99,8 @@ class KeynoteClient
 
   @override
   bool get isOpen => _socket.isOpen;
+
+  @override
+  void sendWebSocketMessage(WebSocketMessage message) =>
+      _socket.sendWebSocketMessage(message);
 }

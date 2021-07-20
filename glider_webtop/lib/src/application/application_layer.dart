@@ -67,4 +67,8 @@ class WebtopAPI
 
   @override
   bool get isOpen => _socket.isOpen;
+
+  @override
+  void sendWebSocketMessage(WebSocketMessage message) =>
+      _socket.sendWebSocketMessage(message);
 }

@@ -25,6 +25,8 @@ abstract class WebSocketClient {
   /// Send JSON data to the WebSocket server.
   void sendJson(JSON data, {String? type, String? topic});
 
+  void sendWebSocketMessage(WebSocketMessage message);
+
   /// Indicates if the WebSocket has a listener attached to the stream.
   bool get hasListener;
 
@@ -100,14 +102,14 @@ class WebSocket extends WebSocketClient with WebHost, UUID {
 
   @override
   void send(String message, {String? type, String? category, String? topic}) {
-    assert(this.isOpen);
-    sink?.add(WebSocketMessage(
+    final wsMessage = WebSocketMessage(
       sender: uuid,
       category: category,
       type: type,
       topic: topic,
       body: message,
-    ).encode());
+    );
+    sendWebSocketMessage(wsMessage);
   }
 
   @override
@@ -119,6 +121,12 @@ class WebSocket extends WebSocketClient with WebHost, UUID {
     final JSON json = JSON.parse(jsonStr);
     final WebSocketMessage message = WebSocketMessage.fromJSON(json);
     return message;
+  }
+
+  @override
+  void sendWebSocketMessage(WebSocketMessage message) {
+    assert(this.isOpen);
+    sink?.add(message.encode());
   }
 }
 
@@ -205,9 +213,6 @@ class WebSocketMessage extends JSON {
   String? get body => _get("body");
   bool get hasBody => _contains("body");
   void setBody(String? body) => _set("body", body);
-
-  /// Attempts to convert the [body] string to a [Uint8List] object.
-  Uint8List? bodyAsUint8List() => hasBody ? body!.toUint8List() : null;
 
   dynamic _get<T>(String key) => get<T>("_ws_$key");
   void _set(String key, dynamic value) => set("_ws_$key", value);

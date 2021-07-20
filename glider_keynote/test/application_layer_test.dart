@@ -45,7 +45,7 @@ void main() {
 
   test("Keynote Mouse Click Test", () async {
     client.openSocket();
-    client.clickMouse(MouseClick.right);
+    client.clickMouse(MouseButton.right);
     client.closeSocket();
   });
 

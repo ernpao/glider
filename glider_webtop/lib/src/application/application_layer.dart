@@ -40,8 +40,8 @@ class WebtopAPI
       );
 
   @override
-  void sendJson(JSON data, {String? type, String? topic}) =>
-      _socket.sendJson(data, type: type, topic: topic);
+  void sendJson(JSON body, {String? type, String? category, String? topic}) =>
+      _socket.sendJson(body, type: type, topic: topic, category: category);
 
   @override
   void closeSocket() => _socket.closeSocket();
@@ -59,7 +59,7 @@ class WebtopAPI
   bool get hasNoListener => _socket.hasNoListener;
 
   @override
-  void send(data, {String? category, String? type, String? topic}) =>
+  void send(data, {String? type, String? category, String? topic}) =>
       _socket.send(data, type: type, category: category, topic: topic);
 
   @override

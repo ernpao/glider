@@ -1,13 +1,14 @@
 import 'dart:convert';
 
-// import 'dart:typed_data';
-
 import 'package:glider_models/glider_models.dart';
 import 'package:web_socket_channel/status.dart' as status;
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 import 'web_mixins.dart';
+import 'web_socket_message.dart';
 
+/// Interface for an object that makes use of a WebSocket for
+/// communication.
 abstract class WebSocketClient {
   /// Establish a connection with the WebSocket server.
   void openSocket({
@@ -18,11 +19,12 @@ abstract class WebSocketClient {
   /// Close the WebSocket connection.
   void closeSocket();
 
-  /// Send a message to the WebSocket server.
-  void send(String data, {String? type, String? category, String? topic});
+  /// Send a message to the WebSocket server with a [String] message body.
+  void send(String body, {String? type, String? category, String? topic});
 
-  /// Send JSON data to the WebSocket server.
-  void sendJson(JSON data, {String? type, String? topic});
+  /// Send JSON data to the WebSocket server. Essentially the same as sending
+  /// the stringified JSON data using `send`.
+  void sendJson(JSON body, {String? type, String? category, String? topic});
 
   void sendWebSocketMessage(WebSocketMessage message);
 
@@ -39,6 +41,7 @@ abstract class WebSocketClient {
   bool get isClosed => !isOpen;
 }
 
+/// Basic implementation of the [WebSocketClient] interface.
 class WebSocket extends WebSocketClient with WebHost, UUID {
   WebSocket({
     required this.host,
@@ -112,14 +115,8 @@ class WebSocket extends WebSocketClient with WebHost, UUID {
   }
 
   @override
-  void sendJson(JSON data, {String? type, String? category, String? topic}) =>
-      send(data.encode(), type: type, category: category, topic: topic);
-
-  WebSocketMessage _parseStreamData(d) {
-    final String jsonStr = d is String ? d : jsonEncode(d);
-    final JSON json = JSON.parse(jsonStr);
-    final WebSocketMessage message = WebSocketMessage.fromJSON(json);
-    return message;
+  void sendJson(JSON data, {String? type, String? category, String? topic}) {
+    send(data.encode(), type: type, category: category, topic: topic);
   }
 
   @override
@@ -127,8 +124,16 @@ class WebSocket extends WebSocketClient with WebHost, UUID {
     assert(this.isOpen);
     sink?.add(message.encode());
   }
+
+  WebSocketMessage _parseStreamData(d) {
+    final String jsonStr = d is String ? d : jsonEncode(d);
+    final JSON json = JSON.parse(jsonStr);
+    final WebSocketMessage message = WebSocketMessage.fromJSON(json);
+    return message;
+  }
 }
 
+/// A class that processes WebSocket events (i.e. [WebSocketEvent] objects).
 class WebSocketEventHandler {
   WebSocketEventHandler({required this.onEvent});
 
@@ -173,58 +178,4 @@ class WebSocketErrorEvent extends WebSocketEvent {
   final Object? error;
   WebSocketErrorEvent(this.error);
   bool get hasError => error != null;
-}
-
-class WebSocketMessage extends JSON {
-  WebSocketMessage({
-    required this.sender,
-    String? category,
-    String? type,
-    String? topic,
-    String? body,
-  }) {
-    _setSender(sender);
-    setType(type);
-    setCategory(category);
-    setTopic(topic);
-    setBody(body);
-    _setCreated(DateTime.now());
-  }
-
-  final String sender;
-  void _setSender(String sender) => _set("sender", sender);
-
-  DateTime get created => DateTime.parse(_get("created"));
-  void _setCreated(DateTime created) => _set("created", created.toString());
-
-  String? get category => _get("category");
-  bool get hasCategory => _contains("category");
-  void setCategory(String? category) => _set("category", category);
-
-  String? get type => _get("type");
-  bool get hasType => _contains("type");
-  void setType(String? type) => _set("type", type);
-
-  String? get topic => _get("topic");
-  bool get hasTopic => _contains("topic");
-  void setTopic(String? topic) => _set("topic", topic);
-
-  String? get body => _get("body");
-  bool get hasBody => _contains("body");
-  void setBody(String? body) => _set("body", body);
-
-  dynamic _get<T>(String key) => get<T>("_ws_$key");
-  void _set(String key, dynamic value) => set("_ws_$key", value);
-  bool _contains(String key) => contains("_ws_$key");
-
-  static WebSocketMessage fromJSON(JSON json) {
-    String? _extract(String key) => json.content["_ws_$key"];
-    return WebSocketMessage(
-      sender: _extract("sender")!,
-      type: _extract("type"),
-      category: _extract("category"),
-      topic: _extract("topic"),
-      body: _extract("body"),
-    ).._setCreated(DateTime.parse(_extract("created").toString()));
-  }
 }

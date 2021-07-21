@@ -47,10 +47,10 @@ class KeynoteClient
   void closeSocket() => _socket.closeSocket();
 
   @override
-  Future<WebResponse> httpGET(String? path) => _client.httpGET(path);
+  Future<WebResponse> get(String? path) => _client.get(path);
 
   @override
-  Future<WebResponse> httpPOST(String? path) => _client.httpPOST(path);
+  Future<WebResponse> post(String? path) => _client.post(path);
 
   @override
   void sendKeystroke(String key, {KeyboardModifier? modifier}) {
@@ -103,4 +103,18 @@ class KeynoteClient
   @override
   void sendWebSocketMessage(WebSocketMessage message) =>
       _socket.sendWebSocketMessage(message);
+
+  @override
+  void printMessage(String text) {
+    final request = createGET("/keyboard")
+      ..withParameter("keyType", "string")
+      ..withParameter("key", text);
+    request.resolve();
+  }
+
+  @override
+  GET createGET(String? path) => _client.createGET(path);
+
+  @override
+  POST createPOST(String? path) => _client.createPOST(path);
 }

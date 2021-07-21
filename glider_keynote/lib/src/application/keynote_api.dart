@@ -5,4 +5,5 @@ abstract class KeynoteAPI {
   void offsetMouse(int xOffset, int yOffset);
   void clickMouse(MouseButton button);
   void sendKeystroke(String keys, {KeyboardModifier? modifier});
+  void printMessage(String text);
 }

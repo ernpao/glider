@@ -9,11 +9,17 @@ import 'web_mixins.dart';
 abstract class WebHttpClient {
   Future<WebResponse> index();
 
-  /// Creates a GET request.
-  Future<WebResponse> httpGET(String? path);
+  /// Send a GET request.
+  Future<WebResponse> get(String? path);
 
-  /// Creates a POST request.
-  Future<WebResponse> httpPOST(String? path);
+  /// Send a POST request.
+  Future<WebResponse> post(String? path);
+
+  /// Create a GET request.
+  GET createGET(String? path);
+
+  /// Create a POST request.
+  POST createPOST(String? path);
 }
 
 class WebClient extends WebHttpClient with WebHttpScheme, WebHost, UUID {
@@ -43,20 +49,21 @@ class WebClient extends WebHttpClient with WebHttpScheme, WebHost, UUID {
   @override
   Future<WebResponse> index() => createGET("/").resolve();
 
+  @override
   GET createGET(String? path) => GET(host, path, useHttps: withHttps)
     ..withHeaders(fixedHeaders ?? {})
     ..withPort(defaultPort);
 
+  @override
   POST createPOST(String? path) => POST(host, path, useHttps: withHttps)
     ..withHeaders(fixedHeaders ?? {})
     ..withPort(defaultPort);
 
   @override
-  Future<WebResponse> httpGET(String? path) => createGET(path).resolve();
+  Future<WebResponse> get(String? path) => createGET(path).resolve();
 
   @override
-  Future<WebResponse> httpPOST(String? path) async =>
-      createPOST(path).resolve();
+  Future<WebResponse> post(String? path) async => createPOST(path).resolve();
 }
 
 abstract class WebRequest with WebHttpScheme, WebHost {
@@ -72,16 +79,21 @@ abstract class WebRequest with WebHttpScheme, WebHost {
 
   Map<String, dynamic> _queryParameters = {};
   Map<String, dynamic> get queryParameters => _queryParameters;
+
+  /// Adds a query paramter to the request.
   void withParameter(String key, dynamic value) =>
       _queryParameters[key] = value;
 
   int? _port;
   int? get port => _port;
+
+  /// Set the target port of the request.
   void withPort(int? port) => _port = port;
 
   Map<String, String> _headers = {};
   Map<String, String> get headers => _headers;
 
+  /// Adds headers to the request.
   void withHeaders(Map<String, String> headers) => _headers.addAll(headers);
 
   /// Adds or overrides a request header.

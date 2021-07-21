@@ -47,10 +47,10 @@ class WebtopAPI
   void closeSocket() => _socket.closeSocket();
 
   @override
-  Future<WebResponse> httpGET(String? path) => _client.httpGET(path);
+  Future<WebResponse> get(String? path) => _client.get(path);
 
   @override
-  Future<WebResponse> httpPOST(String? path) => _client.httpPOST(path);
+  Future<WebResponse> post(String? path) => _client.post(path);
 
   @override
   bool get hasListener => _socket.hasListener;
@@ -71,4 +71,10 @@ class WebtopAPI
   @override
   void sendWebSocketMessage(WebSocketMessage message) =>
       _socket.sendWebSocketMessage(message);
+
+  @override
+  GET createGET(String? path) => _client.createGET(path);
+
+  @override
+  POST createPOST(String? path) => _client.createPOST(path);
 }

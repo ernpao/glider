@@ -11,9 +11,9 @@ extension ResponseExtensions on Response {
   bool get hasStatusCode3XX => statusCode.toString().startsWith("3");
   bool get hasStatusCode4XX => statusCode.toString().startsWith("4");
   bool get hasStatusCode5XX => statusCode.toString().startsWith("5");
-  bool get hasSuccessKey => decodedBodyAsMap.keys.toList().contains("success");
-  bool get successKeyValue => decodedBodyAsMap["success"];
-  bool get isSuccessful => hasSuccessKey ? successKeyValue : hasStatusCode2XX;
+  bool get _hasSuccessKey => decodedBodyAsMap.keys.toList().contains("success");
+  bool get _successKeyValue => decodedBodyAsMap["success"];
+  bool get isSuccessful => _hasSuccessKey ? _successKeyValue : hasStatusCode2XX;
 }
 
 extension MapExtensions on Map {

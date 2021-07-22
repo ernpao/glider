@@ -1,15 +1,29 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:glider/glider.dart';
 import 'package:glider_webtop/glider_webtop.dart';
 
 import 'webtop_client.dart';
 
+/// A widget for rendering "Buffer Source" data
+/// sent by the Webtop server.
 class BufferSourceImageStream extends StatefulWidget {
-  final WebtopClient interface;
   const BufferSourceImageStream({
     Key? key,
     required this.interface,
+    this.width,
+    this.height,
   }) : super(key: key);
+
+  /// A connection with the Webtop server.
+  final WebtopClient interface;
+
+  /// Expected width of the image that will be rendered.
+  final double? width;
+
+  /// Expected height of the image that will be rendered.
+  final double? height;
 
   @override
   _BufferSourceImageStreamState createState() =>
@@ -17,6 +31,17 @@ class BufferSourceImageStream extends StatefulWidget {
 }
 
 class _BufferSourceImageStreamState extends State<BufferSourceImageStream> {
+  final List<Uint8List> _buffer = [];
+
+  void _pushToStream(Uint8List bytes) {
+    _buffer.add(bytes);
+    if (_buffer.length > 10) {
+      _buffer.removeAt(0);
+    }
+  }
+
+  Widget _empty() => SizedBox(width: widget.width, height: widget.height);
+
   @override
   Widget build(BuildContext context) {
     return WebSocketMonitor(
@@ -30,17 +55,32 @@ class _BufferSourceImageStreamState extends State<BufferSourceImageStream> {
               if (message.sender == "Buffer Source") {
                 final json = JSON.parse(message.body!);
                 final bytes = json.get("data").toString().toUint8List();
-                return Center(
-                  child: Image.memory(
-                    bytes,
-                    errorBuilder: (_, __, ___) => const SizedBox.shrink(),
-                  ),
+                _pushToStream(bytes);
+                return Image.memory(
+                  bytes,
+                  height: widget.height,
+                  width: widget.width,
+                  errorBuilder: (context, exception, stackTrace) {
+                    /// Discard the last item stored and make an
+                    /// attempt to use the last valid item in `_buffer`
+                    _buffer.removeLast();
+                    return Image.memory(
+                      _buffer.last,
+                      height: widget.height?.toDouble(),
+                      width: widget.width?.toDouble(),
+                      errorBuilder: (context, error, stackTrace) {
+                        /// Still unnable to use the last item in the `_buffer`
+                        /// so just use an empty widget.
+                        return _empty();
+                      },
+                    );
+                  },
                 );
               }
             }
           }
         }
-        return const Center(child: Text("No Data"));
+        return _empty();
       },
     );
   }

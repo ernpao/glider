@@ -45,14 +45,29 @@ class WebSocketMessage extends JSON {
   bool _contains(String key) => contains("$_prefix$key");
 
   static WebSocketMessage fromJSON(JSON json) {
-    String? _extract(String key) => json.content["$_prefix$key"];
-    return WebSocketMessage(
-      sender: _extract("sender")!,
+    /// Function for extracting values using keys
+    /// with a predefined prefix
+    String? _extract(String key) {
+      return json.content["$_prefix$key"]?.toString();
+    }
+
+    /// Extract the values from the `json`
+    /// object provided
+    final message = WebSocketMessage(
+      sender: _extract("sender") ?? "Undefined",
       type: _extract("type"),
       category: _extract("category"),
       topic: _extract("topic"),
       body: _extract("body"),
-    ).._setCreated(DateTime.parse(_extract("created").toString()));
+    );
+
+    /// Parse the timestamp of the message
+    final timestamp = _extract("created");
+    if (timestamp != null) {
+      final dateTime = DateTime.tryParse(timestamp);
+      if (dateTime != null) message._setCreated(dateTime);
+    }
+    return message;
   }
 
   static const String _prefix = "_ws_";

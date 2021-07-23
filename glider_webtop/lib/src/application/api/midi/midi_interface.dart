@@ -1,5 +1,5 @@
-import 'package:glider_webtop/src/application/api/midi/control_change.dart';
+import 'control_change.dart';
 
 abstract class MidiInterface {
-  void sendCC(String deviceName, ControlChange parameter);
+  void sendMidiCC(String deviceName, ControlChange message);
 }

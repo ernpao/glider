@@ -1,35 +1,31 @@
-import 'package:glider/glider.dart';
+import 'package:glider_webtop/glider_webtop.dart';
+import 'package:glider_webtop/src/application/api/midi/control_change.dart';
+import 'package:glider_webtop/src/application/api/midi/midi_interface.dart';
 
-import 'api/webtop_interface.dart';
-
-class WebtopWebClient
+class WebtopMidiClient
     with WebHost
-    implements WebtopInterface, WebInterface, WebSocketInterface {
-  WebtopWebClient({
-    required this.host,
-    required this.port,
-    required this.socketPort,
-  });
-
-  late final WebSocket _socket = WebSocket(
-    host: host,
-    port: socketPort,
-  );
-
-  late final WebClient _client = WebClient(
-    host: host,
-    defaultPort: port,
-    useHttps: false,
-  );
-
-  final int port;
-  final int socketPort;
-
+    implements MidiInterface, WebSocketInterface {
   @override
   final String host;
 
+  WebtopMidiClient({
+    required this.host,
+    required this.socketPort,
+  });
+
+  final int socketPort;
+
+  late final WebSocket _socket = WebSocket(host: host, port: socketPort);
+
   @override
-  Future<WebResponse> index() => _client.index();
+  void sendMidiCC(String deviceName, ControlChange message) {
+    final body = JSON();
+    body.set("name", deviceName);
+    body.set("controller", message.controller);
+    body.set("value", message.value);
+    body.set("channel", message.channel);
+    _socket.sendJson(body, type: "midi", category: "cc");
+  }
 
   @override
   void openSocket({
@@ -47,12 +43,6 @@ class WebtopWebClient
 
   @override
   void closeSocket() => _socket.closeSocket();
-
-  @override
-  Future<WebResponse> get(String? path) => _client.get(path);
-
-  @override
-  Future<WebResponse> post(String? path) => _client.post(path);
 
   @override
   bool get hasListener => _socket.hasListener;
@@ -73,10 +63,4 @@ class WebtopWebClient
   @override
   void sendWebSocketMessage(WebSocketMessage message) =>
       _socket.sendWebSocketMessage(message);
-
-  @override
-  GET createGET(String? path) => _client.createGET(path);
-
-  @override
-  POST createPOST(String? path) => _client.createPOST(path);
 }

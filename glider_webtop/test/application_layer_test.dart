@@ -28,16 +28,26 @@ void main() {
   });
 
   test("Webtop MIDI", () async {
-    client.openSocket();
+    final macBookProClient = WebtopMidiClient(
+      host: "192.168.100.192",
+      socketPort: 6868,
+    );
+    macBookProClient.openSocket();
 
     const deviceName = "IAC Driver Webtop MIDI";
 
-    client.sendCC(
-      deviceName,
-      ControlChange(channel: 1, value: 127, controller: 1),
-    );
+    final ccMax = ControlChangeMax(channel: 1, controller: 1);
+    final ccMin = ControlChangeMin(channel: 1, controller: 1);
 
+    macBookProClient.sendMidiCC(deviceName, ccMax);
     await Future.delayed(const Duration(seconds: 3));
-    client.closeSocket();
+
+    macBookProClient.sendMidiCC(deviceName, ccMin);
+    await Future.delayed(const Duration(seconds: 3));
+
+    macBookProClient.sendMidiCC(deviceName, ccMax);
+    await Future.delayed(const Duration(seconds: 3));
+
+    macBookProClient.closeSocket();
   });
 }

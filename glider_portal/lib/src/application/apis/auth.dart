@@ -1,12 +1,6 @@
 import 'package:glider/glider.dart';
 
-abstract class PortalAuthInterface extends WebClient {
-  PortalAuthInterface()
-      : super(
-          host: "portal.codera.tech",
-          useHttps: true,
-        );
-
+abstract class AuthInterface {
   /// Generate and resolve a POST request for login.
   Future<WebResponse> logIn(String username, String password);
 
@@ -14,14 +8,19 @@ abstract class PortalAuthInterface extends WebClient {
   /// parameter is optional. If it is not provided,
   /// a new user will be created with their [username]
   /// set as the [email] they have provided.
-  Future<WebResponse> register(String email, String password,
-      {String? username});
+  Future<WebResponse> register(
+    String email,
+    String password, {
+    String? username,
+  });
 
   /// Verify the validity of a user's access token.
   Future<WebResponse> verify(String accessToken);
 }
 
-class PortalAuthAPI extends PortalAuthInterface {
+class AuthWebClient extends WebClient implements AuthInterface {
+  AuthWebClient() : super(host: "portal.codera.tech", useHttps: true);
+
   @override
   Future<WebResponse> logIn(String username, String password) {
     final request = createPOST("/login")
@@ -30,7 +29,7 @@ class PortalAuthAPI extends PortalAuthInterface {
         JSON()..set("username", username)..set("password", password),
       );
 
-    return request.resolve();
+    return request.send();
   }
 
   @override
@@ -44,13 +43,13 @@ class PortalAuthAPI extends PortalAuthInterface {
           ..set("password", password)
           ..set("email", email),
       );
-    return request.resolve();
+    return request.send();
   }
 
   @override
   Future<WebResponse> verify(String accessToken) {
     final request = createGET("/verify")
       ..withHeader("x-access-token", accessToken);
-    return request.resolve();
+    return request.send();
   }
 }

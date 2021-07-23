@@ -6,8 +6,8 @@ mixin WebHttpScheme {
   String get webScheme => withHttps ? "https" : "http";
 }
 
-/// A mixin used to give an object a web host property.
+/// A mixin used to give an object a web `host` property.
 mixin WebHost {
-  /// Name/IP address of the host server.
+  /// Name/IP address of the target host.
   String get host;
 }

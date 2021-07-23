@@ -1,11 +1,12 @@
 import 'package:glider/glider.dart';
+import 'package:glider_webtop/src/application/api/midi/control_change.dart';
 
-import 'webtop_api.dart';
+import 'api/webtop_interface.dart';
 
-class WebtopClient
+class WebtopWebClient
     with WebHost
-    implements WebtopAPI, WebHttpClient, WebSocketClient {
-  WebtopClient({
+    implements WebtopInterface, WebInterface, WebSocketInterface {
+  WebtopWebClient({
     required this.host,
     required this.port,
     required this.socketPort,
@@ -79,4 +80,14 @@ class WebtopClient
 
   @override
   POST createPOST(String? path) => _client.createPOST(path);
+
+  @override
+  void sendCC(String deviceName, ControlChange parameter) {
+    final body = JSON();
+    body.set("name", deviceName);
+    body.set("controller", parameter.controller);
+    body.set("value", parameter.value);
+    body.set("channel", parameter.channel);
+    sendJson(body, type: "midi", category: "cc");
+  }
 }

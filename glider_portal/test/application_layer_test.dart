@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:glider_portal/glider_portal.dart';
 
 void main() {
-  final api = PortalAuthAPI();
+  final api = AuthWebClient();
   test("Portal API Index", () async {
     final result = await api.index();
     assert(result.isSuccessful);

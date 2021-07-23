@@ -4,10 +4,10 @@ import 'package:glider_portal/glider_portal.dart';
 class PortalAppAuthState extends ChangeNotifier
     with ActiveUser, AuthenticationFlow {
   PortalAppAuthState({
-    required this.api,
+    required this.auth,
   });
 
-  final PortalAuthInterface api;
+  final AuthInterface auth;
 
   PortalUser? _activeUser;
 
@@ -46,7 +46,7 @@ class PortalAppAuthState extends ChangeNotifier
   Future<bool> logInHandler(String username, String password) async {
     _clearErrorMessage();
     _triggerLoadingState();
-    final result = await api.logIn(username, password);
+    final result = await auth.logIn(username, password);
     _activeUser = result.isSuccessful
         ? JSON.copyAs<PortalUser>(result.bodyAsJson, PortalUser())
         : null;
@@ -88,7 +88,7 @@ class PortalAppAuthState extends ChangeNotifier
   Future<bool> signUpHandler(String username, String password) async {
     _clearErrorMessage();
     _triggerLoadingState();
-    final result = await api.register(username, password);
+    final result = await auth.register(username, password);
     if (result.isSuccessful) {
       return true;
     } else {

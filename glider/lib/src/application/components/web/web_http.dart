@@ -6,7 +6,7 @@ import 'package:http/http.dart';
 
 import 'web_mixins.dart';
 
-abstract class WebHttpClient {
+abstract class WebInterface {
   Future<WebResponse> index();
 
   /// Send a GET request.
@@ -22,7 +22,7 @@ abstract class WebHttpClient {
   POST createPOST(String? path);
 }
 
-class WebClient extends WebHttpClient with WebHttpScheme, WebHost, UUID {
+class WebClient extends WebInterface with WebHttpScheme, WebHost, UUID {
   WebClient({
     required this.host,
     bool useHttps = true,
@@ -47,7 +47,7 @@ class WebClient extends WebHttpClient with WebHttpScheme, WebHost, UUID {
   late final bool withHttps;
 
   @override
-  Future<WebResponse> index() => createGET("/").resolve();
+  Future<WebResponse> index() => createGET("/").send();
 
   @override
   GET createGET(String? path) => GET(host, path, useHttps: withHttps)
@@ -60,10 +60,10 @@ class WebClient extends WebHttpClient with WebHttpScheme, WebHost, UUID {
     ..withPort(defaultPort);
 
   @override
-  Future<WebResponse> get(String? path) => createGET(path).resolve();
+  Future<WebResponse> get(String? path) => createGET(path).send();
 
   @override
-  Future<WebResponse> post(String? path) async => createPOST(path).resolve();
+  Future<WebResponse> post(String? path) async => createPOST(path).send();
 }
 
 abstract class WebRequest with WebHttpScheme, WebHost {
@@ -93,7 +93,7 @@ abstract class WebRequest with WebHttpScheme, WebHost {
   Map<String, String> _headers = {};
   Map<String, String> get headers => _headers;
 
-  /// Adds headers to the request.
+  /// Adds headers to this request.
   void withHeaders(Map<String, String> headers) => _headers.addAll(headers);
 
   /// Adds or overrides a request header.
@@ -102,8 +102,8 @@ abstract class WebRequest with WebHttpScheme, WebHost {
   /// Sets the "Content-Type" header to "application/json".
   void withJsonContentType() => withHeader("Content-Type", "application/json");
 
-  /// Launch the web request.
-  Future<WebResponse> resolve();
+  /// Send this web request.
+  Future<WebResponse> send();
 }
 
 class GET extends WebRequest {
@@ -115,7 +115,7 @@ class GET extends WebRequest {
         );
 
   @override
-  Future<WebResponse> resolve() async {
+  Future<WebResponse> send() async {
     Uri uri = Uri(
       host: host,
       path: path,
@@ -141,7 +141,7 @@ class POST extends WebRequest {
   void withBody(Mappable body) => _body = body;
 
   @override
-  Future<WebResponse> resolve() async {
+  Future<WebResponse> send() async {
     Uri uri = Uri(
       host: host,
       path: path,

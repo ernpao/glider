@@ -9,7 +9,7 @@ import 'web_socket_message.dart';
 
 /// Interface for an object that makes use of a WebSocket for
 /// communication.
-abstract class WebSocketClient {
+abstract class WebSocketInterface {
   /// Establish a connection with the WebSocket server.
   void openSocket({
     WebSocketEventHandler? eventHandler,
@@ -41,8 +41,8 @@ abstract class WebSocketClient {
   bool get isClosed => !isOpen;
 }
 
-/// Basic implementation of the [WebSocketClient] interface.
-class WebSocket extends WebSocketClient with WebHost, UUID {
+/// Basic implementation of the [WebSocketInterface] interface.
+class WebSocket extends WebSocketInterface with WebHost, UUID {
   WebSocket({
     required this.host,
     required this.port,

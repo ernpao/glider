@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:glider_keynote/glider_keynote.dart';
 
 void main() {
-  final client = KeynoteClient(
+  final client = KeynoteWebClient(
     host: "192.168.100.191",
     port: 7982,
     socketPort: 8082,

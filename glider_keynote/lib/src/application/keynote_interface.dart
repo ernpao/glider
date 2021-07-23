@@ -1,6 +1,6 @@
 import 'models/models.dart';
 
-abstract class KeynoteAPI {
+abstract class KeynoteInterface {
   void moveMouse(int x, int y);
   void offsetMouse(int xOffset, int yOffset);
   void clickMouse(MouseButton button);

@@ -1,5 +1,5 @@
 library application_layer;
 
-export 'keynote_api.dart';
-export 'keynote_client.dart';
+export 'keynote_interface.dart';
+export 'keynote_web_client.dart';
 export 'models/models.dart';

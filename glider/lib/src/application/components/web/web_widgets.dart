@@ -12,8 +12,8 @@ class WebSocketMonitor extends StatefulWidget {
   /// Reopen the connection when the done event is fired.
   final bool reopenOnDone;
 
-  /// An object that implements the [WebSocketClient] interface or an instance of the [WebSocket] class.
-  final WebSocketClient webSocket;
+  /// An object that implements the [WebSocketInterface] interface or an instance of the [WebSocket] class.
+  final WebSocketInterface webSocket;
   final Widget Function(BuildContext, WebSocketEvent?) builder;
 
   @override

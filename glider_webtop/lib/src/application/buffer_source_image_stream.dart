@@ -2,9 +2,8 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:glider/glider.dart';
-import 'package:glider_webtop/glider_webtop.dart';
 
-import 'webtop_web_client.dart';
+import 'apis/apis.dart';
 
 /// A widget for rendering "Buffer Source" data
 /// sent by the Webtop server.
@@ -17,7 +16,7 @@ class BufferSourceImageStream extends StatefulWidget {
   }) : super(key: key);
 
   /// A connection with the Webtop server.
-  final WebtopWebClient interface;
+  final WebtopClient interface;
 
   /// Expected width of the image that will be rendered.
   final double? width;

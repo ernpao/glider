@@ -1,9 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:glider_webtop/glider_webtop.dart';
-import 'package:glider_webtop/src/application/api/midi/control_change.dart';
 
 void main() {
-  final client = WebtopWebClient(
+  final client = WebtopClient(
     host: "192.168.100.191",
     port: 6767,
     socketPort: 6868,
@@ -28,7 +27,7 @@ void main() {
   });
 
   test("Webtop MIDI", () async {
-    final macBookProClient = WebtopMidiClient(
+    final macBookProClient = MidiClient(
       host: "192.168.100.192",
       socketPort: 6868,
     );

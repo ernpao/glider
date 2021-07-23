@@ -4,7 +4,7 @@ import 'package:glider_webtop/src/application/api/midi/midi_interface.dart';
 
 class WebtopMidiClient
     with WebHost
-    implements MidiInterface, WebSocketInterface {
+    implements MidiInterface, WebSocketManagement {
   @override
   final String host;
 
@@ -38,29 +38,5 @@ class WebtopMidiClient
       );
 
   @override
-  void sendJson(JSON body, {String? type, String? category, String? topic}) =>
-      _socket.sendJson(body, type: type, topic: topic, category: category);
-
-  @override
   void closeSocket() => _socket.closeSocket();
-
-  @override
-  bool get hasListener => _socket.hasListener;
-
-  @override
-  bool get hasNoListener => _socket.hasNoListener;
-
-  @override
-  void send(data, {String? type, String? category, String? topic}) =>
-      _socket.send(data, type: type, category: category, topic: topic);
-
-  @override
-  bool get isClosed => _socket.isClosed;
-
-  @override
-  bool get isOpen => _socket.isOpen;
-
-  @override
-  void sendWebSocketMessage(WebSocketMessage message) =>
-      _socket.sendWebSocketMessage(message);
 }

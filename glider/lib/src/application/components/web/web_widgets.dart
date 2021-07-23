@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'web_socket.dart';
+import 'web_socket_event.dart';
 
 class WebSocketMonitor extends StatefulWidget {
   WebSocketMonitor({

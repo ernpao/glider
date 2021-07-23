@@ -54,7 +54,7 @@ class KeynoteWebClient
 
   @override
   void sendKeystroke(String key, {KeyboardModifier? modifier}) {
-    sendWebSocketMessage(KeyboardKeystrokeCommand(
+    sendMessage(KeyboardKeystrokeCommand(
       sender: _socket.uuid,
       key: key,
     ));
@@ -62,13 +62,12 @@ class KeynoteWebClient
 
   @override
   void moveMouse(int x, int y) {
-    sendWebSocketMessage(
-        KeynoteMouseMoveCommand(sender: _socket.uuid, x: x, y: y));
+    sendMessage(KeynoteMouseMoveCommand(sender: _socket.uuid, x: x, y: y));
   }
 
   @override
   void clickMouse(MouseButton button) {
-    sendWebSocketMessage(KeynoteMouseClickCommand(
+    sendMessage(KeynoteMouseClickCommand(
       sender: _socket.uuid,
       button: button,
     ));
@@ -76,7 +75,7 @@ class KeynoteWebClient
 
   @override
   void offsetMouse(int xOffset, int yOffset) {
-    sendWebSocketMessage(KeynoteMouseOffsetCommand(
+    sendMessage(KeynoteMouseOffsetCommand(
       sender: _socket.uuid,
       xOffset: xOffset,
       yOffset: yOffset,
@@ -101,8 +100,7 @@ class KeynoteWebClient
   bool get isOpen => _socket.isOpen;
 
   @override
-  void sendWebSocketMessage(WebSocketMessage message) =>
-      _socket.sendWebSocketMessage(message);
+  void sendMessage(WebSocketMessage message) => _socket.sendMessage(message);
 
   @override
   void printMessage(String text) {

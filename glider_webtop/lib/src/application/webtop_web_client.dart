@@ -71,8 +71,7 @@ class WebtopWebClient
   bool get isOpen => _socket.isOpen;
 
   @override
-  void sendWebSocketMessage(WebSocketMessage message) =>
-      _socket.sendWebSocketMessage(message);
+  void sendMessage(WebSocketMessage message) => _socket.sendMessage(message);
 
   @override
   GET createGET(String? path) => _client.createGET(path);

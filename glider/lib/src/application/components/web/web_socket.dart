@@ -5,11 +5,11 @@ import 'package:web_socket_channel/status.dart' as status;
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 import 'web_mixins.dart';
+import 'web_socket_event.dart';
 import 'web_socket_message.dart';
 
-/// Interface for an object that makes use of a WebSocket for
-/// communication.
-abstract class WebSocketInterface {
+/// Interface for managing a WebSocket connection.
+abstract class WebSocketManagement {
   /// Establish a connection with the WebSocket server.
   void openSocket({
     WebSocketEventHandler? eventHandler,
@@ -18,15 +18,25 @@ abstract class WebSocketInterface {
 
   /// Close the WebSocket connection.
   void closeSocket();
+}
 
-  /// Send a message to the WebSocket server with a [String] message body.
+/// Interface for sending messages to a WebSocket server.
+abstract class WebSocketMessaging {
   void send(String body, {String? type, String? category, String? topic});
 
   /// Send JSON data to the WebSocket server. Essentially the same as sending
   /// the stringified JSON data using `send`.
   void sendJson(JSON body, {String? type, String? category, String? topic});
 
-  void sendWebSocketMessage(WebSocketMessage message);
+  /// Send a [WebSocketMessage] to the server.
+  void sendMessage(WebSocketMessage message);
+}
+
+/// Interface for an object that makes use of a WebSocket for
+/// communication.
+abstract class WebSocketInterface
+    implements WebSocketManagement, WebSocketMessaging {
+  /// Send a message to the WebSocket server with a [String] message body.
 
   /// Indicates if the WebSocket has a listener attached to the stream.
   bool get hasListener;
@@ -111,7 +121,7 @@ class WebSocket extends WebSocketInterface with WebHost, UUID {
       topic: topic,
       body: message,
     );
-    sendWebSocketMessage(wsMessage);
+    sendMessage(wsMessage);
   }
 
   @override
@@ -120,7 +130,7 @@ class WebSocket extends WebSocketInterface with WebHost, UUID {
   }
 
   @override
-  void sendWebSocketMessage(WebSocketMessage message) {
+  void sendMessage(WebSocketMessage message) {
     assert(this.isOpen);
     sink?.add(message.encode());
   }
@@ -131,51 +141,4 @@ class WebSocket extends WebSocketInterface with WebHost, UUID {
     final WebSocketMessage message = WebSocketMessage.fromJSON(json);
     return message;
   }
-}
-
-/// A class that processes WebSocket events (i.e. [WebSocketEvent] objects).
-class WebSocketEventHandler {
-  WebSocketEventHandler({required this.onEvent});
-
-  final Function(WebSocketEvent event) onEvent;
-
-  void onMessage(WebSocketMessage message) =>
-      onEvent(WebSocketMessageEvent(message));
-
-  void onError(Object? error) => onEvent(WebSocketErrorEvent(error));
-
-  void onDone() => onEvent(WebSocketDoneEvent());
-}
-
-abstract class WebSocketEvent {
-  bool get isMessageEvent => this is WebSocketMessageEvent;
-  bool get isErrorEvent => this is WebSocketErrorEvent;
-  bool get isDoneEvent => this is WebSocketDoneEvent;
-
-  T _as<T>() {
-    assert(this is T);
-    return this as T;
-  }
-
-  /// Casts self as a [WebSocketMessageEvent]
-  WebSocketMessageEvent asMessageEvent() => _as<WebSocketMessageEvent>();
-
-  /// Casts self as a [WebSocketDoneEvent]
-  WebSocketDoneEvent asDoneEvent() => _as<WebSocketDoneEvent>();
-
-  /// Casts self as a [WebSocketErrorEvent]
-  WebSocketErrorEvent asErrorEvent() => _as<WebSocketErrorEvent>();
-}
-
-class WebSocketDoneEvent extends WebSocketEvent {}
-
-class WebSocketMessageEvent extends WebSocketEvent {
-  final WebSocketMessage message;
-  WebSocketMessageEvent(this.message);
-}
-
-class WebSocketErrorEvent extends WebSocketEvent {
-  final Object? error;
-  WebSocketErrorEvent(this.error);
-  bool get hasError => error != null;
 }

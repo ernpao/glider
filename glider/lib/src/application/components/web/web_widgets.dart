@@ -15,7 +15,7 @@ class WebSocketMonitor extends StatefulWidget {
 
   /// An object that implements the [WebSocketInterface] interface or an instance of the [WebSocket] class.
   final WebSocketInterface webSocket;
-  final Widget Function(BuildContext, WebSocketEvent?) builder;
+  final Widget Function(BuildContext context, WebSocketEvent? event) builder;
 
   @override
   _WebSocketMonitorState createState() => _WebSocketMonitorState();

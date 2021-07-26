@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+import 'traversible.dart';
 
 class Node extends Traversible {
   @override
@@ -34,21 +34,5 @@ class Node extends Traversible {
   void dropChild(Node child) {
     children.remove(child);
     super.dropChild(child);
-  }
-}
-
-mixin Traverse {
-  void traverse(Function(Traverse child) action);
-}
-
-abstract class Traversible extends AbstractNode with Traverse {
-  final List<Traversible> children = [];
-
-  @override
-  void traverse(Function(Traversible child) action) {
-    for (var child in children) {
-      action(child);
-      child.traverse(action);
-    }
   }
 }

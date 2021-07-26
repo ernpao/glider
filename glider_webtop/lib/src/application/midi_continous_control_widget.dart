@@ -21,7 +21,7 @@ class MidiContinousControlWidget extends StatelessWidget {
 
   final int channel;
   final int controller;
-  final MidiClient interface;
+  final MidiWebAPI interface;
   final String deviceName;
 
   @override

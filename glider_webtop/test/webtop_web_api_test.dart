@@ -27,7 +27,7 @@ void main() {
   });
 
   test("Webtop MIDI", () async {
-    final macBookProClient = MidiClient(
+    final macBookProClient = MidiWebAPI(
       host: "192.168.100.192",
       socketPort: 6868,
     );

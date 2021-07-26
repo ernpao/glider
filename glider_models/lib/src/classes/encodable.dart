@@ -2,7 +2,8 @@ import 'dart:convert';
 
 import 'mappable.dart';
 
-/// A [Mappable] object that can be encoded into a string.
+/// A [Mappable] object that can be encoded into a string
+/// using the `jsonEncode` function.
 abstract class Encodable extends Mappable {
   /// Converts this [Encodable] into a string via the `dart:convert`
   /// library's `jsonEncode` function.

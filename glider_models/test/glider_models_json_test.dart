@@ -7,18 +7,22 @@ void main() {
 
     final parsed = JSONParser().parse(testModel.stringify());
 
-    /// Verify the `stringify` function
+    /// Test the `stringify` function
     final stringified = testModel.stringify();
     final parsedStringified = parsed.stringify();
     assert(parsedStringified == stringified);
 
-    /// Verify array conversion
+    /// Test the `prettify` function
+    final prettified = testModel.prettify();
+    assert(JSONParser().parse(prettified).stringify() == stringified);
+
+    /// Test array conversion
     final parsedItems = parsed.get("items");
     final testModelItems = testModel.get("items");
     assert(parsedItems is List && testModelItems is List);
     assert((parsedItems as List).length == (testModelItems as List).length);
 
-    /// Verify DateTime conversion
+    /// Test DateTime conversion
     final parsedCreatedType = parsed.get("created").runtimeType;
     final testModelCreatedType = testModel.get("created").runtimeType;
     assert(parsedCreatedType == testModelCreatedType);

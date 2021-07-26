@@ -4,7 +4,7 @@ import 'package:glider_keynote/src/application/models/keynote_command.dart';
 import 'keynote_interface.dart';
 import 'models/models.dart';
 
-class KeynoteWebClient
+class KeynoteWebAPI
     with WebHost
     implements KeynoteInterface, WebInterface, WebSocketInterface {
   late final WebSocket _socket = WebSocket(host: host, port: socketPort);
@@ -20,7 +20,7 @@ class KeynoteWebClient
   @override
   final String host;
 
-  KeynoteWebClient({
+  KeynoteWebAPI({
     required this.host,
     required this.port,
     required this.socketPort,

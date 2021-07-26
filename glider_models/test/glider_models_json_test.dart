@@ -9,7 +9,8 @@ void main() {
 
     /// Verify the `stringify` function
     final stringified = testModel.stringify();
-    assert(parsed.stringify() == stringified);
+    final parsedStringified = parsed.stringify();
+    assert(parsedStringified == stringified);
 
     /// Verify array conversion
     final parsedItems = parsed.get("items");

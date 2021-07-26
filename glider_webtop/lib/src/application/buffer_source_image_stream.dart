@@ -15,8 +15,8 @@ class BufferSourceImageStream extends StatefulWidget {
     this.height,
   }) : super(key: key);
 
-  /// A connection with the Webtop server.
-  final WebtopClient interface;
+  /// Interface used to connect with the Webtop server.
+  final WebtopWebAPI interface;
 
   /// Expected width of the image that will be rendered.
   final double? width;

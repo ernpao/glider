@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:glider_portal/glider_portal.dart';
 
 void main() {
-  final api = AuthWebClient();
+  final api = PortalAuthWebAPI();
   test("Portal API Index", () async {
     final result = await api.index();
     assert(result.isSuccessful);
@@ -21,7 +21,10 @@ void main() {
   test("Portal API Verify", () async {
     var response = await api.logIn("ernpao", "Zero1928!");
     assert(response.isSuccessful);
-    final user = JSON.copyAs<PortalUser>(response.bodyAsJson, PortalUser());
+    final user = Parseable.copyTo<PortalUser>(
+      response.bodyAsJson,
+      PortalUser(),
+    );
     final token = user.accessToken;
     response = await api.verify(token);
     assert(response.isSuccessful);

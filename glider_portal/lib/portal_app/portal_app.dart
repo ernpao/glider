@@ -15,7 +15,7 @@ class PortalApp extends StatelessWidget {
     return Application(
       providers: [
         PortalAppAuthStateProvider(
-            model: PortalAppAuthState(auth: AuthWebClient())),
+            model: PortalAppAuthState(auth: PortalAuthWebAPI())),
       ],
       theme: HoverThemeData.dark.data,
       child: PortalAppAuthStateConsumer(

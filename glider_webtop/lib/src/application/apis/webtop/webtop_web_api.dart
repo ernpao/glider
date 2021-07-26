@@ -2,10 +2,10 @@ import 'package:glider/glider.dart';
 
 import 'webtop_interface.dart';
 
-class WebtopClient
+class WebtopWebAPI
     with WebHost
     implements WebtopInterface, WebInterface, WebSocketInterface {
-  WebtopClient({
+  WebtopWebAPI({
     required this.host,
     required this.port,
     required this.socketPort,

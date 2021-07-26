@@ -74,7 +74,7 @@ class WebSocketMessage extends JSON {
     /// Function for extracting values using keys
     /// with a predefined prefix
     String? _extract(String key) {
-      return json.content["$_prefix$key"]?.toString();
+      return json.get("$_prefix$key")?.toString();
     }
 
     /// Extract the values from the `json`

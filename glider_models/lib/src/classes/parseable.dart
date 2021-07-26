@@ -1,8 +1,8 @@
 import 'dart:convert';
 
-import 'mappable.dart';
+import 'encodable.dart';
 
-class Parseable extends Mappable {
+class Parseable extends Encodable {
   Map<String, dynamic> _content = {};
 
   void _setContent(Map<String, dynamic> content) => _content = content;

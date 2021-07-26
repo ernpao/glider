@@ -136,9 +136,9 @@ class POST extends WebRequest {
           withHttps: useHttps,
         );
 
-  Mappable? _body;
-  Mappable? get body => _body;
-  void withBody(Mappable body) => _body = body;
+  Encodable? _body;
+  Encodable? get body => _body;
+  void withBody(Encodable body) => _body = body;
 
   @override
   Future<WebResponse> send() async {

@@ -48,7 +48,7 @@ class PortalAppAuthState extends ChangeNotifier
     _triggerLoadingState();
     final result = await auth.logIn(username, password);
     _activeUser = result.isSuccessful
-        ? Parseable.copyTo<PortalUser>(result.bodyAsJson, PortalUser())
+        ? Parser.copyTo<PortalUser>(result.bodyAsJson, PortalUser())
         : null;
 
     if (result.isNotSuccessful && result.withMessage) {

@@ -137,7 +137,7 @@ class WebSocket extends WebSocketInterface with WebHost, UUID {
 
   WebSocketMessage _parseStreamData(d) {
     final String jsonStr = d is String ? d : jsonEncode(d);
-    final JSON json = JSON.parse(jsonStr);
+    final JSON json = JSONParser().parse(jsonStr);
     final WebSocketMessage message = WebSocketMessage.fromJSON(json);
     return message;
   }

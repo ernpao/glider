@@ -5,7 +5,7 @@ void main() {
   test("JSON Decode/Encode Test", () async {
     final testModel = _createTestModel();
 
-    final parsed = JSON.parse(testModel.stringify());
+    final parsed = JSONParser().parse(testModel.stringify());
 
     /// Verify the `stringify` function
     final stringified = testModel.stringify();

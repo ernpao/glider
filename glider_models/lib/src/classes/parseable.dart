@@ -12,13 +12,19 @@ class Parseable extends Mappable {
 
   @override
   void set(String key, dynamic value) => _content[key] = value;
+}
+
+abstract class Parser<T extends Parseable> {
+  /// Create an instance of the model
+  /// that this [Parser] will parse.
+  T instantiateModel();
 
   /// Attempt to parse `jsonString` into a [Parseable] object.
   ///
   /// This will also convert nested [Map<String, dynamic>]
   /// objects into [Parseable] objects and any strings that are found to
   /// match the ISO8601 date time string format into [DateTime] objects.
-  static Parseable parse(String string) {
+  T parse(String string) {
     final parsed = jsonDecode(
       string,
       reviver: (key, value) {
@@ -32,15 +38,17 @@ class Parseable extends Mappable {
       },
     );
     if (parsed is Parseable) {
-      return parsed;
+      parsed.forEach((key, value) {
+        if (value is Parseable) {
+          parsed.set(key, parse(value.encode()));
+        }
+      });
+      return instantiateModel().._setContent(parsed.map());
     } else {
       final map = parsed as Map<String, dynamic>;
-      return Parseable().._setContent(map);
+      return instantiateModel().._setContent(map);
     }
   }
-
-  /// Converts [nonEncodable] to an encodable object for use
-  /// with encoding functions such as `jsonEncode`.
 
   /// Copies the contents of a [Parseable] object
   /// to another [Parseable] object.

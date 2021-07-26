@@ -170,7 +170,7 @@ class WebResponse extends Result {
   String get body => httpResponse.body;
 
   /// The body of the response as a [JSON] object.
-  JSON get bodyAsJson => JSON.parse(httpResponse.body);
+  JSON get bodyAsJson => JSONParser().parse(httpResponse.body);
 
   /// The HTTP status code for this response.
   int get statusCode => httpResponse.statusCode;

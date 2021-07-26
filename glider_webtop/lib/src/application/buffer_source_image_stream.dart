@@ -52,7 +52,7 @@ class _BufferSourceImageStreamState extends State<BufferSourceImageStream> {
             final message = e.message;
             if (message.hasBody) {
               if (message.sender == "Buffer Source") {
-                final json = JSON.parse(message.body!);
+                final json = JSONParser().parse(message.body!);
                 final bytes = json.get("data").toString().toUint8List();
                 _pushToStream(bytes);
                 return Image.memory(

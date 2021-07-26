@@ -4,7 +4,7 @@ abstract class PortalUserModel with Username, EmailAddress {
   String get accessToken;
 }
 
-class PortalUser extends JSON with Username, EmailAddress {
+class PortalUser extends Parseable with Username, EmailAddress {
   @override
   String get username => get<String>("username") ?? "";
 

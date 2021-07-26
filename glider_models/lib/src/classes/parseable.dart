@@ -2,9 +2,10 @@ import 'dart:convert';
 
 import 'encodable.dart';
 
-class Parseable extends Encodable {
+abstract class Parseable extends Encodable {
   Map<String, dynamic> _content = {};
 
+  /// Replace the content of this object.
   void _setContent(Map<String, dynamic> content) => _content = content;
 
   @override
@@ -17,7 +18,17 @@ class Parseable extends Encodable {
 abstract class Parser<T extends Parseable> {
   /// Create an instance of the model
   /// that this [Parser] will parse.
+  ///
+  /// The [Parseable] created by this method
+  /// should be empty and contain no key/value
+  /// pairs.
   T instantiateModel();
+
+  T _instantiateEmptyModel() {
+    final instance = instantiateModel();
+    assert(instance.map().isEmpty);
+    return instance;
+  }
 
   /// Attempt to parse `jsonString` into a [Parseable] object.
   ///
@@ -25,28 +36,22 @@ abstract class Parser<T extends Parseable> {
   /// objects into [Parseable] objects and any strings that are found to
   /// match the ISO8601 date time string format into [DateTime] objects.
   T parse(String string) {
-    final parsed = jsonDecode(
-      string,
-      reviver: (key, value) {
-        if (value is Map<String, dynamic>) {
-          return Parseable().._setContent(value);
-        } else if (value is String && _isIso8601String(value)) {
-          return DateTime.parse(value);
-        } else {
-          return value;
-        }
-      },
-    );
-    if (parsed is Parseable) {
-      parsed.forEach((key, value) {
-        if (value is Parseable) {
-          parsed.set(key, parse(value.encode()));
-        }
-      });
-      return instantiateModel().._setContent(parsed.map());
+    final parsed = jsonDecode(string, reviver: _reviver);
+    if (parsed is T) {
+      return parsed;
     } else {
       final map = parsed as Map<String, dynamic>;
-      return instantiateModel().._setContent(map);
+      return _instantiateEmptyModel().._setContent(map);
+    }
+  }
+
+  Object? _reviver(Object? key, Object? value) {
+    if (value is Map<String, dynamic>) {
+      return _instantiateEmptyModel().._setContent(value);
+    } else if (value is String && _isIso8601String(value)) {
+      return DateTime.parse(value);
+    } else {
+      return value;
     }
   }
 

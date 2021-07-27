@@ -5,14 +5,24 @@ import 'encodable.dart';
 abstract class Parseable extends Encodable {
   Map<String, dynamic> _content = {};
 
-  /// Replace the content of this object.
-  void _setContent(Map<String, dynamic> content) => _content = content;
-
   @override
   Map<String, dynamic> map() => _content;
 
   @override
   void set(String key, dynamic value) => _content[key] = value;
+
+  Map<String, Type>? get parseMap;
+
+  void _setContent(Map<String, dynamic> content) {
+    if (parseMap != null) {
+      parseMap!.forEach((key, value) {
+        assert(content[key].runtimeType == parseMap![key]);
+        set(key, content[key]);
+      });
+    } else {
+      _content = content;
+    }
+  }
 }
 
 abstract class Parser<T extends Parseable> {
@@ -59,7 +69,7 @@ abstract class Parser<T extends Parseable> {
   /// to another [Parseable] object.
   static T copyTo<T extends Parseable>(Parseable from, T to) {
     assert(to is Parseable);
-    to._setContent(from._content);
+    to._setContent(from.map());
     return to;
   }
 

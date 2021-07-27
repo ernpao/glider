@@ -20,11 +20,12 @@ void main() {
 
   test("Portal API Verify", () async {
     var response = await api.logIn("ernpao", "Zero1928!");
+    var body = response.bodyAsJson;
     assert(response.isSuccessful);
-    final user = Parser.copyTo<PortalUser>(
-      response.bodyAsJson,
-      PortalUser(),
-    );
+
+    final user = PortalUser();
+    Parser.copyTo<PortalUser>(body, user);
+
     final token = user.accessToken;
     response = await api.verify(token);
     assert(response.isSuccessful);

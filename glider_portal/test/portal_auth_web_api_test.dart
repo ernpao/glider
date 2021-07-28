@@ -23,8 +23,7 @@ void main() {
     var body = response.bodyAsJson;
     assert(response.isSuccessful);
 
-    final user = PortalUser();
-    Parser.copyTo<PortalUser>(body, user);
+    final user = PortalUserParser().parseFrom<JSON>(body);
 
     final token = user.accessToken;
     response = await api.verify(token);

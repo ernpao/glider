@@ -21,5 +21,5 @@ class JSON extends Parseable implements Stringifiable {
 
 class JSONParser extends Parser<JSON> {
   @override
-  JSON instantiateModel() => JSON();
+  JSON createParseableModel() => JSON();
 }

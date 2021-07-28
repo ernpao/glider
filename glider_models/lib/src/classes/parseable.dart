@@ -4,12 +4,16 @@ import 'encodable.dart';
 
 abstract class Parseable extends Encodable {
   Parseable() {
-    _content[_runtimeTypeKey] = runtimeType.toString();
+    _setRuntimeTypeInContent();
   }
 
   static const String _runtimeTypeKey = "_parseableType_";
   static String? _getRuntimeTypeString(Map<String, dynamic> map) {
     return map[_runtimeTypeKey];
+  }
+
+  void _setRuntimeTypeInContent() {
+    _content[_runtimeTypeKey] = runtimeType.toString();
   }
 
   Map<String, dynamic> _content = {};
@@ -36,6 +40,7 @@ abstract class Parseable extends Encodable {
       });
     } else {
       _content = content;
+      _setRuntimeTypeInContent();
     }
   }
 }

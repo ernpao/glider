@@ -3,13 +3,28 @@ import 'dart:convert';
 import 'encodable.dart';
 
 abstract class Parseable extends Encodable {
+  Parseable() {
+    _content[_runtimeTypeKey] = runtimeType.toString();
+  }
+
+  static const String _runtimeTypeKey = "_parseableType_";
+  static String? _getRuntimeTypeString(Map<String, dynamic> map) {
+    return map[_runtimeTypeKey];
+  }
+
   Map<String, dynamic> _content = {};
 
   @override
   Map<String, dynamic> map() => _content;
 
   @override
-  void set(String key, dynamic value) => _content[key] = value;
+  void set(String key, dynamic value) {
+    assert(
+      key != _runtimeTypeKey,
+      "$_runtimeTypeKey is a reserved key for the Parseable class.",
+    );
+    _content[key] = value;
+  }
 
   Map<String, Type>? get parseMap;
 
@@ -28,17 +43,7 @@ abstract class Parseable extends Encodable {
 abstract class Parser<T extends Parseable> {
   /// Create an instance of the [Parseable] class
   /// that this [Parser] will parse.
-  ///
-  /// The [Parseable] created by this method
-  /// should be empty and contain no key/value
-  /// pairs.
   T createParseableModel();
-
-  T _instantiateEmptyModel() {
-    final instance = createParseableModel();
-    assert(instance.map().isEmpty);
-    return instance;
-  }
 
   /// Attempt to parse [string] into a [Parseable] object.
   ///
@@ -51,9 +56,11 @@ abstract class Parser<T extends Parseable> {
       return parsed;
     } else {
       final map = parsed as Map<String, dynamic>;
-      return _instantiateEmptyModel().._setContent(map);
+      return createParseableModel().._setContent(map);
     }
   }
+
+  late final String _modelRuntimeTypeString = T.toString();
 
   /// The reviver function used with `jsonDecode` in `parse`.
   ///
@@ -63,7 +70,12 @@ abstract class Parser<T extends Parseable> {
   /// as the content of a new instance of the [Parseable].
   Object? _reviver(Object? key, Object? value) {
     if (value is Map<String, dynamic>) {
-      return _instantiateEmptyModel().._setContent(value);
+      final valueType = Parseable._getRuntimeTypeString(value);
+      if (valueType == _modelRuntimeTypeString) {
+        return createParseableModel().._setContent(value);
+      } else {
+        return value;
+      }
     } else if (value is String && _isIso8601String(value)) {
       return DateTime.parse(value);
     } else {
@@ -96,7 +108,7 @@ abstract class Parser<T extends Parseable> {
   /// simply copy all of the content of [from] into the a new instance of
   /// the [Parseable].
   T parseFrom<F extends Parseable>(F from) {
-    final model = _instantiateEmptyModel();
+    final model = createParseableModel();
     final targetMap = model.parseMap;
 
     if (targetMap != null) {

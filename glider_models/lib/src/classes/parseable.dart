@@ -35,7 +35,32 @@ abstract class Parseable extends Encodable {
   void _setContent(Map<String, dynamic> content) {
     if (parseMap != null) {
       parseMap!.forEach((key, value) {
-        assert(content[key].runtimeType == parseMap![key]);
+        final parseMapType = parseMap![key];
+        final contentValue = content[key];
+        final contentValueType = contentValue.runtimeType;
+        assert(
+          contentValue != null,
+          '''      
+          
+          \n\nParse map error in Parseable.
+The '$key' element is missing in the content and is expected to
+not be null since it is defined in the parse map of ${this.runtimeType.toString()}.
+        
+          ''',
+        );
+        assert(
+          parseMapType == contentValueType,
+          '''          
+          
+          \n\nParse map error in Parseable.
+Value in the Parseable's content has a type of
+'$contentValueType' but '$parseMapType' is expected as defined in the parse map.
+
+Make sure that the type set in the parse map of ${this.runtimeType.toString()} for '$key'
+is the same as the type of the content value.  
+
+          ''',
+        );
         set(key, content[key]);
       });
     } else {

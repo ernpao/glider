@@ -16,6 +16,13 @@ abstract class Mappable {
     }
   }
 
+  /// Get a value as a list of T with the string key specified.
+  List<T> getListOf<T>(String key) {
+    final list = get(key) ?? [];
+    assert(list is List, "$key is not a List");
+    return (list as List).cast<T>();
+  }
+
   /// Store a value with a string key in this object.
   void set(String key, dynamic value);
 

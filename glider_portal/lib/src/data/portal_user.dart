@@ -26,5 +26,5 @@ class PortalUser extends PortalUserModel {
 
 class PortalUserParser extends Parser<PortalUser> {
   @override
-  PortalUser createParseableModel() => PortalUser();
+  PortalUser createModel() => PortalUser();
 }

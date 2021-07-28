@@ -73,7 +73,7 @@ is the same as the type of the content value.
 abstract class Parser<T extends Parseable> {
   /// Create an instance of the [Parseable] class
   /// that this [Parser] will parse.
-  T createParseableModel();
+  T createModel();
 
   /// Attempt to parse [string] into a [Parseable] object.
   ///
@@ -86,7 +86,7 @@ abstract class Parser<T extends Parseable> {
       return parsed;
     } else {
       final map = parsed as Map<String, dynamic>;
-      return createParseableModel().._setContent(map);
+      return createModel().._setContent(map);
     }
   }
 
@@ -102,7 +102,7 @@ abstract class Parser<T extends Parseable> {
     if (value is Map<String, dynamic>) {
       final valueType = Parseable._getRuntimeTypeString(value);
       if (valueType == _modelRuntimeTypeString) {
-        return createParseableModel().._setContent(value);
+        return createModel().._setContent(value);
       } else {
         return value;
       }
@@ -138,7 +138,7 @@ abstract class Parser<T extends Parseable> {
   /// simply copy all of the content of [from] into the a new instance of
   /// the [Parseable].
   T parseFrom<F extends Parseable>(F from) {
-    final model = createParseableModel();
+    final model = createModel();
     final targetMap = model.parseMap;
 
     if (targetMap != null) {

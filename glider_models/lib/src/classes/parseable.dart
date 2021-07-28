@@ -35,9 +35,9 @@ abstract class Parseable extends Encodable {
   void _setContent(Map<String, dynamic> content) {
     if (parseMap != null) {
       parseMap!.forEach((key, value) {
-        final parseMapType = parseMap![key];
+        final parseMapType = parseMap![key].toString();
         final contentValue = content[key];
-        final contentValueType = contentValue.runtimeType;
+        final contentValueType = contentValue.runtimeType.toString();
         assert(
           contentValue != null,
           '''      

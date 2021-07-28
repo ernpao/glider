@@ -7,7 +7,14 @@ abstract class Mappable {
   bool contains(String key) => keys.contains(key);
 
   /// Get the value stored in this object with the string key specified.
-  T? get<T>(String key) => map()[key] as T;
+  T? get<T>(String key) {
+    final val = map()[key];
+    if (val == null) {
+      return null;
+    } else {
+      return val as T;
+    }
+  }
 
   /// Store a value with a string key in this object.
   void set(String key, dynamic value);

@@ -35,6 +35,12 @@ void main() {
     final rootDepth = root.getTotalDepth();
     assert(parsedDepth == rootDepth);
   });
+
+  test("Glider Models Parseable Node - Get Node Test", () async {
+    final nodes = root.getNodeByPath("root/5-1");
+    assert(nodes.length == 1);
+    debugPrintSynchronously(root.prettify());
+  });
 }
 
 ParseableNode _createTree(int childrenPerGeneration, int generations) {

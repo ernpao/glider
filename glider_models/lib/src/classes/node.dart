@@ -50,6 +50,15 @@ abstract class AbstractParseableNode extends Parseable
   set identifier(String id);
 
   String get path;
+
+  List<AbstractParseableNode> getNodeWhere(
+      bool Function(AbstractParseableNode node) test) {
+    return children.where(test).toList();
+  }
+
+  List<AbstractParseableNode> getNodeByPath(String path) {
+    return children.where((node) => node.path == path).toList();
+  }
 }
 
 class ParseableNode extends AbstractParseableNode {

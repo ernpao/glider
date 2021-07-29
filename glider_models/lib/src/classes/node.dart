@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 
 import 'parseable.dart';
-
 import 'traversible.dart';
 
 class Node extends Traversible {
@@ -41,13 +40,27 @@ class Node extends Traversible {
   }
 }
 
-class ParseableNode extends Parseable with AbstractNode, Traverse {
+abstract class AbstractParseableNode extends Parseable
+    with AbstractNode, Traverse {
+  @override
+  List<AbstractParseableNode> get children;
+  set children(covariant List<AbstractParseableNode> newChildren);
+
+  String get identifier;
+  set identifier(String id);
+
+  String get path;
+}
+
+class ParseableNode extends AbstractParseableNode {
   ParseableNode() {
     set(_childrenKey, <ParseableNode>[]);
   }
 
   static const String _childrenKey = "_parseableNodeChildren_";
+  @override
   List<ParseableNode> get children => getListOf<ParseableNode>(_childrenKey);
+  @override
   set children(List<ParseableNode> items) => set(_childrenKey, items);
 
   void _adoptChildren(List<ParseableNode> newChildren) {
@@ -66,7 +79,7 @@ class ParseableNode extends Parseable with AbstractNode, Traverse {
 
   int getTotalDepth() {
     int totalDepth = 0;
-    traverse((node) {
+    traverseChildren((node) async {
       if (node.depth > totalDepth) {
         totalDepth = node.depth;
       }
@@ -109,12 +122,56 @@ class ParseableNode extends Parseable with AbstractNode, Traverse {
     children.remove(child);
   }
 
+  static const String _identifierKey = "_parseableNodeIdentifier_";
   @override
-  void traverse(void Function(ParseableNode child) action) {
+  String get identifier {
+    final identifier = super.get<String>(_identifierKey);
+    assert(identifier != null);
+    return identifier!;
+  }
+
+  @override
+  set identifier(String id) {
+    assert(!id.contains(_pathSeparator), '''
+        
+        \n\nA node's identifier cannot contain the '$_pathSeparator' character since it is reserved for parsing the path of the node.
+
+''');
+    super.set(_identifierKey, id);
+  }
+
+  static const String _pathSeparator = "/";
+
+  @override
+  String get path {
+    String _path = identifier;
+
+    traverseToRoot((ancestor) async {
+      _path = ancestor.identifier + _pathSeparator + _path;
+    });
+
+    return _path;
+  }
+
+  @override
+  List<Future> traverseChildren(Future Function(ParseableNode child) action) {
+    final futures = <Future>[];
     for (var child in children) {
-      action(child);
-      child.traverse(action);
+      futures.add(action(child));
+      futures.addAll(child.traverseChildren(action));
     }
+    return futures;
+  }
+
+  @override
+  List<Future> traverseToRoot(Future Function(ParseableNode ancestor) action) {
+    final futures = <Future>[];
+    if (parent != null) {
+      final ancestor = parent as ParseableNode;
+      futures.add(action(ancestor));
+      futures.addAll(ancestor.traverseToRoot(action));
+    }
+    return futures;
   }
 }
 
@@ -125,5 +182,6 @@ class ParseableNodeParser extends Parser<ParseableNode> {
   @override
   Map<String, Type>? get typeMap => {
         ParseableNode._childrenKey: List,
+        ParseableNode._identifierKey: String,
       };
 }

@@ -8,9 +8,6 @@ abstract class Parseable extends Encodable {
   }
 
   static const String _runtimeTypeKey = "_parseableType_";
-  static String? _getRuntimeTypeString(Map<String, dynamic> map) {
-    return map[_runtimeTypeKey];
-  }
 
   void _setRuntimeTypeInContent() {
     _content[_runtimeTypeKey] = runtimeType.toString();
@@ -30,12 +27,10 @@ abstract class Parseable extends Encodable {
     _content[key] = value;
   }
 
-  Map<String, Type>? get parseMap;
-
-  void _setContent(Map<String, dynamic> content) {
-    if (parseMap != null) {
-      parseMap!.forEach((key, value) {
-        final parseMapType = parseMap![key].toString();
+  void _setContent(Map<String, dynamic> content, Map<String, Type>? typeMap) {
+    if (typeMap != null) {
+      typeMap.forEach((key, value) {
+        final parseMapType = typeMap[key].toString();
         final contentValue = content[key];
         final contentValueType = contentValue.runtimeType.toString();
         assert(
@@ -44,7 +39,7 @@ abstract class Parseable extends Encodable {
           
           \n\nParse map error in Parseable.
 The '$key' element is missing in the content and is expected to
-not be null since it is defined in the parse map of ${this.runtimeType.toString()}.
+not be null since it is defined in the parse map of ${runtimeType.toString()}.
         
           ''',
         );
@@ -56,7 +51,7 @@ not be null since it is defined in the parse map of ${this.runtimeType.toString(
 Value in the Parseable's content has a type of
 '$contentValueType' but '$parseMapType' is expected as defined in the parse map.
 
-Make sure that the type set in the parse map of ${this.runtimeType.toString()} for '$key'
+Make sure that the type set in the parse map of ${runtimeType.toString()} for '$key'
 is the same as the type of the content value.  
 
           ''',
@@ -75,6 +70,10 @@ abstract class Parser<T extends Parseable> {
   /// that this [Parser] will parse.
   T createModel();
 
+  /// A key/type map which will be used for
+  /// parsing.
+  Map<String, Type>? get typeMap;
+
   /// Attempt to parse [string] into a [Parseable] object.
   ///
   /// This will also convert nested [Map<String, dynamic>]
@@ -86,7 +85,7 @@ abstract class Parser<T extends Parseable> {
       return parsed;
     } else {
       final map = parsed as Map<String, dynamic>;
-      return createModel().._setContent(map);
+      return createModel().._setContent(map, typeMap);
     }
   }
 
@@ -100,9 +99,9 @@ abstract class Parser<T extends Parseable> {
   /// as the content of a new instance of the [Parseable].
   Object? _reviver(Object? key, Object? value) {
     if (value is Map<String, dynamic>) {
-      final valueType = Parseable._getRuntimeTypeString(value);
+      final valueType = value[Parseable._runtimeTypeKey];
       if (valueType == _modelRuntimeTypeString) {
-        return createModel().._setContent(value);
+        return createModel().._setContent(value, typeMap);
       } else {
         return value;
       }
@@ -126,29 +125,29 @@ abstract class Parser<T extends Parseable> {
 
   /// Creates an instance of the [Parseable] handled by this parser
   /// from the content of [from]. Behavior of this function
-  /// will depend on whether [Parseable] contains a [parseMap] that
+  /// will depend on whether [Parseable] contains a [typeMap] that
   /// is not null.
   ///
-  /// If the [Parseable] has a [parseMap] that is not null,
+  /// If the [Parseable] has a [typeMap] that is not null,
   /// this function will loop through each key in that map
   /// and copy the value from [from] into a new instance of
   /// the [Parseable] only for those keys.
   ///
-  /// If the [Parseable] type has a null [parseMap], then this function will
+  /// If the [Parseable] type has a null [typeMap], then this function will
   /// simply copy all of the content of [from] into the a new instance of
   /// the [Parseable].
   T parseFrom<F extends Parseable>(F from) {
     final model = createModel();
-    final targetMap = model.parseMap;
+    final mapping = typeMap;
 
-    if (targetMap != null) {
-      targetMap.forEach((key, value) {
+    if (mapping != null) {
+      mapping.forEach((key, value) {
         if (from.contains(key)) {
           model.set(key, from.get(key));
         }
       });
     } else {
-      model._setContent(from.map());
+      model._setContent(from.map(), typeMap);
     }
 
     return model;

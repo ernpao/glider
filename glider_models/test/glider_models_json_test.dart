@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:glider_models/glider_models.dart';
 
 void main() {
-  test("JSON Decode/Encode Test", () async {
+  test("Glider Models JSON Decode/Encode Test", () async {
     final testModel = _createTestModel();
 
     final parsed = JSONParser().parse(testModel.stringify());

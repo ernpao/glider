@@ -13,18 +13,18 @@ class PortalUser extends PortalUserModel {
 
   @override
   String get accessToken => get<String>("accessToken") ?? "";
+}
+
+class PortalUserParser extends Parser<PortalUser> {
+  @override
+  PortalUser createModel() => PortalUser();
 
   @override
-  Map<String, Type>? get parseMap {
+  Map<String, Type>? get typeMap {
     return {
       "username": String,
       "email": String,
       "accessToken": String,
     };
   }
-}
-
-class PortalUserParser extends Parser<PortalUser> {
-  @override
-  PortalUser createModel() => PortalUser();
 }

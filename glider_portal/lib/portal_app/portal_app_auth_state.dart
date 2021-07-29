@@ -9,10 +9,10 @@ class PortalAppAuthState extends ChangeNotifier
 
   final PortalAuthInterface auth;
 
-  PortalUser? _activeUser;
+  PortalUserData? _activeUser;
 
   @override
-  PortalUser? get activeUser => _activeUser;
+  PortalUserData? get activeUser => _activeUser;
 
   String? get errorMessage => _errorMessage;
   String? _errorMessage;
@@ -48,7 +48,7 @@ class PortalAppAuthState extends ChangeNotifier
     _triggerLoadingState();
     final result = await auth.logIn(username, password);
     _activeUser = result.isSuccessful
-        ? PortalUserParser().parseFrom<JSON>(result.bodyAsJson)
+        ? PortalUserDataParser().parseFrom<JSON>(result.bodyAsJson)
         : null;
 
     if (result.isNotSuccessful && result.withMessage) {

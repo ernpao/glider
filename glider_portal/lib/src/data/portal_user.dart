@@ -1,10 +1,14 @@
 import 'package:glider_models/glider_models.dart';
 
-abstract class PortalUserModel extends Parseable with Username, EmailAddress {
+abstract class PortalUserModel with Username, EmailAddress {
   String get accessToken;
 }
 
-class PortalUser extends PortalUserModel {
+/// An implementation of the [PortalUserModel]
+/// that is parseable.
+class PortalUserData extends Parseable
+    with Username, EmailAddress
+    implements PortalUserModel {
   @override
   String get username => get<String>("username") ?? "";
 
@@ -15,9 +19,9 @@ class PortalUser extends PortalUserModel {
   String get accessToken => get<String>("accessToken") ?? "";
 }
 
-class PortalUserParser extends Parser<PortalUser> {
+class PortalUserDataParser extends Parser<PortalUserData> {
   @override
-  PortalUser createModel() => PortalUser();
+  PortalUserData createModel() => PortalUserData();
 
   @override
   Map<String, Type>? get typeMap {

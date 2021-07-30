@@ -66,7 +66,11 @@ abstract class SensorMonitor<T>
   SensorMonitor({
     required this.onData,
   }) {
-    assert(eventType == GyroscopeEvent || eventType == AccelerometerEvent);
+    if (!(eventType == GyroscopeEvent || eventType == AccelerometerEvent)) {
+      throw new Exception(
+        "Sensor monitor eventType is ${T.toString()}but should be GyroscopeEvent or AccelerometerEvent",
+      );
+    }
   }
 
   /// The type of event that the sensor is currently set up to listen to.

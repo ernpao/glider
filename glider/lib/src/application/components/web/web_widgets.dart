@@ -8,7 +8,13 @@ class WebSocketMonitor extends StatefulWidget {
     required this.webSocket,
     required this.builder,
     this.reopenOnDone = true,
-  }) : assert(webSocket.isClosed);
+  }) {
+    if (webSocket.isOpen) {
+      throw new Exception(
+        "webSocket provided to a WebSocketMonitor should be closed.",
+      );
+    }
+  }
 
   /// Reopen the connection when the done event is fired.
   final bool reopenOnDone;

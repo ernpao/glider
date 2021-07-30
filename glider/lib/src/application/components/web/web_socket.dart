@@ -131,7 +131,11 @@ class WebSocket extends WebSocketInterface with WebHost, UUID {
 
   @override
   void sendMessage(WebSocketMessage message) {
-    assert(this.isOpen);
+    if (this.isClosed) {
+      throw new Exception(
+        "WebSocket should be open before calling sendMessage.",
+      );
+    }
     sink?.add(message.encode());
   }
 

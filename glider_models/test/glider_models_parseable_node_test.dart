@@ -26,19 +26,23 @@ void main() {
   });
 
   test("Glider Models Parseable Node - Parsing Test", () async {
+    assert(root.totalDepth == generations);
+
     /// Test parsing
     final parsed = ParseableNodeParser().parse(root.encode());
     assert(root.encode() == parsed.encode());
 
     /// Test depth of parsed object
-    final parsedDepth = parsed.getTotalDepth();
-    final rootDepth = root.getTotalDepth();
+    final parsedDepth = parsed.totalDepth;
+    final rootDepth = root.totalDepth;
     assert(parsedDepth == rootDepth);
   });
 
   test("Glider Models Parseable Node - Get Node Test", () async {
-    final nodes = root.getNodeByPath("root/5-1");
-    assert(nodes.length == 1);
+    final node = root.getNodeByPath("root/5-1");
+    assert(node.path == "root/5-1");
+    assert(node.identifier == "5-1");
+    assert((node.parent as ParseableNode).identifier == "root");
     debugPrintSynchronously(root.prettify());
   });
 }

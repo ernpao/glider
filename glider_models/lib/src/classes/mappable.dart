@@ -19,10 +19,10 @@ abstract class Mappable {
   /// Get a value as a list of T with the string key specified.
   List<T> getListOf<T>(String key) {
     final list = get(key) ?? [];
-    if (list! is List) {
+    if (list is! List) {
       throw Exception("Value in '$key' is not a List");
     }
-    return (list as List).cast<T>();
+    return (list).cast<T>();
   }
 
   /// Store a value with a string key in this object.

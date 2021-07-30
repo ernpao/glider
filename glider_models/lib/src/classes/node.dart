@@ -330,15 +330,15 @@ class ParseableNode extends Parseable with AbstractNode implements Node {
   }
 }
 
-class ParseableNodeParser extends Parser<ParseableNode> {
-  @override
-  ParseableNode createModel() => ParseableNode();
+abstract class NodeParser<T extends ParseableNode> extends Parser<T> {
+  Map<String, Type>? get nodeMap;
 
   @override
   Map<String, Type>? get typeMap {
-    return {
+    final baseMap = {
       ParseableNode._childrenKey: List,
       ParseableNode._identifierKey: String,
     };
+    return baseMap..addAll(nodeMap ?? {});
   }
 }

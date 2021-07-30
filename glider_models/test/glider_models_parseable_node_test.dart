@@ -28,7 +28,7 @@ void main() {
     assert(root.totalDepth == generations);
 
     /// Test parsing
-    final parsed = ParseableNodeParser().parse(root.encode());
+    final parsed = SampleNodeParser().parse(root.encode());
     assert(root.encode() == parsed.encode());
 
     /// Test depth of parsed object
@@ -78,6 +78,13 @@ void main() {
 const int perGeneration = 5;
 const int generations = 5;
 final root = _createTree(perGeneration, generations);
+
+class SampleNodeParser extends NodeParser<ParseableNode> {
+  @override
+  ParseableNode createModel() => ParseableNode();
+  @override
+  Map<String, Type>? get nodeMap => null;
+}
 
 ParseableNode _createTree(int childrenPerGeneration, int generations) {
   final root = ParseableNode();

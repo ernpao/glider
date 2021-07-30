@@ -214,7 +214,9 @@ class Node extends AbstractNode with Traversible {
   static const String pathSeparator = "/";
 }
 
-class ParseableNode extends Parseable with AbstractNode implements Node {
+abstract class ParseableNode extends Parseable
+    with AbstractNode
+    implements Node {
   ParseableNode() {
     set(_childrenKey, <ParseableNode>[]);
   }
@@ -225,10 +227,32 @@ class ParseableNode extends Parseable with AbstractNode implements Node {
   @override
   void set(String key, dynamic value) {
     if (key == _childrenKey) {
-      _adoptNodes((value as List).cast<ParseableNode>());
+      final _isList = (value is List && value.isNotEmpty);
+      final _isEmptyList = (value is List && value.isEmpty);
+
+      if (_isList && value.first is ParseableNode) {
+        _adoptNodes((value as List).cast<ParseableNode>());
+        return super.set(key, value);
+      } else if (_isList && value.first is Map<String, dynamic>) {
+        final _newChildren = <ParseableNode>[];
+        for (final map in value) {
+          final child = childParser.parseFromMap(map);
+          _newChildren.add(child);
+        }
+        _adoptNodes(_newChildren);
+        return super.set(key, _newChildren);
+      } else {
+        if (!_isEmptyList) {
+          throw Exception(
+            "Invalid type for node children: ${value.runtimeType.toString()}",
+          );
+        }
+      }
     }
     super.set(key, value);
   }
+
+  NodeParser get childParser;
 
   @override
   List<ParseableNode> get children => getListOf<ParseableNode>(_childrenKey);

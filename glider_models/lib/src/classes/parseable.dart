@@ -95,6 +95,10 @@ abstract class Parser<T extends Parseable> {
     }
   }
 
+  T parseFromMap(Map<String, dynamic> map) {
+    return createModel().._setContent(map, typeMap);
+  }
+
   late final String _modelRuntimeTypeString = T.toString();
 
   /// The reviver function used with `jsonDecode` in `parse`.

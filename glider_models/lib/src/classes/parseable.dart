@@ -1,13 +1,14 @@
 import 'dart:convert';
 
 import 'encodable.dart';
+import 'stringifiable.dart';
 
-abstract class Parseable extends Encodable {
+abstract class Parseable extends Encodable with Stringifiable {
   Parseable() {
     _setRuntimeTypeInContent();
   }
 
-  static const String _runtimeTypeKey = "_parseableType_";
+  static const String _runtimeTypeKey = "__type";
 
   void _setRuntimeTypeInContent() {
     _content[_runtimeTypeKey] = runtimeType.toString();
@@ -20,10 +21,11 @@ abstract class Parseable extends Encodable {
 
   @override
   void set(String key, dynamic value) {
-    assert(
-      key != _runtimeTypeKey,
-      "$_runtimeTypeKey is a reserved key for the Parseable class.",
-    );
+    if (key == _runtimeTypeKey) {
+      throw Exception(
+        "$_runtimeTypeKey is a reserved key for the Parseable class.",
+      );
+    }
     _content[key] = value;
   }
 
@@ -33,19 +35,19 @@ abstract class Parseable extends Encodable {
         final parseMapType = typeMap[key].toString();
         final contentValue = content[key];
         final contentValueType = contentValue.runtimeType.toString();
-        assert(
-          contentValue != null,
-          '''      
+
+        if (contentValue == null) {
+          throw Exception('''      
           
           \n\nParse map error in Parseable.
 The '$key' element is missing in the content and is expected to
 not be null since it is defined in the parse map of ${runtimeType.toString()}.
         
-          ''',
-        );
-        assert(
-          parseMapType == contentValueType,
-          '''          
+          ''');
+        }
+
+        if (parseMapType != contentValueType) {
+          throw Exception('''          
           
           \n\nParse map error in Parseable.
 Value in the Parseable's content has a type of
@@ -54,8 +56,9 @@ Value in the Parseable's content has a type of
 Make sure that the type set in the parse map of ${runtimeType.toString()} for '$key'
 is the same as the type of the content value.  
 
-          ''',
-        );
+          ''');
+        }
+
         set(key, content[key]);
       });
     } else {
@@ -63,6 +66,9 @@ is the same as the type of the content value.
       _setRuntimeTypeInContent();
     }
   }
+
+  @override
+  String stringify() => encode();
 }
 
 abstract class Parser<T extends Parseable> {

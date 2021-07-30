@@ -5,15 +5,14 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:glider_models/glider_models.dart';
 
 void main() {
-  const int perGeneration = 5;
-  const int generations = 5;
-  final root = _createTree(perGeneration, generations);
-
   test("Glider Models Parseable Node - Traversal Test", () async {
-    final futures = root.traverseChildren((child) async {
-      final path = ''.padLeft(child.depth * 4) + child.identifier;
-      debugPrintSynchronously(path);
-      return path;
+    int count = 0;
+
+    root.traverseChildrenAs<ParseableNode>((child) {
+      final paddedId = ''.padLeft(child.depth * 4) + child.identifier;
+      debugPrintSynchronously(paddedId);
+      count++;
+      return paddedId;
     });
 
     /// Calculate expected number of children
@@ -22,7 +21,7 @@ void main() {
       total += perGeneration * (pow(perGeneration, i).toInt());
     }
 
-    assert(total == futures.length);
+    assert(total == count);
   });
 
   test("Glider Models Parseable Node - Parsing Test", () async {
@@ -38,14 +37,47 @@ void main() {
     assert(parsedDepth == rootDepth);
   });
 
-  test("Glider Models Parseable Node - Get Node Test", () async {
-    final node = root.getNodeByPath("root/5-1");
-    assert(node.path == "root/5-1");
-    assert(node.identifier == "5-1");
-    assert((node.parent as ParseableNode).identifier == "root");
-    debugPrintSynchronously(root.prettify());
+  test("Glider Models Parseable Node - getNode Test", () async {
+    assert(root.path == "root");
+
+    final node = root.getNode("root/5-1");
+    assert(node != null);
+    assert(node!.path == "root/5-1");
+    assert(node!.identifier == "5-1");
+    assert((node!.parent as ParseableNode).identifier == "root");
+  });
+
+  test("Glider Models Parseable Node - setNode Test", () async {
+    const newNodeId = "Test Node";
+    final newNode = ParseableNode()..identifier = newNodeId;
+    final childCount = root.children.length;
+
+    expect(() {
+      root.setNode("/test/asdasd", newNode);
+    }, throwsException);
+
+    root.setNode("/test", newNode);
+    assert(newNode.ancestor!.path == "root");
+    assert(root.children.length == childCount + 1);
+  });
+
+  test("Glider Models Parseable Node - Node Path Test", () async {
+    /// Test valid path detection
+    assert(Node.isPathValid("target") == true);
+    assert(Node.isPathValid("node1/node2/target") == true);
+
+    /// Test invalid path detection
+    assert(Node.isPathValid("/target") == false);
+    assert(Node.isPathValid("/target/") == false);
+    assert(Node.isPathValid("target/") == false);
+    assert(Node.isPathValid("node//node") == false);
+    assert(Node.isPathValid("./") == false);
   });
 }
+
+const int perGeneration = 5;
+const int generations = 5;
+final root = _createTree(perGeneration, generations);
 
 ParseableNode _createTree(int childrenPerGeneration, int generations) {
   final root = ParseableNode();

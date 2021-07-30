@@ -1,10 +1,6 @@
 import 'parseable.dart';
-import 'stringifiable.dart';
 
-class JSON extends Parseable implements Stringifiable {
-  @override
-  String stringify() => encode();
-}
+class JSON extends Parseable {}
 
 class JSONParser extends Parser<JSON> {
   JSONParser({

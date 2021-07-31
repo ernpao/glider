@@ -8,8 +8,8 @@ class ControlChange extends MidiMessage {
     required int channel,
     required this.value,
     required this.controller,
-  })  : assert(value >= 0 && value <= 127),
-        assert(controller >= 0 && controller <= 127),
+  })  : assert(Midi.verifyValue(value)),
+        assert(Midi.verifyChannel(channel)),
         super(channel: channel);
 }
 
@@ -19,7 +19,7 @@ class ControlChangeMax extends ControlChange {
   ControlChangeMax({
     required int channel,
     required int controller,
-  }) : super(channel: channel, value: 127, controller: controller);
+  }) : super(channel: channel, value: Midi.kMaxChannel, controller: controller);
 }
 
 /// A MIDI Control Change (CC) message with
@@ -28,5 +28,5 @@ class ControlChangeMin extends ControlChange {
   ControlChangeMin({
     required int channel,
     required int controller,
-  }) : super(channel: channel, value: 0, controller: controller);
+  }) : super(channel: channel, value: Midi.kMinValue, controller: controller);
 }

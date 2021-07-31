@@ -1,33 +1,43 @@
 class Midi {
   Midi._();
 
-  static bool _verifyValue(String property, int value) {
-    return (_getMin(property) <= value) && (value <= _getMax(property));
+  static bool verifyProperty(String property, int value) =>
+      (getMin(property) <= value) && (value <= getMax(property));
+
+  static int _getMinOrMax(String property, String minMaxKey) {
+    final validProperties = minMaxValues.keys;
+    if (!validProperties.contains(property)) {
+      throw Exception(
+        "Cannot verify '$property' since it is not a valid MIDI property."
+        "'property' must be one of the following: ${validProperties.join(",")}",
+      );
+    }
+    return minMaxValues[property]![minMaxKey]!;
   }
 
-  static bool verifyChannel(int i) => _verifyValue(kChannel, i);
-  static bool verifyValue(int i) => _verifyValue(kValue, i);
-  static bool verifyController(int i) => _verifyValue(kController, i);
-  static bool verifyVelocity(int i) => _verifyValue(kVelocity, i);
-  static bool verifyNote(int i) => _verifyValue(kNote, i);
+  static bool verifyChannel(int i) => verifyProperty(kChannel, i);
+  static bool verifyValue(int i) => verifyProperty(kValue, i);
+  static bool verifyController(int i) => verifyProperty(kController, i);
+  static bool verifyVelocity(int i) => verifyProperty(kVelocity, i);
+  static bool verifyNote(int i) => verifyProperty(kNote, i);
 
-  static final int kMinChannel = _getMin(kChannel);
-  static final int kMaxChannel = _getMax(kChannel);
+  static final int kMinChannel = getMin(kChannel);
+  static final int kMaxChannel = getMax(kChannel);
 
-  static final int kMinValue = _getMin(kValue);
-  static final int kMaxValue = _getMax(kValue);
+  static final int kMinValue = getMin(kValue);
+  static final int kMaxValue = getMax(kValue);
 
-  static final int kMinController = _getMin(kController);
-  static final int kMaxController = _getMax(kController);
+  static final int kMinController = getMin(kController);
+  static final int kMaxController = getMax(kController);
 
-  static final int kMinVelocity = _getMin(kVelocity);
-  static final int kMaxVelocity = _getMax(kVelocity);
+  static final int kMinVelocity = getMin(kVelocity);
+  static final int kMaxVelocity = getMax(kVelocity);
 
-  static final int kMinNote = _getMin(kNote);
-  static final int kMaxNote = _getMax(kNote);
+  static final int kMinNote = getMin(kNote);
+  static final int kMaxNote = getMax(kNote);
 
-  static int _getMin(String key) => minMaxValues[key]![_min]!;
-  static int _getMax(String key) => minMaxValues[key]![_max]!;
+  static int getMin(String key) => _getMinOrMax(key, _min);
+  static int getMax(String key) => _getMinOrMax(key, _max);
 
   static const String _min = "min";
   static const String _max = "max";

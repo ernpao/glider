@@ -36,11 +36,11 @@ class Midi {
   static final int kMinNote = getMin(kNote);
   static final int kMaxNote = getMax(kNote);
 
-  static int getMin(String key) => _getMinOrMax(key, _min);
-  static int getMax(String key) => _getMinOrMax(key, _max);
+  static int getMin(String key) => _getMinOrMax(key, kMin);
+  static int getMax(String key) => _getMinOrMax(key, kMax);
 
-  static const String _min = "min";
-  static const String _max = "max";
+  static const String kMin = "min";
+  static const String kMax = "max";
 
   static const String kChannel = "channel";
   static const String kValue = "value";
@@ -49,11 +49,11 @@ class Midi {
   static const String kNote = "note";
 
   static const Map<String, Map<String, int>> minMaxValues = {
-    kChannel: {_min: 0, _max: 15},
-    kValue: {_min: 0, _max: 127},
-    kController: {_min: 0, _max: 127},
-    kVelocity: {_min: 0, _max: 127},
-    kNote: {_min: 0, _max: 127}
+    kChannel: {kMin: 0, kMax: 15},
+    kValue: {kMin: 0, kMax: 127},
+    kController: {kMin: 0, kMax: 127},
+    kVelocity: {kMin: 0, kMax: 127},
+    kNote: {kMin: 0, kMax: 127}
   };
 }
 

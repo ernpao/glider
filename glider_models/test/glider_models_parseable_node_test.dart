@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:flutter/foundation.dart';
+// import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:glider_models/glider_models.dart';
 
@@ -10,7 +10,7 @@ void main() {
 
     root.traverseChildrenAs<SampleNode>((child) {
       final paddedId = ''.padLeft(child.depth * 4) + child.identifier;
-      debugPrintSynchronously(paddedId);
+      // debugPrintSynchronously(paddedId);
       count++;
       return paddedId;
     });

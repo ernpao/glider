@@ -56,9 +56,9 @@ class Node extends AbstractNode with Traversible {
     super.dropChild(child);
   }
 
-  int get totalDepth => getNodeDepth(this);
+  int get totalDepth => calculateNodeDepth(this);
 
-  static int getNodeDepth(Node node) {
+  static int calculateNodeDepth(Node node) {
     int d = 0;
     node.traverseChildrenAs<Node>((n) => d = n.depth > d ? n.depth : d);
     return d;
@@ -71,9 +71,8 @@ class Node extends AbstractNode with Traversible {
     final ancestor = node.parent;
     if (ancestor != null) {
       return ancestor as T;
-    } else {
-      return null;
     }
+    return null;
   }
 
   /// Get the node directly below this node with
@@ -227,31 +226,53 @@ abstract class ParseableNode extends Parseable
   @override
   void set(String key, dynamic value) {
     if (key == _childrenKey) {
-      final _isList = (value is List && value.isNotEmpty);
-      final _isEmptyList = (value is List && value.isEmpty);
+      bool throwException = value is! List;
 
-      if (_isList && value.first is ParseableNode) {
-        _adoptNodes((value as List).cast<ParseableNode>());
-        return super.set(key, value);
-      } else if (_isList && value.first is Map<String, dynamic>) {
-        final _newChildren = <ParseableNode>[];
-        for (final map in value) {
-          final child = childParser.parseFromMap(map);
-          _newChildren.add(child);
-        }
-        _adoptNodes(_newChildren);
-        return super.set(key, _newChildren);
-      } else {
-        if (!_isEmptyList) {
-          throw Exception(
-            "Invalid type for node children: ${value.runtimeType.toString()}",
-          );
+      var list = value as List;
+      var nodes = <ParseableNode>[];
+
+      if (list.isNotEmpty && !throwException) {
+        final first = list.first;
+        if (first is Map<String, dynamic>) {
+          var castedList = list.cast<Map<String, dynamic>>();
+
+          for (final item in castedList) {
+            final node = childParser.parseFromMap(item);
+            nodes.add(node);
+          }
+        } else if (first is ParseableNode) {
+          var castedList = list.cast<ParseableNode>();
+          for (final item in castedList) {
+            final node = childParser.translate<ParseableNode>(item);
+            nodes.add(node);
+          }
+        } else {
+          throwException = true;
         }
       }
+
+      if (throwException) {
+        throw Exception(
+          "Invalid value: Attempted to set ${value.runtimeType.toString()} as children of node $identifier."
+          "The children of a node must be a list of Node or Map<String, dynamic> that conforms to the parseMap "
+          "of this node's childParser.",
+        );
+      }
+
+      _adoptNodes(nodes);
+      return super.set(key, nodes);
     }
+
+    /// Use default behavior if children of node is not being set.
     super.set(key, value);
   }
 
+  /// The parser for the children of this node.
+  ///
+  /// This enables nodes to have children that are of a different class
+  /// than themselves (as long as they extend [ParseableNode]) simply
+  /// by setting [childParser] as a [NodeParser] for the same type
+  /// as the children.
   NodeParser get childParser;
 
   @override
@@ -335,7 +356,7 @@ abstract class ParseableNode extends Parseable
   String get path => Node.getPathOfNode(this);
 
   @override
-  int get totalDepth => Node.getNodeDepth(this);
+  int get totalDepth => Node.calculateNodeDepth(this);
 
   @override
   ParseableNode? getChildById(String id) {

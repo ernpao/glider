@@ -37,26 +37,21 @@ abstract class Parseable extends Encodable with Stringifiable {
         final contentValueType = contentValue.runtimeType.toString();
 
         if (contentValue == null) {
-          throw Exception('''      
-          
-          \n\nParse map error in Parseable.
-The '$key' element is missing in the content and is expected to
-not be null since it is defined in the parse map of ${runtimeType.toString()}.
-        
-          ''');
+          throw Exception(
+            "Parse map error in Parseable."
+            "The '$key' element is missing in the content and is expected to"
+            "not be null since it is defined in the parse map of ${runtimeType.toString()}.",
+          );
         }
 
         if (parseMapType != contentValueType) {
-          throw Exception('''          
-          
-          \n\nParse map error in Parseable.
-Value in the Parseable's content has a type of
-'$contentValueType' but '$parseMapType' is expected as defined in the parse map.
-
-Make sure that the type set in the parse map of ${runtimeType.toString()} for '$key'
-is the same as the type of the content value.  
-
-          ''');
+          throw Exception(
+            "Parse map error in Parseable."
+            "Value in the Parseable's content has a type of"
+            "'$contentValueType' but '$parseMapType' is expected as defined in the parse map."
+            "Make sure that the type set in the parse map of ${runtimeType.toString()} for '$key'"
+            "is the same as the type of the content value.  ",
+          );
         }
 
         set(key, content[key]);
@@ -133,20 +128,21 @@ abstract class Parser<T extends Parseable> {
     return isLocalTimestamp;
   }
 
-  /// Creates an instance of the [Parseable] handled by this parser
-  /// from the content of [from]. Behavior of this function
-  /// will depend on whether [Parseable] contains a [typeMap] that
-  /// is not null.
+  /// Translate a [Parsable] into another [Parseable].
   ///
-  /// If the [Parseable] has a [typeMap] that is not null,
-  /// this function will loop through each key in that map
-  /// and copy the value from [from] into a new instance of
-  /// the [Parseable] only for those keys.
+  /// Translates `from` into an instance of the [Parseable] class handled by this parser.
+  /// Behavior of this function
+  /// will depend on whether [typeMap] is null or not.
   ///
-  /// If the [Parseable] type has a null [typeMap], then this function will
-  /// simply copy all of the content of [from] into the a new instance of
-  /// the [Parseable].
-  T parseFrom<F extends Parseable>(F from) {
+  /// If [typeMap] is not null,
+  /// this function will map the value from `from` into a new [Parseable]
+  /// created with [createModel] using the key/type mapping
+  /// in [typeMap].
+  ///
+  /// If [typeMap] is null, then this function will
+  /// simply copy all of the content of `from` into a new [Parseable]
+  /// created with [createModel].
+  T translate<F extends Parseable>(F from) {
     final model = createModel();
     final mapping = typeMap;
 

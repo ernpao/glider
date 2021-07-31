@@ -39,7 +39,7 @@ abstract class Parseable extends Encodable with Stringifiable {
         if (contentValue == null) {
           throw Exception(
             "Parse map error in Parseable."
-            "The '$key' element is missing in the content and is expected to"
+            "The '$key' element is missing in the content and is expected to "
             "not be null since it is defined in the parse map of ${runtimeType.toString()}.",
           );
         }

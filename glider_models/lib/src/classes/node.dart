@@ -108,10 +108,13 @@ class Node extends AbstractNode with Traversible {
       isPathValid(path, throwException: true);
 
       final _path = _isPathRelative(path) ? baseNode.identifier + path : path;
-      final nodes = baseNode.children.where((c) {
-        final p = c.path;
-        return p == _path;
-      }).toList();
+      final nodes = <Node>[];
+
+      baseNode.traverseChildrenAs<Node>((n) {
+        if (n.path == _path) {
+          nodes.add(n);
+        }
+      });
 
       if (nodes.length > 1) {
         throw Exception("More than one node was found at '$path'.");

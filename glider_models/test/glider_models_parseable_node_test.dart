@@ -87,6 +87,8 @@ class SampleNodeParser extends NodeParser<SampleNode> {
 }
 
 class SampleNode extends ParseableNode {
+  SampleNode() : super(childParser: SampleNodeParser());
+
   @override
   SampleNodeParser get childParser => SampleNodeParser();
 }

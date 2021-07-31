@@ -216,7 +216,9 @@ class Node extends AbstractNode with Traversible {
 abstract class ParseableNode extends Parseable
     with AbstractNode
     implements Node {
-  ParseableNode() {
+  ParseableNode({
+    required this.childParser,
+  }) {
     set(_childrenKey, <ParseableNode>[]);
   }
 
@@ -232,22 +234,26 @@ abstract class ParseableNode extends Parseable
       var nodes = <ParseableNode>[];
 
       if (list.isNotEmpty && !throwException) {
-        final first = list.first;
-        if (first is Map<String, dynamic>) {
-          var castedList = list.cast<Map<String, dynamic>>();
+        var parser = childParser;
 
-          for (final item in castedList) {
-            final node = childParser.parseFromMap(item);
-            nodes.add(node);
+        if (parser != null) {
+          final first = list.first;
+          if (first is Map<String, dynamic>) {
+            var castedList = list.cast<Map<String, dynamic>>();
+
+            for (final item in castedList) {
+              final node = parser.parseFromMap(item);
+              nodes.add(node);
+            }
+          } else if (first is ParseableNode) {
+            var castedList = list.cast<ParseableNode>();
+            for (final item in castedList) {
+              final node = parser.translate<ParseableNode>(item);
+              nodes.add(node);
+            }
+          } else {
+            throwException = true;
           }
-        } else if (first is ParseableNode) {
-          var castedList = list.cast<ParseableNode>();
-          for (final item in castedList) {
-            final node = childParser.translate<ParseableNode>(item);
-            nodes.add(node);
-          }
-        } else {
-          throwException = true;
         }
       }
 
@@ -269,11 +275,15 @@ abstract class ParseableNode extends Parseable
 
   /// The parser for the children of this node.
   ///
+  /// This can be set
+  /// to `null` in the constructor if no parsing needs to be done
+  /// on this node's children.
+  ///
   /// This enables nodes to have children that are of a different class
   /// than themselves (as long as they extend [ParseableNode]) simply
   /// by setting [childParser] as a [NodeParser] for the same type
   /// as the children.
-  NodeParser get childParser;
+  final NodeParser? childParser;
 
   @override
   List<ParseableNode> get children => getListOf<ParseableNode>(_childrenKey);

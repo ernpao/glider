@@ -67,15 +67,15 @@ class WebSocketMessage extends JSON {
   /// Parse a [JSON] object into a [WebSocketMessage].
   static WebSocketMessage fromJSON(JSON json) {
     final message = WebSocketMessage(
-      sender: json.get(kSender) ?? "Undefined",
-      type: json.get(kType),
-      category: json.get(kCategory),
-      topic: json.get(kTopic),
-      body: json.get(kBody),
+      sender: json.get<String>(kSender) ?? "Undefined",
+      type: json.get<String>(kType),
+      category: json.get<String>(kCategory),
+      topic: json.get<String>(kTopic),
+      body: json.get<String>(kBody),
     );
 
     /// Parse the timestamp of the message
-    final timestamp = json.get(kCreated);
+    final timestamp = json.get<String>(kCreated);
     if (timestamp != null) {
       final dateTime = DateTime.tryParse(timestamp);
       if (dateTime != null) message._setCreated(dateTime);

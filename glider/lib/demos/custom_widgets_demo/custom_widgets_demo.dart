@@ -73,13 +73,13 @@ class _SensorsDemo extends StatelessWidget {
   Widget _buildSensorInfo(
     BuildContext context,
     dynamic sensorData,
-    SensorMonitor? controller,
+    SensorWidgetController? controller,
   ) {
     return controller != null
         ? Column(
             children: [
               HoverText(
-                controller.runtimeType == GyroscopeMonitor
+                controller.runtimeType == GyroscopeWidgetController
                     ? "Gyroscope"
                     : "Accelerometer",
                 bottomPadding: 8.0,
@@ -106,6 +106,16 @@ class _SensorsDemo extends StatelessWidget {
       children: [
         AccelerometerWidget(builder: _buildSensorInfo),
         GyroscopeWidget(builder: _buildSensorInfo),
+        AccelerometerStream(builder: (context, snapshot) {
+          return Text(
+            "Accelerometer Event X: ${snapshot.data?.x} Y: ${snapshot.data?.y} Z: ${snapshot.data?.z}",
+          );
+        }),
+        GyroscopeStream(builder: (context, snapshot) {
+          return Text(
+            "Gyroscope Event X: ${snapshot.data?.x} Y: ${snapshot.data?.y} Z: ${snapshot.data?.z}",
+          );
+        }),
       ],
     );
   }

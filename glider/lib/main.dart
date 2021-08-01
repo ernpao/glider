@@ -17,5 +17,5 @@ final CustomWidgetsDemo customWidgetsDemo = CustomWidgetsDemo(
 final MachineLearningDemo machineLearningDemo = MachineLearningDemo();
 
 void main() {
-  runApp(machineLearningDemo);
+  runApp(customWidgetsDemo);
 }

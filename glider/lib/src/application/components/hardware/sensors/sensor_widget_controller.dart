@@ -2,12 +2,12 @@ import 'package:sensors_plus/sensors_plus.dart';
 
 /// Helper class for mobile sensors.
 class _SensorManager {
-  static final List<SensorMonitor> _monitors = [];
+  static final List<SensorWidgetController> _monitors = [];
 
   static bool _sensorsActive = false;
   static bool get _sensorsInactive => !_sensorsActive;
 
-  static _addMonitor(SensorMonitor monitor) {
+  static _addMonitor(SensorWidgetController monitor) {
     if (monitor.isNotWatching) {
       _monitors.add(monitor);
       if (_sensorsInactive) _initializeSensors();
@@ -20,22 +20,23 @@ class _SensorManager {
     _sensorsActive = true;
   }
 
-  static bool _isWatching(SensorMonitor monitor) => _monitors.contains(monitor);
+  static bool _isWatching(SensorWidgetController monitor) =>
+      _monitors.contains(monitor);
 
   static void _process<T>(e) {
     _monitors
         .where((l) => l.eventType == e.runtimeType)
-        .forEach((l) => (l as SensorMonitor<T>).onData(e));
+        .forEach((l) => (l as SensorWidgetController<T>).onData(e));
   }
 
-  static void _removeMonitor(SensorMonitor monitor) {
+  static void _removeMonitor(SensorWidgetController monitor) {
     if (monitor.isWatching) {
       _monitors.remove(monitor);
     }
   }
 }
 
-mixin SensorMonitorInterface {
+mixin _SensorControllerInterface {
   /// Indicates if this object is listening to the sensor event stream.
   bool get isWatching;
 
@@ -51,9 +52,7 @@ mixin SensorMonitorInterface {
   /// Stops listening to sensor data if the monitor
   /// is currently listening and vice versa.
   void toggleMonitoring();
-}
 
-mixin SensorMonitorEvents {
   /// Function called when the monitor starts listening to the sensor event stream.
   void Function() get onWatchStarted;
 
@@ -61,11 +60,8 @@ mixin SensorMonitorEvents {
   void Function() get onWatchStopped;
 }
 
-abstract class SensorMonitor<T>
-    with SensorMonitorInterface, SensorMonitorEvents {
-  SensorMonitor({
-    required this.onData,
-  }) {
+abstract class SensorWidgetController<T> with _SensorControllerInterface {
+  SensorWidgetController({required this.onData}) {
     if (!(eventType == GyroscopeEvent || eventType == AccelerometerEvent)) {
       throw new Exception(
         "Sensor monitor eventType is ${T.toString()}but should be GyroscopeEvent or AccelerometerEvent",
@@ -98,8 +94,8 @@ abstract class SensorMonitor<T>
   void toggleMonitoring() => isWatching ? stopMonitoring() : monitor();
 }
 
-class GyroscopeMonitor extends SensorMonitor<GyroscopeEvent> {
-  GyroscopeMonitor({
+class GyroscopeWidgetController extends SensorWidgetController<GyroscopeEvent> {
+  GyroscopeWidgetController({
     required void Function(GyroscopeEvent) onData,
     required this.onWatchStarted,
     required this.onWatchStopped,
@@ -112,8 +108,9 @@ class GyroscopeMonitor extends SensorMonitor<GyroscopeEvent> {
   final void Function() onWatchStopped;
 }
 
-class AccelerometerMonitor extends SensorMonitor<AccelerometerEvent> {
-  AccelerometerMonitor({
+class AccelerometerWidgetController
+    extends SensorWidgetController<AccelerometerEvent> {
+  AccelerometerWidgetController({
     required void Function(AccelerometerEvent) onData,
     required this.onWatchStarted,
     required this.onWatchStopped,

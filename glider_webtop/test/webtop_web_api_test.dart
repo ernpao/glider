@@ -39,13 +39,13 @@ void main() {
     final ccMin = ControlChangeMin(channel: 1, controller: 1);
 
     macBookProClient.sendMidiCC(deviceName, ccMax);
-    await Future.delayed(const Duration(seconds: 3));
+    await Future.delayed(const Duration(seconds: 2));
 
     macBookProClient.sendMidiCC(deviceName, ccMin);
-    await Future.delayed(const Duration(seconds: 3));
+    await Future.delayed(const Duration(seconds: 2));
 
     macBookProClient.sendMidiCC(deviceName, ccMax);
-    await Future.delayed(const Duration(seconds: 3));
+    await Future.delayed(const Duration(seconds: 2));
 
     macBookProClient.closeSocket();
   });

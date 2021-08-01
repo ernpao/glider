@@ -75,12 +75,10 @@ class Node extends AbstractNode with Traversible {
     return null;
   }
 
-  /// Get the node directly below this node with
-  /// the same identifier as [id];
+  /// Get a child of this node that has `identifier` that matches `id`.
   Node? getChildById(String id) => getChildOfParentById(this, id);
 
-  /// Get the node directly below the [parent] with
-  /// the same identifier as [id];
+  /// Get a child of `parent` that has `identifier` that matches `id`.
   static Node? getChildOfParentById(Node parent, String id) {
     final nodes = parent.children.where((n) => n.identifier == id).toList();
 
@@ -98,12 +96,12 @@ class Node extends AbstractNode with Traversible {
   ///
   /// This will throw an error if it is found
   /// that multiple nodes exist with the same path.
-  Node? getNode(String path) => getNodeByPath(this, path);
+  Node? findDescendantByPath(String path) => getDescendantByPath(this, path);
 
   /// Get the node below [baseNode] at the specified path. [isRelative]
   /// indicates if [path] is relative to the path of [baseNode] and is set
   /// to false by default.
-  static Node? getNodeByPath(Node baseNode, String path) {
+  static Node? getDescendantByPath(Node baseNode, String path) {
     {
       isPathValid(path, throwException: true);
 
@@ -125,16 +123,16 @@ class Node extends AbstractNode with Traversible {
     }
   }
 
-  /// Sets a child node at the specified path.
+  /// Sets the descendant node at the specified path.
   ///
   /// This will replace the node if the parent
   /// specified already contains
   /// a child node with the same identifier as [child].
-  void setNode(String path, covariant Node child) {
-    setNodeByPath(this, path, child);
+  void updateDescendantByPath(String path, covariant Node child) {
+    setDescendantByPath(this, path, child);
   }
 
-  static void setNodeByPath(Node baseNode, String path, Node child) {
+  static void setDescendantByPath(Node baseNode, String path, Node child) {
     String fullPath = _isPathRelative(path) ? baseNode.path + path : path;
     isPathValid(fullPath, throwException: true);
 
@@ -150,7 +148,7 @@ class Node extends AbstractNode with Traversible {
     if (bridgePath.isEmpty && baseNode.parent == null) {
       nodeToAddChildTo = baseNode;
     } else {
-      final lastBridgeNode = baseNode.getNode(bridgePath);
+      final lastBridgeNode = baseNode.findDescendantByPath(bridgePath);
       if (lastBridgeNode == null) {
         throw Exception(
           "Cannot create a node at the specified path '$path' since there are missing nodes from the base node to this path.",
@@ -380,11 +378,12 @@ abstract class ParseableNode extends Parseable
   ParseableNode? get ancestor => Node.getAncestorOfNodeAs<ParseableNode>(this);
 
   @override
-  Node? getNode(String path) => Node.getNodeByPath(this, path);
+  Node? findDescendantByPath(String path) =>
+      Node.getDescendantByPath(this, path);
 
   @override
-  void setNode(String path, ParseableNode child) {
-    Node.setNodeByPath(this, path, child);
+  void updateDescendantByPath(String path, ParseableNode child) {
+    Node.setDescendantByPath(this, path, child);
   }
 }
 

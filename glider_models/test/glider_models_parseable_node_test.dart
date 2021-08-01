@@ -40,7 +40,7 @@ void main() {
   test("Glider Models Parseable Node - getNode Test", () async {
     assert(root.path == "root");
 
-    final node = root.getNode("root/5-1");
+    final node = root.findDescendantByPath("root/5-1");
     assert(node != null);
     assert(node!.path == "root/5-1");
     assert(node!.identifier == "5-1");
@@ -53,10 +53,10 @@ void main() {
     final childCount = root.children.length;
 
     expect(() {
-      root.setNode("/test/asdasd", newNode);
+      root.updateDescendantByPath("/test/asdasd", newNode);
     }, throwsException);
 
-    root.setNode("/test", newNode);
+    root.updateDescendantByPath("/test", newNode);
     assert(newNode.ancestor!.path == "root");
     assert(root.children.length == childCount + 1);
   });

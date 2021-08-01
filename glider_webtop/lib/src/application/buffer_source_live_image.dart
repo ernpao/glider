@@ -6,9 +6,9 @@ import 'package:glider/glider.dart';
 import 'apis/apis.dart';
 
 /// A widget for rendering "Buffer Source" data
-/// sent by the Webtop server.
-class BufferSourceImageStream extends StatefulWidget {
-  const BufferSourceImageStream({
+/// received from the Webtop server.
+class BufferSourceLiveImage extends StatefulWidget {
+  const BufferSourceLiveImage({
     Key? key,
     required this.interface,
     this.width,
@@ -25,11 +25,10 @@ class BufferSourceImageStream extends StatefulWidget {
   final double? height;
 
   @override
-  _BufferSourceImageStreamState createState() =>
-      _BufferSourceImageStreamState();
+  _BufferSourceLiveImageState createState() => _BufferSourceLiveImageState();
 }
 
-class _BufferSourceImageStreamState extends State<BufferSourceImageStream> {
+class _BufferSourceLiveImageState extends State<BufferSourceLiveImage> {
   final List<Uint8List> _buffer = [];
 
   void _pushToStream(Uint8List bytes) {

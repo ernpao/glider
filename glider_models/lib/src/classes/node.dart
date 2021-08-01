@@ -150,16 +150,16 @@ class Node extends AbstractNode with Traversible {
     if (bridgePath.isEmpty && baseNode.parent == null) {
       nodeToAddChildTo = baseNode;
     } else {
-      final lastNode = baseNode.getNode(bridgePath);
-      if (lastNode == null) {
+      final lastBridgeNode = baseNode.getNode(bridgePath);
+      if (lastBridgeNode == null) {
         throw Exception(
           "Cannot create a node at the specified path '$path' since there are missing nodes from the base node to this path.",
         );
       }
-      nodeToAddChildTo = lastNode;
+      nodeToAddChildTo = lastBridgeNode;
     }
 
-    nodeToAddChildTo.children.removeWhere((n) => n.path == fullPath);
+    child.parent?.dropChild(child);
     nodeToAddChildTo.adoptChild(child);
   }
 
@@ -373,7 +373,7 @@ abstract class ParseableNode extends Parseable
 
   @override
   ParseableNode? getChildById(String id) {
-    Node.getChildOfParentById(this, id) as ParseableNode;
+    return Node.getChildOfParentById(this, id) as ParseableNode;
   }
 
   @override

@@ -53,7 +53,11 @@ class Midi {
     kValue: {kMin: 0, kMax: 127},
     kController: {kMin: 0, kMax: 127},
     kVelocity: {kMin: 0, kMax: 127},
-    kNote: {kMin: 0, kMax: 127}
+    kNote: {kMin: 0, kMax: 127},
+
+    // Used for limiting the "value" property on CC messages
+    kMin: {kMin: 0, kMax: 127},
+    kMax: {kMin: 0, kMax: 127},
   };
 }
 

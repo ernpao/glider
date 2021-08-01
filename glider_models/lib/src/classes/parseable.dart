@@ -3,15 +3,15 @@ import 'dart:convert';
 import 'encodable.dart';
 import 'stringifiable.dart';
 
-abstract class Parseable extends Encodable with Stringifiable {
+class Parseable extends Encodable with Stringifiable {
   Parseable() {
-    _setRuntimeTypeInContent();
+    _setTypeInContent();
   }
 
-  static const String _runtimeTypeKey = "__type";
+  static const String _typeKey = "__type";
 
-  void _setRuntimeTypeInContent() {
-    _content[_runtimeTypeKey] = runtimeType.toString();
+  void _setTypeInContent() {
+    _content[_typeKey] = runtimeType.toString();
   }
 
   Map<String, dynamic> _content = {};
@@ -21,14 +21,13 @@ abstract class Parseable extends Encodable with Stringifiable {
 
   @override
   void set(String key, dynamic value) {
-    if (key == _runtimeTypeKey) {
-      throw Exception(
-        "$_runtimeTypeKey is a reserved key for the Parseable class.",
-      );
+    if (key == _typeKey) {
+      throw Exception("$_typeKey is a reserved key for the Parseable class.");
     }
     _content[key] = value;
   }
 
+  /// Copy [content] into this object
   void _setContent(Map<String, dynamic> content, Map<String, Type>? typeMap) {
     if (typeMap != null) {
       typeMap.forEach((key, value) {
@@ -58,7 +57,7 @@ abstract class Parseable extends Encodable with Stringifiable {
       });
     } else {
       _content = content;
-      _setRuntimeTypeInContent();
+      _setTypeInContent();
     }
   }
 
@@ -71,8 +70,10 @@ abstract class Parser<T extends Parseable> {
   /// that this [Parser] will parse.
   T createModel();
 
-  /// A key/type map which will be used for
-  /// parsing.
+  /// A key/type map that the `parse` function
+  /// will use to determine which key/value pairs
+  /// to copy from the parsed content and insert
+  /// in the base object created by `createModel`.
   Map<String, Type>? get typeMap;
 
   /// Attempt to parse [string] into a [Parseable] object.
@@ -81,11 +82,11 @@ abstract class Parser<T extends Parseable> {
   /// objects into [Parseable] objects and any strings that are found to
   /// match the ISO8601 date time string format into [DateTime] objects.
   T parse(String string) {
-    final parsed = jsonDecode(string, reviver: _reviver);
-    if (parsed is T) {
-      return parsed;
+    final decoded = jsonDecode(string, reviver: _reviver);
+    if (decoded is T) {
+      return decoded;
     } else {
-      final map = parsed as Map<String, dynamic>;
+      final map = decoded as Map<String, dynamic>;
       return createModel().._setContent(map, typeMap);
     }
   }
@@ -94,7 +95,7 @@ abstract class Parser<T extends Parseable> {
     return createModel().._setContent(map, typeMap);
   }
 
-  late final String _modelRuntimeTypeString = T.toString();
+  late final String _modelTypeAsString = T.toString();
 
   /// The reviver function used with `jsonDecode` in `parse`.
   ///
@@ -104,13 +105,13 @@ abstract class Parser<T extends Parseable> {
   /// as the content of a new instance of the [Parseable].
   Object? _reviver(Object? key, Object? value) {
     if (value is Map<String, dynamic>) {
-      final valueType = value[Parseable._runtimeTypeKey];
-      if (valueType == _modelRuntimeTypeString) {
+      final valueType = value[Parseable._typeKey];
+      if (valueType == _modelTypeAsString) {
         return createModel().._setContent(value, typeMap);
       } else {
         return value;
       }
-    } else if (value is String && _isIso8601String(value)) {
+    } else if (value is String && _iso8601RegExp.hasMatch(value)) {
       return DateTime.parse(value);
     } else {
       return value;
@@ -122,12 +123,6 @@ abstract class Parser<T extends Parseable> {
     r'^\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}:\d{2}.\d{3}(\d{3})Z?$',
   );
 
-  /// Checks if a string is an ISO8601 time string.
-  static bool _isIso8601String(String string) {
-    final isLocalTimestamp = _iso8601RegExp.hasMatch(string);
-    return isLocalTimestamp;
-  }
-
   /// Translate a [Parsable] into another [Parseable].
   ///
   /// Translates `from` into an instance of the [Parseable] class handled by this parser.
@@ -136,18 +131,17 @@ abstract class Parser<T extends Parseable> {
   ///
   /// If [typeMap] is not null,
   /// this function will map the value from `from` into a new [Parseable]
-  /// created with [createModel] using the key/type mapping
+  /// created with [_createModel] using the key/type mapping
   /// in [typeMap].
   ///
   /// If [typeMap] is null, then this function will
   /// simply copy all of the content of `from` into a new [Parseable]
-  /// created with [createModel].
+  /// created with [_createModel].
   T translate<F extends Parseable>(F from) {
     final model = createModel();
-    final mapping = typeMap;
 
-    if (mapping != null) {
-      mapping.forEach((key, value) {
+    if (typeMap != null) {
+      typeMap!.forEach((key, value) {
         if (from.contains(key)) {
           model.set(key, from.get(key));
         }

@@ -17,9 +17,9 @@ void main() {
     client.openSocket();
 
     final json = JSON();
-    json.set("message", "Testing Webtop WebSocket connection.");
-    json.set("date", DateTime.now().formattedDate);
-    json.set("time", DateTime.now().formattedTime);
+    json.setProperty("message", "Testing Webtop WebSocket connection.");
+    json.setProperty("date", DateTime.now().formattedDate);
+    json.setProperty("time", DateTime.now().formattedTime);
     client.sendJson(json);
 
     await Future.delayed(const Duration(seconds: 3));
@@ -27,26 +27,26 @@ void main() {
   });
 
   test("Webtop MIDI", () async {
-    final macBookProClient = MidiWebAPI(
+    final api = MidiWebAPI(
       host: "192.168.100.192",
       socketPort: 6868,
     );
-    macBookProClient.openSocket();
+    api.openSocket();
 
     const deviceName = "IAC Driver Webtop MIDI";
 
     final ccMax = ControlChangeMax(channel: 1, controller: 1);
     final ccMin = ControlChangeMin(channel: 1, controller: 1);
 
-    macBookProClient.sendMidiCC(deviceName, ccMax);
+    api.sendMidiCC(deviceName, ccMax);
     await Future.delayed(const Duration(seconds: 2));
 
-    macBookProClient.sendMidiCC(deviceName, ccMin);
+    api.sendMidiCC(deviceName, ccMin);
     await Future.delayed(const Duration(seconds: 2));
 
-    macBookProClient.sendMidiCC(deviceName, ccMax);
+    api.sendMidiCC(deviceName, ccMax);
     await Future.delayed(const Duration(seconds: 2));
 
-    macBookProClient.closeSocket();
+    api.closeSocket();
   });
 }

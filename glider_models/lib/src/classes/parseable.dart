@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
+
 import 'encodable.dart';
 import 'stringifiable.dart';
 
@@ -19,6 +21,7 @@ class Parseable extends Encodable with Stringifiable {
   @override
   Map<String, dynamic> map() => _content;
 
+  @protected
   @override
   void set(String key, dynamic value) {
     if (key == _typeKey) {
@@ -61,6 +64,8 @@ class Parseable extends Encodable with Stringifiable {
     }
   }
 
+  T? _get<T>(String key) => get<T>(key);
+
   @override
   String stringify() => encode();
 }
@@ -68,6 +73,7 @@ class Parseable extends Encodable with Stringifiable {
 abstract class Parser<T extends Parseable> {
   /// Create an instance of the [Parseable] class
   /// that this [Parser] will parse.
+  @protected
   T createModel();
 
   /// A key/type map that the `parse` function
@@ -143,7 +149,7 @@ abstract class Parser<T extends Parseable> {
     if (typeMap != null) {
       typeMap!.forEach((key, value) {
         if (from.contains(key)) {
-          model.set(key, from.get(key));
+          model.set(key, from._get(key));
         }
       });
     } else {

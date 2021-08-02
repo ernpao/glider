@@ -23,7 +23,7 @@ class PortalAppAuthState extends ChangeNotifier
   void _getErrorFromResponse(WebResponse response) {
     assert(response.isNotSuccessful);
     final responseBody = response.bodyAsJson()!;
-    _errorMessage = responseBody.get<String>("error");
+    _errorMessage = responseBody.getProperty<String>("error");
   }
 
   void _clearError() => _errorMessage = null;

@@ -241,7 +241,6 @@ abstract class ParseableNode extends Parseable
           final first = list.first;
           if (first is Map<String, dynamic>) {
             var castedList = list.cast<Map<String, dynamic>>();
-
             for (final item in castedList) {
               final node = parser.parseFromMap(item);
               nodes.add(node);
@@ -287,7 +286,8 @@ abstract class ParseableNode extends Parseable
   final NodeParser? childParser;
 
   @override
-  List<ParseableNode> get children => getListOf<ParseableNode>(_childrenKey);
+  List<ParseableNode> get children =>
+      getListOf<ParseableNode>(_childrenKey) ?? [];
 
   /// Replace all the children of this node with [items].
   set children(List<ParseableNode> items) => set(_childrenKey, items);
@@ -297,8 +297,8 @@ abstract class ParseableNode extends Parseable
 
   @override
   String get identifier {
-    final id = super.get<String>(_identifierKey) ?? "";
-    if (id.isEmpty) {
+    final id = super.get<String>(_identifierKey);
+    if (id == null) {
       throw Exception("The identifier for this node has not been set.");
     }
     return id;
@@ -370,9 +370,8 @@ abstract class ParseableNode extends Parseable
   int get totalDepth => Node.calculateNodeDepth(this);
 
   @override
-  ParseableNode? getChildById(String id) {
-    return Node.getChildOfParentById(this, id) as ParseableNode;
-  }
+  ParseableNode? getChildById(String id) =>
+      Node.getChildOfParentById(this, id) as ParseableNode;
 
   @override
   ParseableNode? get ancestor => Node.getAncestorOfNodeAs<ParseableNode>(this);
@@ -382,9 +381,8 @@ abstract class ParseableNode extends Parseable
       Node.getDescendantByPath(this, path);
 
   @override
-  void updateDescendantByPath(String path, ParseableNode child) {
-    Node.setDescendantByPath(this, path, child);
-  }
+  void updateDescendantByPath(String path, ParseableNode child) =>
+      Node.setDescendantByPath(this, path, child);
 }
 
 abstract class NodeParser<T extends ParseableNode> extends Parser<T> {

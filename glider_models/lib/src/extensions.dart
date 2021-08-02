@@ -5,35 +5,53 @@ import 'package:http/http.dart';
 
 extension ResponseExtensions on Response {
   dynamic get decodedBody => jsonDecode(body);
-  Map<String, dynamic> get decodedBodyAsMap =>
-      decodedBody as Map<String, dynamic>;
-  bool get hasStatusCode2XX => statusCode.toString().startsWith("2");
-  bool get hasStatusCode3XX => statusCode.toString().startsWith("3");
-  bool get hasStatusCode4XX => statusCode.toString().startsWith("4");
-  bool get hasStatusCode5XX => statusCode.toString().startsWith("5");
-  bool get _hasSuccessKey => decodedBodyAsMap.keys.toList().contains("success");
-  bool get _successKeyValue => decodedBodyAsMap["success"];
+  Map<String, dynamic>? get bodyAsMap {
+    try {
+      return decodedBody as Map<String, dynamic>;
+    } catch (e) {
+      throw Exception(
+        "Can't convert the body of this Response into a Map<String, dynamic>: $body",
+      );
+    }
+  }
+
+  String get _statusCodeString => statusCode.toString();
+  bool get hasStatusCode2XX => _statusCodeString.startsWith("2");
+  bool get hasStatusCode3XX => _statusCodeString.startsWith("3");
+  bool get hasStatusCode4XX => _statusCodeString.startsWith("4");
+  bool get hasStatusCode5XX => _statusCodeString.startsWith("5");
+  bool get _hasSuccessKey => bodyAsMap?.keys.contains("success") ?? false;
+  bool get _successKeyValue => bodyAsMap?["success"];
   bool get isSuccessful => _hasSuccessKey ? _successKeyValue : hasStatusCode2XX;
 }
 
 extension MapExtensions on Map {
   dynamic keyOf(dynamic value) {
-    dynamic r;
-    forEach((k, v) => (v == value) ? r = k : r);
-    return r;
+    dynamic key;
+    forEach((_key, _value) {
+      if (_value == value) key = _key;
+    });
+    return key;
   }
 }
 
 extension ListExtensions on List<dynamic> {
-  List<int> toIntList() => map((e) => e as int).toList();
+  List<int> toIntList() => cast<int>();
   Uint8List toUint8List() => Uint8List.fromList(toIntList());
 }
 
 extension StringExtensions on String {
-  List<int> toIntList() {
-    List l = jsonDecode(this);
-    return l.map((e) => e as int).toList();
+  List<int>? toIntList() {
+    try {
+      List list = jsonDecode(this);
+      return list.cast<int>();
+    } catch (e) {
+      throw Exception("Can't convert String '$this' to a list of integers.");
+    }
   }
 
-  Uint8List toUint8List() => Uint8List.fromList(toIntList());
+  Uint8List? toUint8List() {
+    final intList = toIntList();
+    if (intList != null) Uint8List.fromList(intList);
+  }
 }

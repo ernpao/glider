@@ -26,7 +26,9 @@ class PortalAuthWebAPI extends WebClient implements PortalAuthInterface {
     final request = createPOST("/login")
       ..withJsonContentType()
       ..withBody(
-        JSON()..set("username", username)..set("password", password),
+        JSON()
+          ..setProperty("username", username)
+          ..setProperty("password", password),
       );
 
     return request.send();
@@ -39,9 +41,9 @@ class PortalAuthWebAPI extends WebClient implements PortalAuthInterface {
       ..withJsonContentType()
       ..withBody(
         JSON()
-          ..set("username", username ?? email)
-          ..set("password", password)
-          ..set("email", email),
+          ..setProperty("username", username ?? email)
+          ..setProperty("password", password)
+          ..setProperty("email", email),
       );
     return request.send();
   }

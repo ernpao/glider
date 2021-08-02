@@ -17,19 +17,19 @@ void main() {
     assert(JSON.parse(prettified).stringify() == stringified);
 
     /// Test array conversion
-    final parsedItems = parsed.get("items");
-    final testModelItems = testModel.get("items");
+    final parsedItems = parsed.getProperty("items");
+    final testModelItems = testModel.getProperty("items");
     assert(parsedItems is List && testModelItems is List);
     assert((parsedItems as List).length == (testModelItems as List).length);
 
     /// Test DateTime conversion
-    final parsedCreatedType = parsed.get("created").runtimeType;
-    final testModelCreatedType = testModel.get("created").runtimeType;
+    final parsedCreatedType = parsed.getProperty("created").runtimeType;
+    final testModelCreatedType = testModel.getProperty("created").runtimeType;
     assert(parsedCreatedType == testModelCreatedType);
 
-    final Map<String, dynamic> nested = parsed.get("nested");
+    final Map<String, dynamic> nested = parsed.getProperty("nested");
     final JSON nestedBody = nested["body"];
-    final List nestedBodyItems = nestedBody.get("items");
+    final List nestedBodyItems = nestedBody.getProperty("items");
     assert(nested is Map<String, dynamic>);
     assert(nestedBody is JSON);
     assert(nestedBodyItems is List);
@@ -39,28 +39,28 @@ void main() {
 JSON _createTestModel() {
   final json = JSON();
 
-  json.set("name", "Test Model");
-  json.set("created", DateTime.now());
+  json.setProperty("name", "Test Model");
+  json.setProperty("created", DateTime.now());
 
   final items = <JSON>[];
   for (int i = 0; i < 10; i++) {
     final content = JSON()
-      ..set("name", "Item $i Content")
-      ..set("body", "This is some sample text content for 'Item $i'.");
+      ..setProperty("name", "Item $i Content")
+      ..setProperty("body", "This is some sample text content for 'Item $i'.");
 
     items.add(
       JSON()
-        ..set("name", "Item $i")
-        ..set("content", content),
+        ..setProperty("name", "Item $i")
+        ..setProperty("content", content),
     );
   }
 
-  json.set("items", items);
+  json.setProperty("items", items);
 
   final body = JSON();
-  body.set("name", "body");
-  body.set("items", items);
-  json.set("body", body);
+  body.setProperty("name", "body");
+  body.setProperty("items", items);
+  json.setProperty("body", body);
 
   final nestedMap = <String, dynamic>{
     "name": "Nested Map",
@@ -68,7 +68,7 @@ JSON _createTestModel() {
     "body": body,
   };
 
-  json.set("nested", nestedMap);
+  json.setProperty("nested", nestedMap);
 
   return json;
 }

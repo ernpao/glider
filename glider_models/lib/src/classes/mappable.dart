@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 /// An object that can be mapped into a series of key/value pairs.
 abstract class Mappable {
   /// Create a key/value map of this object.
@@ -7,25 +9,23 @@ abstract class Mappable {
   bool contains(String key) => keys.contains(key);
 
   /// Get the value stored in this object with the string key specified.
+  @protected
   T? get<T>(String key) {
     final val = map()[key];
-    if (val == null) {
-      return null;
-    } else {
-      return val as T;
-    }
+    return val == null ? null : val as T;
   }
 
   /// Get a value as a list of T with the string key specified.
-  List<T> getListOf<T>(String key) {
-    final list = get(key) ?? [];
-    if (list is! List) {
-      throw Exception("Value in '$key' is not a List");
-    }
+  @protected
+  List<T>? getListOf<T>(String key) {
+    final list = get(key);
+    if (list == null) return null;
+    if (list is! List) throw Exception("Value set with '$key' is not a List.");
     return (list).cast<T>();
   }
 
   /// Store a value with a string key in this object.
+  @protected
   void set(String key, dynamic value);
 
   /// Obtain a list of all the keys stored in this object.

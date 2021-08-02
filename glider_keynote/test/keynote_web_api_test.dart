@@ -17,7 +17,7 @@ void main() {
     client.openSocket();
 
     final json = JSON();
-    json.set("message", "Testing Keynote WebSocket connection.");
+    json.setProperty("message", "Testing Keynote WebSocket connection.");
     client.sendJson(json);
 
     await delay(3);

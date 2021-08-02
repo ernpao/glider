@@ -7,6 +7,12 @@ class JSON extends Parseable {
   factory JSON.parse(String string) => _parser.parse(string);
 
   static final _parser = _JSONParser();
+
+  /// Get a value stored in this `JSON` object with `key`.
+  T? getProperty<T>(String key) => get<T>(key);
+
+  /// Set a value in this `JSON` object with `key`.
+  void setProperty(String key, dynamic value) => set(key, value);
 }
 
 class _JSONParser extends Parser<JSON> {

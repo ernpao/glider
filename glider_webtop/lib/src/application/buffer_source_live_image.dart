@@ -52,10 +52,10 @@ class _BufferSourceLiveImageState extends State<BufferSourceLiveImage> {
             if (message != null) {
               if (message.hasBody && message.sender == "Buffer Source") {
                 final json = JSON.parse(message.body!);
-                final data = json.get<String>("data");
+                final data = json.getProperty<String>("data");
                 if (data != null) {
                   final bytes = data.toUint8List();
-                  _buildImage(bytes);
+                  if (bytes != null) _buildImage(bytes);
                 }
               }
             }

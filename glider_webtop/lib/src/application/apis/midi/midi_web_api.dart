@@ -18,10 +18,10 @@ class MidiWebAPI with WebHost implements MidiInterface, WebSocketManagement {
   @override
   void sendMidiCC(String deviceName, ControlChange message) {
     final body = JSON();
-    body.set("name", deviceName);
-    body.set("controller", message.controller);
-    body.set("value", message.value);
-    body.set("channel", message.channel);
+    body.setProperty("name", deviceName);
+    body.setProperty("controller", message.controller);
+    body.setProperty("value", message.value);
+    body.setProperty("channel", message.channel);
     _socket.sendJson(body, type: "midi", category: "cc");
   }
 

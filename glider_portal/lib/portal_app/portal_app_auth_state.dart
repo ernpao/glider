@@ -15,54 +15,50 @@ class PortalAppAuthState extends ChangeNotifier
   PortalUserData? get activeUser => _activeUser;
 
   String? get errorMessage => _errorMessage;
+
   String? _errorMessage;
+
   bool get hasError => _errorMessage != null;
-  void _clearErrorMessage() {
-    _errorMessage = null;
+
+  void _getErrorFromResponse(WebResponse response) {
+    assert(response.isNotSuccessful);
+    final responseBody = response.bodyAsJson()!;
+    _errorMessage = responseBody.get<String>("error");
   }
 
-  void _setErrorMessage(String message) {
-    _errorMessage = message;
-  }
+  void _clearError() => _errorMessage = null;
 
-  bool _isLoading = false;
-  bool get isLoading => _isLoading;
+  bool _awaitingResponse = false;
+  bool get awaitingResponse => _awaitingResponse;
 
-  /// Sets the [isLoading] flag to true
-  /// and notifies listeners.
-  void _triggerLoadingState() {
-    _isLoading = true;
+  void _setAwait() {
+    _awaitingResponse = true;
     notifyListeners();
   }
 
-  /// Sets the [isLoading] flag to false
-  /// and notifies listeners.
-  void _clearLoadingState() {
-    _isLoading = false;
+  void _clearAwait() {
+    _awaitingResponse = false;
     notifyListeners();
   }
 
   @override
-  Future<bool> logInHandler(String username, String password) async {
-    _clearErrorMessage();
-    _triggerLoadingState();
-    final result = await auth.logIn(username, password);
-    _activeUser = result.isSuccessful
-        ? PortalUserDataParser().translate<JSON>(result.bodyAsJson)
-        : null;
+  Future<bool> processCredentials(String username, String password) async {
+    _clearError();
+    _setAwait();
 
-    if (result.isNotSuccessful && result.withMessage) {
-      final responseJson = result.bodyAsJson;
-      final error = responseJson.get<String>("error");
-      if (error != null) {
-        _setErrorMessage(error);
-      }
+    final loginResult = await auth.logIn(username, password);
+
+    if (loginResult.isNotSuccessful) {
+      _getErrorFromResponse(loginResult);
+    } else if (loginResult.isSuccessful) {
+      _activeUser = PortalUserData.fromJSON(loginResult.bodyAsJson()!);
     }
-    return result.isSuccessful;
+
+    return loginResult.isSuccessful;
   }
 
   @override
-  Future<bool> logOutHandler() async {
+  Future<bool> processLogOut() async {
     _activeUser = null;
     return true;
   }
@@ -73,13 +69,13 @@ class PortalAppAuthState extends ChangeNotifier
   }
 
   @override
-  Future<bool> onOtpCancelled() async {
+  Future<bool> processOtpCancellation() async {
     // No OTP so just return true.
     return true;
   }
 
   @override
-  Future<bool> onOtpSubmitted(String otp) async {
+  Future<bool> validateOtp(String otp) async {
     // No OTP so just return true.
     return true;
   }
@@ -88,17 +84,12 @@ class PortalAppAuthState extends ChangeNotifier
   bool get otpRequired => false;
 
   @override
-  Future<bool> signUpHandler(String username, String password) async {
-    _clearErrorMessage();
-    _triggerLoadingState();
+  Future<bool> processSignUp(String username, String password) async {
+    _clearError();
+    _setAwait();
     final result = await auth.register(username, password);
-    if (result.isSuccessful) {
-      return true;
-    } else {
-      final responseJson = result.bodyAsJson;
-      _errorMessage = responseJson.get<String>("error");
-      return false;
-    }
+    if (result.isNotSuccessful) _getErrorFromResponse(result);
+    return result.isSuccessful;
   }
 
   @override
@@ -107,54 +98,54 @@ class PortalAppAuthState extends ChangeNotifier
   }
 
   @override
-  void onCancelSignUp() {
-    _clearErrorMessage();
+  void onSignUpCancelled() {
+    _clearError();
     notifyListeners();
   }
 
   @override
-  void onLoginWithEmailFail() {
-    _clearLoadingState();
+  void onFailureToLoginWithEmail() {
+    _clearAwait();
   }
 
   @override
-  void onLoginWithEmailSuccess() {
-    _clearLoadingState();
+  void onSuccessfulLoginWithEmail() {
+    _clearAwait();
   }
 
   @override
-  void onLogoutFail() {
-    _clearLoadingState();
+  void onFailureToLogout() {
+    _clearAwait();
   }
 
   @override
-  void onLogoutSuccess() {
-    _clearLoadingState();
+  void onSuccessfulLogout() {
+    _clearAwait();
   }
 
   @override
-  void onSignUpWithEmailFail() {
-    _clearLoadingState();
+  void onFailureToSignUpWithEmail() {
+    _clearAwait();
   }
 
   @override
-  void onSignUpWithEmailSuccess() {
-    _clearLoadingState();
+  void onSuccessfulSignUpWithEmail() {
+    _clearAwait();
   }
 
   @override
-  void onStartSignUp() {
-    _clearErrorMessage();
+  void onSignUpTriggered() {
+    _clearError();
     notifyListeners();
   }
 
   @override
-  void onSubmitOTPFail() {
+  void onFailureToValidateOtp() {
     // No OTP so do nothing.
   }
 
   @override
-  void onSubmitOTPSuccess() {
+  void onSuccessfulOtpValidation() {
     // No OTP so do nothing.
   }
 
@@ -164,40 +155,27 @@ class PortalAppAuthState extends ChangeNotifier
   }
 
   @override
-  void onLoginWithEmailException(Object error) {
-    _setErrorMessage(error.toString());
-    _clearLoadingState();
+  void loginWithEmailExceptionHandler(Object error) {
+    _errorMessage = error.toString();
+    _clearAwait();
   }
 
   @override
   void onLogoutException(Object error) {
-    _setErrorMessage(error.toString());
-    _clearLoadingState();
+    _errorMessage = error.toString();
+    _clearAwait();
   }
 
   @override
-  void onSignUpWithEmailException(Object error) {
-    _setErrorMessage(error.toString());
-    _clearLoadingState();
+  void signUpWithEmailExceptionHandler(Object error) {
+    _errorMessage = error.toString();
+    _clearAwait();
   }
 
   @override
-  void onSubmitOTPException(Object error) {
+  void otpValidationExceptionHandler(Object error) {
     // No OTP so do nothing.
   }
-}
-
-class PortalAppAuthStateProvider
-    extends ChangeNotifierProvider<PortalAppAuthState> {
-  PortalAppAuthStateProvider({
-    Key? key,
-    required PortalAppAuthState model,
-    Widget? child,
-  }) : super(
-          key: key,
-          create: (_) => model,
-          child: child,
-        );
 }
 
 class PortalAppAuthStateConsumer extends StatelessWidget {

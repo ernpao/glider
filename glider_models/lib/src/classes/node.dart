@@ -249,7 +249,7 @@ abstract class ParseableNode extends Parseable
           } else if (first is ParseableNode) {
             var castedList = list.cast<ParseableNode>();
             for (final item in castedList) {
-              final node = parser.translate<ParseableNode>(item);
+              final node = parser.translateFrom<ParseableNode>(item);
               nodes.add(node);
             }
           } else {

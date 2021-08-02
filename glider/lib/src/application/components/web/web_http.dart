@@ -169,8 +169,19 @@ class WebResponse extends Result {
   /// The body of the response as a string.
   String get body => httpResponse.body;
 
-  /// The body of the response as a [JSON] object.
-  JSON get bodyAsJson => JSONParser().parse(httpResponse.body);
+  /// Attempt to parse the body of the response as a [JSON] object.
+  ///
+  /// Will return null if the body cannot be parse fails.
+  JSON? bodyAsJson() {
+    try {
+      return JSONParser().parse(httpResponse.body);
+    } catch (e) {
+      throw Exception(
+        "Can't parse the body of WebResponse into a JSON object:"
+        "\n${httpResponse.body}",
+      );
+    }
+  }
 
   /// The HTTP status code for this response.
   int get statusCode => httpResponse.statusCode;

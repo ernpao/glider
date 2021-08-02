@@ -28,7 +28,7 @@ class _AppBody extends StatelessWidget {
 
     if (state.isLoggedOut) {
       content = _LoginPage();
-    } else if (state.isAwaitingOTP) {
+    } else if (state.isAwaitingOtp) {
       content = _OTPConfirmationPage();
     } else if (state.isSigningUp) {
       content = _SignUpPage();
@@ -119,7 +119,7 @@ class _OTPConfirmationPage extends StatelessWidget {
         ElevatedButton(
           onPressed: () {
             final otp = otpFieldController.text;
-            state.submitOTP(otp);
+            state.submitOtp(otp);
           },
           child: Text("Submit OTP"),
         )

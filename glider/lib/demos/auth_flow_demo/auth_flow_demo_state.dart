@@ -3,10 +3,8 @@ import 'package:flutter/cupertino.dart';
 import '../../glider.dart';
 
 class AuthFlowDemoState extends ChangeNotifier
-    with ActiveUser, AuthenticationFlow {
-  AuthFlowDemoState({
-    this.otpRequired = true,
-  });
+    with AuthenticationFlow, ActiveUser {
+  AuthFlowDemoState({this.otpRequired = true});
 
   AuthFlowDemoUser? _activeUser;
 
@@ -17,92 +15,64 @@ class AuthFlowDemoState extends ChangeNotifier
   final bool otpRequired;
 
   @override
-  Future<bool> logInHandler(String username, String password) async {
+  Future<bool> processCredentials(String username, String password) async {
     _activeUser = AuthFlowDemoUser(username);
     return true;
   }
 
   @override
-  Future<bool> logOutHandler() async {
+  Future<bool> processLogOut() async {
     _activeUser = null;
     return true;
   }
 
   @override
-  void onStartSignUp() {
-    this.notifyListeners();
-  }
+  void onSignUpTriggered() => this.notifyListeners();
 
   @override
-  Future<bool> signUpHandler(String username, String password) async {
+  Future<bool> processSignUp(String username, String password) async {
     _activeUser = AuthFlowDemoUser(username);
     return true;
   }
 
   @override
-  Future<bool> onOtpSubmitted(String otp) async {
-    return true;
-  }
+  Future<bool> validateOtp(String otp) async => true;
 
   @override
-  Future<bool> onOtpCancelled() async {
-    return true;
-  }
+  Future<bool> processOtpCancellation() async => true;
 
   @override
-  void onCancelOtpFail() {
-    this.notifyListeners();
-  }
+  void onCancelOtpFail() => this.notifyListeners();
 
   @override
-  void onCancelOtpSuccess() {
-    this.notifyListeners();
-  }
+  void onCancelOtpSuccess() => this.notifyListeners();
 
   @override
-  void onLoginWithEmailFail() {
-    this.notifyListeners();
-  }
+  void onFailureToLoginWithEmail() => this.notifyListeners();
 
   @override
-  void onLoginWithEmailSuccess() {
-    this.notifyListeners();
-  }
+  void onSuccessfulLoginWithEmail() => this.notifyListeners();
 
   @override
-  void onLogoutFail() {
-    this.notifyListeners();
-  }
+  void onFailureToLogout() => this.notifyListeners();
 
   @override
-  void onLogoutSuccess() {
-    this.notifyListeners();
-  }
+  void onSuccessfulLogout() => this.notifyListeners();
 
   @override
-  void onSignUpWithEmailFail() {
-    this.notifyListeners();
-  }
+  void onFailureToSignUpWithEmail() => this.notifyListeners();
 
   @override
-  void onSignUpWithEmailSuccess() {
-    this.notifyListeners();
-  }
+  void onSuccessfulSignUpWithEmail() => this.notifyListeners();
 
   @override
-  void onSubmitOTPFail() {
-    this.notifyListeners();
-  }
+  void onFailureToValidateOtp() => this.notifyListeners();
 
   @override
-  void onSubmitOTPSuccess() {
-    this.notifyListeners();
-  }
+  void onSuccessfulOtpValidation() => this.notifyListeners();
 
   @override
-  void onCancelSignUp() {
-    this.notifyListeners();
-  }
+  void onSignUpCancelled() => this.notifyListeners();
 
   @override
   void onCancelOtpException(Object error) {
@@ -110,7 +80,7 @@ class AuthFlowDemoState extends ChangeNotifier
   }
 
   @override
-  void onLoginWithEmailException(Object error) {
+  void loginWithEmailExceptionHandler(Object error) {
     // Demo only - no errors expected.
   }
 
@@ -120,12 +90,12 @@ class AuthFlowDemoState extends ChangeNotifier
   }
 
   @override
-  void onSignUpWithEmailException(Object error) {
+  void signUpWithEmailExceptionHandler(Object error) {
     // Demo only - no errors expected.
   }
 
   @override
-  void onSubmitOTPException(Object error) {
+  void otpValidationExceptionHandler(Object error) {
     // Demo only - no errors expected.
   }
 }

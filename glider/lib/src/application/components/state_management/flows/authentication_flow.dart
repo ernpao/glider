@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 enum AuthenticationFlowState {
   LOGGED_IN,
   LOGGED_OUT,
@@ -16,62 +18,85 @@ mixin AuthenticationFlow {
   bool get isLoggedIn => currentState == AuthenticationFlowState.LOGGED_IN;
   bool get isLoggedOut => currentState == AuthenticationFlowState.LOGGED_OUT;
   bool get isSigningUp => currentState == AuthenticationFlowState.SIGNING_UP;
-  bool get isAwaitingOTP =>
+  bool get isAwaitingOtp =>
       currentState == AuthenticationFlowState.AWAITING_OTP;
 
   bool get otpRequired;
 
   /// Callback when the sign up flow is triggered.
-  void onStartSignUp();
+  @protected
+  void onSignUpTriggered();
 
   /// Callback when the sign up flow is cancelled.
-  void onCancelSignUp();
+  @protected
+  void onSignUpCancelled();
 
   /// Logout function.
   /// Asynchonously returns a boolean flag that determines
   /// if the operation was successful.
-  Future<bool> logOutHandler();
+  @protected
+  Future<bool> processLogOut();
 
-  /// Login function that accepts [username] and [password] as inputs.
+  /// Function for processing login credentials.
   /// Asynchonously returns a boolean flag that determines
-  /// if the operation was successful.
-  Future<bool> logInHandler(String username, String password);
+  /// if the login operation was successful.
+  @protected
+  Future<bool> processCredentials(String username, String password);
 
   /// Function for handling email/username sign ups.
   /// Asynchonously returns a boolean flag that determines
   /// if the operation was successful.
-  Future<bool> signUpHandler(String username, String password);
+  @protected
+  Future<bool> processSignUp(String username, String password);
 
-  /// The function used to validate a OTP when it is submitted.
+  /// The function used to validate a OTP.
   /// Asynchonously returns a boolean flag that determines
   /// if the OTP is valid.
-  Future<bool> onOtpSubmitted(String otp);
+  @protected
+  Future<bool> validateOtp(String otp);
 
-  /// The function used to cancel the current OTP transaction.
+  /// The function used to cancel a OTP.
   /// Asynchonously returns a boolean flag that determines
   /// if the operation is successful.
-  Future<bool> onOtpCancelled();
+  @protected
+  Future<bool> processOtpCancellation();
 
   /// Success/Fail Callbacks
-  void onLogoutFail();
-  void onLogoutSuccess();
+
+  @protected
+  void onFailureToLogout();
+  @protected
+  void onSuccessfulLogout();
+  @protected
   void onLogoutException(Object error);
 
-  void onLoginWithEmailSuccess();
-  void onLoginWithEmailFail();
-  void onLoginWithEmailException(Object error);
+  @protected
+  void onSuccessfulLoginWithEmail();
+  @protected
+  void onFailureToLoginWithEmail();
+  @protected
+  void loginWithEmailExceptionHandler(Object error);
 
-  void onSignUpWithEmailSuccess();
-  void onSignUpWithEmailFail();
-  void onSignUpWithEmailException(Object error);
+  @protected
+  void onSuccessfulSignUpWithEmail();
+  @protected
+  void onFailureToSignUpWithEmail();
+  @protected
+  void signUpWithEmailExceptionHandler(Object error);
 
+  @protected
   void onCancelOtpSuccess();
+  @protected
   void onCancelOtpFail();
+  @protected
   void onCancelOtpException(Object error);
 
-  void onSubmitOTPSuccess();
-  void onSubmitOTPFail();
-  void onSubmitOTPException(Object error);
+  @protected
+  void onSuccessfulOtpValidation();
+  @protected
+  void onFailureToValidateOtp();
+  @protected
+  void otpValidationExceptionHandler(Object error);
 
   String get currentStateAsString {
     switch (currentState) {
@@ -118,7 +143,7 @@ mixin AuthenticationFlow {
   }
 
   /// Should only be called if [currentState] is [LOGGED_IN].
-  /// Changes the [currentState] to [LOGGED_OUT] if [logOutHandler]
+  /// Changes the [currentState] to [LOGGED_OUT] if [processLogOut]
   /// returned true. Doesn't change [currentState] otherwise.
   Future<bool> logOut() async {
     _printBasedOnCurrentState(
@@ -128,26 +153,25 @@ mixin AuthenticationFlow {
     );
     if (!isLoggedIn) return false;
 
-    bool success = false;
-
     try {
-      success = await logOutHandler();
-      if (success) {
-        onLogoutSuccess();
+      bool logoutSuccessful = await processLogOut();
+      if (logoutSuccessful) {
+        onSuccessfulLogout();
         _currentState = AuthenticationFlowState.LOGGED_OUT;
       } else {
-        onLogoutFail();
+        onFailureToLogout();
       }
+      return logoutSuccessful;
     } catch (e) {
       _executeErrorHandler(e, onLogoutException);
     }
-    return success;
+    return false;
   }
 
   /// Log in using email and password credentials.
   /// Should only be called if [currentState] is [LOGGED_OUT].
   ///
-  /// Changes [currentState] to [LOGGED_IN] if [logInHandler]
+  /// Changes [currentState] to [LOGGED_IN] if [processCredentials]
   /// returned true or [AWAITING_OTP] if [otpRequired] is
   /// set to true.
   ///
@@ -161,28 +185,27 @@ mixin AuthenticationFlow {
     );
     if (!isLoggedOut) return false;
 
-    bool success = false;
     try {
-      success = await logInHandler(email, password);
-      if (success) {
-        onLoginWithEmailSuccess();
+      bool loginSuccessful = await processCredentials(email, password);
+      if (loginSuccessful) {
+        onSuccessfulLoginWithEmail();
         _currentState = otpRequired
             ? AuthenticationFlowState.AWAITING_OTP
             : AuthenticationFlowState.LOGGED_IN;
       } else {
-        onLoginWithEmailFail();
+        onFailureToLoginWithEmail();
       }
+      return loginSuccessful;
     } catch (e) {
-      _executeErrorHandler(e, onLoginWithEmailException);
-      success = false;
+      _executeErrorHandler(e, loginWithEmailExceptionHandler);
     }
-    return success;
+    return false;
   }
 
   /// Sign up using email and password credentials.
   /// Should only be called if [currentState] is [SIGNING_UP].
   ///
-  /// Changes [currentState] to [LOGGED_IN] if [signUpHandler]
+  /// Changes [currentState] to [LOGGED_IN] if [processSignUp]
   /// returned true or [AWAITING_OTP] if [otpRequired] is
   /// set to true.
   ///
@@ -194,57 +217,56 @@ mixin AuthenticationFlow {
       whenSigningUp: "Already signing up!",
       whenLoggedIn: "Can't sign up while logged in.",
     );
+
     if (!isSigningUp) return false;
 
-    bool success = false;
     try {
-      success = await signUpHandler(email, password);
-      if (success) {
-        onSignUpWithEmailSuccess();
+      bool signUpSuccessful = await processSignUp(email, password);
+      if (signUpSuccessful) {
+        onSuccessfulSignUpWithEmail();
         _currentState = otpRequired
             ? AuthenticationFlowState.AWAITING_OTP
             : AuthenticationFlowState.LOGGED_IN;
       } else {
-        onSignUpWithEmailFail();
+        onFailureToSignUpWithEmail();
       }
+      return signUpSuccessful;
     } catch (e) {
-      _executeErrorHandler(e, onSignUpWithEmailException);
-      success = false;
+      _executeErrorHandler(e, signUpWithEmailExceptionHandler);
     }
-    return success;
+    return false;
   }
 
   /// Submits a OTP for validation.
   /// Should only be called if [currentState] is [AWAITING_OTP].
   ///
-  /// Changes [currentState] to [LOGGED_IN] if [onOtpSubmitted]
+  /// Changes [currentState] to [LOGGED_IN] if [validateOtp]
   /// returned true. Sets [currentState] to [LOGGED_OUT] if
-  /// [signUpHandler] returns false.
+  /// [processSignUp] returns false.
   ///
   /// Doesn't change [currentState] if an error
   /// or exception occured.
-  Future<bool> submitOTP(String otp) async {
+  Future<bool> submitOtp(String otp) async {
     _printBasedOnCurrentState(
       whenSigningUp: "Can't submit OTP while not waiting for OTP.",
       whenLoggedIn: "Can't submit OTP while not waiting for OTP.",
       whenLoggedOut: "Can't submit OTP while not waiting for OTP.",
     );
-    if (!isAwaitingOTP) return false;
+    if (!isAwaitingOtp) return false;
 
-    bool success = false;
     try {
-      success = await onOtpSubmitted(otp);
-      if (success) {
-        onSubmitOTPSuccess();
+      bool otpIsValid = await validateOtp(otp);
+      if (otpIsValid) {
+        onSuccessfulOtpValidation();
         _currentState = AuthenticationFlowState.LOGGED_IN;
       } else {
-        onSubmitOTPFail();
+        onFailureToValidateOtp();
       }
+      return otpIsValid;
     } catch (e) {
-      _executeErrorHandler(e, onSubmitOTPException);
-      success = false;
+      _executeErrorHandler(e, otpValidationExceptionHandler);
     }
-    return success;
+    return false;
   }
 
   /// Cancels the [AWAITING_OTP] state and changes the state to [LOGGED_OUT].
@@ -258,11 +280,11 @@ mixin AuthenticationFlow {
       whenLoggedOut:
           "Can't cancel AWAITING_OTP state while not waiting for OTP.",
     );
-    if (!isAwaitingOTP) return false;
+    if (!isAwaitingOtp) return false;
 
     bool success = false;
     try {
-      success = await onOtpCancelled();
+      success = await processOtpCancellation();
       success ? onCancelOtpSuccess() : onCancelOtpFail();
 
       /// OTP can only be requested when logged out (i.e. during login or sign up)
@@ -276,7 +298,7 @@ mixin AuthenticationFlow {
     return success;
   }
 
-  /// Calls [onStartSignUp] and changes [currentState] to [SIGNING_UP].
+  /// Calls [onSignUpTriggered] and changes [currentState] to [SIGNING_UP].
   void startSignUp({Function(Object error) onException = print}) {
     _printBasedOnCurrentState(
       whileAwaitingOTP: "Can't sign up while waiting for OTP.",
@@ -285,14 +307,14 @@ mixin AuthenticationFlow {
     );
     if (!isLoggedOut) return;
     try {
-      onStartSignUp();
+      onSignUpTriggered();
       _currentState = AuthenticationFlowState.SIGNING_UP;
     } catch (e) {
       _executeErrorHandler(e, onException);
     }
   }
 
-  /// Calls [onCancelSignUp] and changes [currentState] to [LOGGED_OUT].
+  /// Calls [onSignUpCancelled] and changes [currentState] to [LOGGED_OUT].
   /// Should only be called when [currentState] is [SIGNING_UP].
   void cancelSignUp({Function(Object error) onException = print}) {
     _printBasedOnCurrentState(
@@ -302,7 +324,7 @@ mixin AuthenticationFlow {
     );
     if (!isSigningUp) return;
     try {
-      onCancelSignUp();
+      onSignUpCancelled();
       _currentState = AuthenticationFlowState.LOGGED_OUT;
     } catch (e) {
       _executeErrorHandler(e, onException);

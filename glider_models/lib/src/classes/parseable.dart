@@ -137,7 +137,7 @@ abstract class Parser<T extends Parseable> {
   /// If [typeMap] is null, then this function will
   /// simply copy all of the content of `from` into a new [Parseable]
   /// created with [_createModel].
-  T translate<F extends Parseable>(F from) {
+  T translateFrom<F extends Parseable>(F from) {
     final model = createModel();
 
     if (typeMap != null) {

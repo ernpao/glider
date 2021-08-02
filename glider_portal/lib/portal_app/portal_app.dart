@@ -14,8 +14,9 @@ class PortalApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return Application(
       providers: [
-        PortalAppAuthStateProvider(
-            model: PortalAppAuthState(auth: PortalAuthWebAPI())),
+        ChangeNotifierProvider<PortalAppAuthState>.value(
+          value: PortalAppAuthState(auth: PortalAuthWebAPI()),
+        ),
       ],
       theme: HoverThemeData.dark.data,
       child: PortalAppAuthStateConsumer(
@@ -68,7 +69,7 @@ class PortalAppLoginPage extends StatelessWidget {
     return PortalAppAuthStateConsumer(
       builder: (context, authState) {
         return Scaffold(
-          body: !authState.isLoading
+          body: !authState.awaitingResponse
               ? Center(
                   child: SingleChildScrollView(
                     child: Column(
@@ -109,7 +110,7 @@ class PortalAppSignUpPage extends StatelessWidget {
     return PortalAppAuthStateConsumer(
       builder: (context, authState) {
         return Scaffold(
-          body: !authState.isLoading
+          body: !authState.awaitingResponse
               ? Center(
                   child: SingleChildScrollView(
                     child: Column(

@@ -1,9 +1,16 @@
 import 'parseable.dart';
 
-class JSON extends Parseable {}
+class JSON extends Parseable {
+  JSON();
 
-class JSONParser extends Parser<JSON> {
-  JSONParser({
+  /// Create a new `JSON` object by parsing a string.
+  factory JSON.parse(String string) => _parser.parse(string);
+
+  static final _parser = _JSONParser();
+}
+
+class _JSONParser extends Parser<JSON> {
+  _JSONParser({
     this.typeMap,
   });
 

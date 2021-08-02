@@ -47,38 +47,45 @@ class _BufferSourceLiveImageState extends State<BufferSourceLiveImage> {
       builder: (context, event) {
         if (event != null) {
           if (event.isMessageEvent) {
-            final e = event.asMessageEvent();
-            final message = e.message;
-            if (message.hasBody) {
-              if (message.sender == "Buffer Source") {
-                final json = JSONParser().parse(message.body!);
-                final bytes = json.get("data").toString().toUint8List();
-                _pushToStream(bytes);
-                return Image.memory(
-                  bytes,
-                  height: widget.height,
-                  width: widget.width,
-                  errorBuilder: (context, exception, stackTrace) {
-                    /// Discard the last item stored and make an
-                    /// attempt to use the last valid item in `_buffer`
-                    _buffer.removeLast();
-                    return Image.memory(
-                      _buffer.last,
-                      height: widget.height?.toDouble(),
-                      width: widget.width?.toDouble(),
-                      errorBuilder: (context, error, stackTrace) {
-                        /// Still unnable to use the last item in the `_buffer`
-                        /// so just use an empty widget.
-                        return _empty();
-                      },
-                    );
-                  },
-                );
+            final messageEvent = event.asMessageEvent();
+            final message = messageEvent.message;
+            if (message != null) {
+              if (message.hasBody && message.sender == "Buffer Source") {
+                final json = JSON.parse(message.body!);
+                final data = json.get<String>("data");
+                if (data != null) {
+                  final bytes = data.toUint8List();
+                  _buildImage(bytes);
+                }
               }
             }
           }
         }
         return _empty();
+      },
+    );
+  }
+
+  Widget _buildImage(Uint8List bytes) {
+    _pushToStream(bytes);
+    return Image.memory(
+      bytes,
+      height: widget.height,
+      width: widget.width,
+      errorBuilder: (context, exception, stackTrace) {
+        /// Discard the last item stored and make an
+        /// attempt to use the last valid item in `_buffer`
+        _buffer.removeLast();
+        return Image.memory(
+          _buffer.last,
+          height: widget.height?.toDouble(),
+          width: widget.width?.toDouble(),
+          errorBuilder: (context, error, stackTrace) {
+            /// Still unnable to use the last item in the `_buffer`
+            /// so just use an empty widget.
+            return _empty();
+          },
+        );
       },
     );
   }

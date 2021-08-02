@@ -174,7 +174,7 @@ class WebResponse extends Result {
   /// Will return null if the body cannot be parse fails.
   JSON? bodyAsJson() {
     try {
-      return JSONParser().parse(httpResponse.body);
+      return JSON.parse(httpResponse.body);
     } catch (e) {
       throw Exception(
         "Can't parse the body of WebResponse into a JSON object:"

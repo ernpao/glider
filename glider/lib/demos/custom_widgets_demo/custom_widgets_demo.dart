@@ -144,19 +144,19 @@ class _WebWidgetsDemoState extends State<_WebWidgetsDemo> {
               if (event != null) {
                 if (event is WebSocketMessageEvent) {
                   final message = event.message;
-                  if (message.type == "buffer") {
-                    final List<dynamic> data = jsonDecode(message.body!);
-                    final List<int> ints = data.map((i) => i as int).toList();
-                    final bytes = Uint8List.fromList(ints);
-                    return Image.memory(
-                      bytes,
-                      errorBuilder: (_, err, ___) => SizedBox.shrink(),
-                    );
+                  if (message != null) {
+                    if (message.type == "buffer") {
+                      final List<dynamic> data = jsonDecode(message.body!);
+                      final List<int> ints = data.map((i) => i as int).toList();
+                      final bytes = Uint8List.fromList(ints);
+                      return Image.memory(
+                        bytes,
+                        errorBuilder: (_, err, ___) => SizedBox.shrink(),
+                      );
+                    }
+                    return Text(message.body ?? "");
                   }
-                  return Text(message.body ?? "");
-                }
-
-                if (event is WebSocketErrorEvent) {
+                } else if (event is WebSocketErrorEvent) {
                   return Text(event.error?.toString() ?? "");
                 }
               }

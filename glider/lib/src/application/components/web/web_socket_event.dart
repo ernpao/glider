@@ -23,7 +23,7 @@ abstract class WebSocketEvent {
 class WebSocketDoneEvent extends WebSocketEvent {}
 
 class WebSocketMessageEvent extends WebSocketEvent {
-  final WebSocketMessage message;
+  final WebSocketMessage? message;
   WebSocketMessageEvent(this.message);
 }
 
@@ -39,7 +39,7 @@ class WebSocketEventHandler {
 
   final Function(WebSocketEvent event) onEvent;
 
-  void onMessage(WebSocketMessage message) =>
+  void onMessage(WebSocketMessage? message) =>
       onEvent(WebSocketMessageEvent(message));
 
   void onError(Object? error) => onEvent(WebSocketErrorEvent(error));

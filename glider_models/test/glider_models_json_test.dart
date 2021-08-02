@@ -5,7 +5,7 @@ void main() {
   test("Glider Models JSON Decode/Encode Test", () async {
     final testModel = _createTestModel();
 
-    final parsed = JSONParser().parse(testModel.stringify());
+    final parsed = JSON.parse(testModel.stringify());
 
     /// Test the `stringify` function
     final stringified = testModel.stringify();
@@ -14,7 +14,7 @@ void main() {
 
     /// Test the `prettify` function
     final prettified = testModel.prettify();
-    assert(JSONParser().parse(prettified).stringify() == stringified);
+    assert(JSON.parse(prettified).stringify() == stringified);
 
     /// Test array conversion
     final parsedItems = parsed.get("items");
@@ -49,7 +49,9 @@ JSON _createTestModel() {
       ..set("body", "This is some sample text content for 'Item $i'.");
 
     items.add(
-      JSON()..set("name", "Item $i")..set("content", content),
+      JSON()
+        ..set("name", "Item $i")
+        ..set("content", content),
     );
   }
 

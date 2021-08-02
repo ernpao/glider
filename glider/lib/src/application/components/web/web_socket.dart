@@ -22,6 +22,7 @@ abstract class WebSocketManagement {
 
 /// Interface for sending messages to a WebSocket server.
 abstract class WebSocketMessaging {
+  /// Function for sending string content to the WebSocket server.
   void send(String body, {String? type, String? category, String? topic});
 
   /// Send JSON data to the WebSocket server. Essentially the same as sending
@@ -62,14 +63,10 @@ class WebSocket extends WebSocketInterface with WebHost, UUID {
   final int port;
 
   WebSocketChannel? _channel;
-  Stream? get stream => _channel?.stream;
-  WebSocketSink? get sink => _channel?.sink;
-
-  WebSocketEventHandler? get listener => _eventHandler;
   WebSocketEventHandler? _eventHandler;
 
   @override
-  bool get hasListener => listener != null;
+  bool get hasListener => _eventHandler != null;
 
   bool _isOpen = false;
 
@@ -81,8 +78,7 @@ class WebSocket extends WebSocketInterface with WebHost, UUID {
     WebSocketEventHandler? eventHandler,
     bool reopenOnDone = true,
   }) {
-    final url = 'ws://$host:$port';
-    _channel = WebSocketChannel.connect(Uri.parse(url));
+    _channel = WebSocketChannel.connect(Uri.parse('ws://$host:$port'));
 
     _isOpen = true;
     _eventHandler = eventHandler;
@@ -91,17 +87,16 @@ class WebSocket extends WebSocketInterface with WebHost, UUID {
       _channel?.stream.listen(
         (d) => _eventHandler?.onMessage(_parseStreamData(d)),
         onError: _eventHandler?.onError,
-        onDone: () {
-          _isOpen = false;
-          _eventHandler?.onDone();
-          if (reopenOnDone) {
-            openSocket(
-              eventHandler: _eventHandler,
-              reopenOnDone: reopenOnDone,
-            );
-          }
-        },
+        onDone: () => _onDone(reopenOnDone),
       );
+    }
+  }
+
+  void _onDone(bool reopenOnDone) {
+    _isOpen = false;
+    _eventHandler?.onDone();
+    if (reopenOnDone) {
+      openSocket(eventHandler: _eventHandler, reopenOnDone: reopenOnDone);
     }
   }
 
@@ -136,12 +131,13 @@ class WebSocket extends WebSocketInterface with WebHost, UUID {
         "WebSocket should be open before calling sendMessage.",
       );
     }
-    sink?.add(message.encode());
+    _channel?.sink.add(message.encode());
   }
 
-  WebSocketMessage _parseStreamData(d) {
+  WebSocketMessage? _parseStreamData(d) {
+    if (d == null) return null;
     final String jsonStr = d is String ? d : jsonEncode(d);
-    final JSON json = JSONParser().parse(jsonStr);
+    final JSON json = JSON.parse(jsonStr);
     final WebSocketMessage message = WebSocketMessage.fromJSON(json);
     return message;
   }

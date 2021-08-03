@@ -3,20 +3,21 @@ import 'package:flutter/widgets.dart';
 import 'package:glider_portal/glider_portal.dart';
 import 'package:hover/hover.dart';
 
-import 'portal_app_auth_state.dart';
+import 'portal_app_auth_flow.dart';
 
 class PortalApp extends StatelessWidget {
-  const PortalApp({
+  PortalApp({
     Key? key,
   }) : super(key: key);
+
+  /// State management model for authentication
+  final authFlowState = PortalAppAuthState(authInterface: PortalAuthWebAPI());
 
   @override
   Widget build(BuildContext context) {
     return Application(
       providers: [
-        ChangeNotifierProvider<PortalAppAuthState>.value(
-          value: PortalAppAuthState(auth: PortalAuthWebAPI()),
-        ),
+        ChangeNotifierProvider<PortalAppAuthFlow>.value(value: authFlowState),
       ],
       theme: HoverThemeData.dark.data,
       child: PortalAppAuthStateConsumer(

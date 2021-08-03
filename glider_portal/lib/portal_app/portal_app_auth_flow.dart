@@ -1,23 +1,50 @@
 import 'package:flutter/widgets.dart';
 import 'package:glider_portal/glider_portal.dart';
 
-class PortalAppAuthState extends ChangeNotifier
+/// Abstraction of the state management model for user authentication.
+abstract class PortalAppAuthFlow extends ChangeNotifier
     with ActiveUser, AuthenticationFlow {
+  /// Indicates if the authentication flow
+  /// has encountered an error.
+  bool get hasError;
+
+  /// An error message of the last error
+  /// encountered by the authentication
+  /// flow.
+  String? get errorMessage;
+
+  /// Indicates if the authentication flow
+  /// is currently in a state of
+  /// waiting for a response
+  /// from the remote host.
+  bool get awaitingResponse;
+
+  /// The interface that will be used to
+  /// connect to the remote host to access
+  /// its authentication functions such as
+  /// login and signup.
+  PortalAuthInterface get authInterface;
+}
+
+class PortalAppAuthState extends PortalAppAuthFlow {
   PortalAppAuthState({
-    required this.auth,
+    required this.authInterface,
   });
 
-  final PortalAuthInterface auth;
+  @override
+  final PortalAuthInterface authInterface;
 
   PortalUserData? _activeUser;
 
   @override
   PortalUserData? get activeUser => _activeUser;
 
+  @override
   String? get errorMessage => _errorMessage;
 
   String? _errorMessage;
 
+  @override
   bool get hasError => _errorMessage != null;
 
   void _getErrorFromResponse(WebResponse response) {
@@ -29,6 +56,8 @@ class PortalAppAuthState extends ChangeNotifier
   void _clearError() => _errorMessage = null;
 
   bool _awaitingResponse = false;
+
+  @override
   bool get awaitingResponse => _awaitingResponse;
 
   void _setAwait() {
@@ -46,7 +75,7 @@ class PortalAppAuthState extends ChangeNotifier
     _clearError();
     _setAwait();
 
-    final loginResult = await auth.logIn(username, password);
+    final loginResult = await authInterface.logIn(username, password);
 
     if (loginResult.isNotSuccessful) {
       _getErrorFromResponse(loginResult);
@@ -87,7 +116,7 @@ class PortalAppAuthState extends ChangeNotifier
   Future<bool> processSignUp(String username, String password) async {
     _clearError();
     _setAwait();
-    final result = await auth.register(username, password);
+    final result = await authInterface.register(username, password);
     if (result.isNotSuccessful) _getErrorFromResponse(result);
     return result.isSuccessful;
   }
@@ -186,12 +215,12 @@ class PortalAppAuthStateConsumer extends StatelessWidget {
 
   final Widget Function(
     BuildContext context,
-    PortalAppAuthState authState,
+    PortalAppAuthFlow authState,
   ) builder;
 
   @override
   Widget build(BuildContext context) {
-    final authState = Provider.of<PortalAppAuthState>(context);
+    final authState = Provider.of<PortalAppAuthFlow>(context);
     return builder(context, authState);
   }
 }

@@ -15,21 +15,20 @@ class PortalAppMain extends StatelessWidget {
         }
         final mediaQuery = HoverResponsiveHelper(context);
         return Scaffold(
+          backgroundColor: Colors.grey.shade200,
           drawer: mediaQuery.onPhone ? _Drawer() : null,
-          body: Row(
+          body: Column(
             children: [
-              if (!mediaQuery.onPhone) _Drawer(),
+              const _Header(),
               Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                child: Row(
                   children: [
-                    Center(
-                      child: Text("Welcome ${authState.activeUser!.username}"),
+                    if (!mediaQuery.onPhone) _Drawer(),
+                    Expanded(
+                      child: _Body(
+                        authState: authState,
+                      ),
                     ),
-                    HoverLinkText(
-                      "Logout",
-                      onTap: authState.logOut,
-                    )
                   ],
                 ),
               ),
@@ -41,15 +40,43 @@ class PortalAppMain extends StatelessWidget {
   }
 }
 
+class _Body extends StatelessWidget {
+  const _Body({required this.authState, Key? key}) : super(key: key);
+  final PortalAppAuthFlow authState;
+  @override
+  Widget build(BuildContext context) {
+    return HoverBaseCard(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Center(child: Text("Welcome ${authState.activeUser!.username}")),
+          HoverLinkText("Logout", onTap: authState.logOut)
+        ],
+      ),
+    );
+  }
+}
+
+class _Header extends StatelessWidget {
+  const _Header({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 100,
+      width: Hover.getScreenWidth(context),
+      child: HoverBaseCard(),
+    );
+  }
+}
+
 class _Drawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: Hover.getScreenHeight(context),
       width: 300,
-      child: HoverBaseCard(
-        color: Colors.red,
-      ),
+      child: HoverBaseCard(),
     );
   }
 }

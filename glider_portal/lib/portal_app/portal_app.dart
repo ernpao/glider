@@ -20,7 +20,7 @@ class PortalApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider<PortalAppAuthFlow>.value(value: authFlowState),
       ],
-      theme: HoverThemeData.dark.data,
+      theme: HoverThemeData.light.data,
       child: PortalAppAuthStateConsumer(
         builder: (context, authState) {
           switch (authState.currentState) {

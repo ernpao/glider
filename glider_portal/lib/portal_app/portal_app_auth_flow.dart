@@ -46,9 +46,11 @@ class PortalAppAuthState extends PortalAppAuthFlow {
   void _loadUser() async {
     final _storedEncodedUser = await Hover.loadSetting(_kUser);
     if (_storedEncodedUser != null) {
-      _activeUser = PortalUserData.parse(_storedEncodedUser);
-      assert(_activeUser != null);
-      setState(AuthenticationFlowState.LOGGED_IN);
+      if (_storedEncodedUser.isNotEmpty) {
+        _activeUser = PortalUserData.parse(_storedEncodedUser);
+        assert(_activeUser != null);
+        setState(AuthenticationFlowState.LOGGED_IN);
+      }
     }
   }
 
@@ -104,6 +106,7 @@ class PortalAppAuthState extends PortalAppAuthFlow {
   @override
   Future<bool> processLogOut() async {
     _activeUser = null;
+    await Hover.saveSetting(_kUser, "");
     return true;
   }
 

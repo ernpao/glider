@@ -4,6 +4,7 @@ import 'package:glider_portal/glider_portal.dart';
 import 'package:hover/hover.dart';
 
 import 'portal_app_auth_flow.dart';
+import 'portal_app_main.dart';
 
 class PortalApp extends StatelessWidget {
   PortalApp({
@@ -24,7 +25,7 @@ class PortalApp extends StatelessWidget {
         builder: (context, authState) {
           switch (authState.currentState) {
             case AuthenticationFlowState.LOGGED_IN:
-              return const PortalAppContent();
+              return const PortalAppMain();
             case AuthenticationFlowState.LOGGED_OUT:
               return PortalAppLoginPage();
             case AuthenticationFlowState.SIGNING_UP:
@@ -134,32 +135,6 @@ class PortalAppSignUpPage extends StatelessWidget {
                   ),
                 )
               : const Center(child: CircularProgressIndicator()),
-        );
-      },
-    );
-  }
-}
-
-class PortalAppContent extends StatelessWidget {
-  const PortalAppContent({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return PortalAppAuthStateConsumer(
-      builder: (context, authState) {
-        return Scaffold(
-          body: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Center(
-                child: Text("Welcome ${authState.activeUser!.username}"),
-              ),
-              HoverLinkText(
-                "Logout",
-                onTap: authState.logOut,
-              )
-            ],
-          ),
         );
       },
     );

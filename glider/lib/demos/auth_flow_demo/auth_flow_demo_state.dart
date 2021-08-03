@@ -27,7 +27,7 @@ class AuthFlowDemoState extends ChangeNotifier
   }
 
   @override
-  void onSignUpTriggered() => this.notifyListeners();
+  void onSignUpTriggered() => notifyListeners();
 
   @override
   Future<bool> processSignUp(String username, String password) async {
@@ -42,37 +42,37 @@ class AuthFlowDemoState extends ChangeNotifier
   Future<bool> processOtpCancellation() async => true;
 
   @override
-  void onCancelOtpFail() => this.notifyListeners();
+  void onCancelOtpFail() => notifyListeners();
 
   @override
-  void onCancelOtpSuccess() => this.notifyListeners();
+  void onCancelOtpSuccess() => notifyListeners();
 
   @override
-  void onFailureToLoginWithEmail() => this.notifyListeners();
+  void onFailureToLoginWithEmail() => notifyListeners();
 
   @override
-  void onSuccessfulLoginWithEmail() => this.notifyListeners();
+  void onSuccessfulLoginWithEmail() => notifyListeners();
 
   @override
-  void onFailureToLogout() => this.notifyListeners();
+  void onFailureToLogout() => notifyListeners();
 
   @override
-  void onSuccessfulLogout() => this.notifyListeners();
+  void onSuccessfulLogout() => notifyListeners();
 
   @override
-  void onFailureToSignUpWithEmail() => this.notifyListeners();
+  void onFailureToSignUpWithEmail() => notifyListeners();
 
   @override
-  void onSuccessfulSignUpWithEmail() => this.notifyListeners();
+  void onSuccessfulSignUpWithEmail() => notifyListeners();
 
   @override
-  void onFailureToValidateOtp() => this.notifyListeners();
+  void onFailureToValidateOtp() => notifyListeners();
 
   @override
-  void onSuccessfulOtpValidation() => this.notifyListeners();
+  void onSuccessfulOtpValidation() => notifyListeners();
 
   @override
-  void onSignUpCancelled() => this.notifyListeners();
+  void onSignUpCancelled() => notifyListeners();
 
   @override
   void onCancelOtpException(Object error) {
@@ -98,6 +98,9 @@ class AuthFlowDemoState extends ChangeNotifier
   void otpValidationExceptionHandler(Object error) {
     // Demo only - no errors expected.
   }
+
+  @override
+  void onStateUpdated(AuthenticationFlowState newState) => notifyListeners();
 }
 
 class AuthFlowDemoUser with Username {

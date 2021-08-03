@@ -21,6 +21,15 @@ mixin AuthenticationFlow {
   bool get isAwaitingOtp =>
       currentState == AuthenticationFlowState.AWAITING_OTP;
 
+  @protected
+  void setState(AuthenticationFlowState newState) {
+    _currentState = newState;
+    onStateUpdated(_currentState);
+  }
+
+  @protected
+  void onStateUpdated(AuthenticationFlowState newState);
+
   bool get otpRequired;
 
   /// Callback when the sign up flow is triggered.
@@ -157,7 +166,7 @@ mixin AuthenticationFlow {
       bool logoutSuccessful = await processLogOut();
       if (logoutSuccessful) {
         onSuccessfulLogout();
-        _currentState = AuthenticationFlowState.LOGGED_OUT;
+        setState(AuthenticationFlowState.LOGGED_OUT);
       } else {
         onFailureToLogout();
       }
@@ -189,9 +198,9 @@ mixin AuthenticationFlow {
       bool loginSuccessful = await processCredentials(email, password);
       if (loginSuccessful) {
         onSuccessfulLoginWithEmail();
-        _currentState = otpRequired
+        setState(otpRequired
             ? AuthenticationFlowState.AWAITING_OTP
-            : AuthenticationFlowState.LOGGED_IN;
+            : AuthenticationFlowState.LOGGED_IN);
       } else {
         onFailureToLoginWithEmail();
       }
@@ -224,9 +233,9 @@ mixin AuthenticationFlow {
       bool signUpSuccessful = await processSignUp(email, password);
       if (signUpSuccessful) {
         onSuccessfulSignUpWithEmail();
-        _currentState = otpRequired
+        setState(otpRequired
             ? AuthenticationFlowState.AWAITING_OTP
-            : AuthenticationFlowState.LOGGED_IN;
+            : AuthenticationFlowState.LOGGED_IN);
       } else {
         onFailureToSignUpWithEmail();
       }
@@ -258,7 +267,7 @@ mixin AuthenticationFlow {
       bool otpIsValid = await validateOtp(otp);
       if (otpIsValid) {
         onSuccessfulOtpValidation();
-        _currentState = AuthenticationFlowState.LOGGED_IN;
+        setState(AuthenticationFlowState.LOGGED_IN);
       } else {
         onFailureToValidateOtp();
       }
@@ -290,7 +299,7 @@ mixin AuthenticationFlow {
       /// OTP can only be requested when logged out (i.e. during login or sign up)
       /// therefore cancelling the AWAITING_OTP state should set the state back
       /// to LOGGED_OUT.
-      _currentState = AuthenticationFlowState.LOGGED_OUT;
+      setState(AuthenticationFlowState.LOGGED_OUT);
     } catch (e) {
       _executeErrorHandler(e, onCancelOtpException);
       success = false;
@@ -308,7 +317,7 @@ mixin AuthenticationFlow {
     if (!isLoggedOut) return;
     try {
       onSignUpTriggered();
-      _currentState = AuthenticationFlowState.SIGNING_UP;
+      setState(AuthenticationFlowState.SIGNING_UP);
     } catch (e) {
       _executeErrorHandler(e, onException);
     }
@@ -325,7 +334,7 @@ mixin AuthenticationFlow {
     if (!isSigningUp) return;
     try {
       onSignUpCancelled();
-      _currentState = AuthenticationFlowState.LOGGED_OUT;
+      setState(AuthenticationFlowState.LOGGED_OUT);
     } catch (e) {
       _executeErrorHandler(e, onException);
     }

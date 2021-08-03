@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:glider_portal/glider_portal.dart';
+import 'package:hover/hover.dart';
 
 /// Abstraction of the state management model for user authentication.
 abstract class PortalAppAuthFlow extends ChangeNotifier
@@ -29,15 +30,27 @@ abstract class PortalAppAuthFlow extends ChangeNotifier
 class PortalAppAuthState extends PortalAppAuthFlow {
   PortalAppAuthState({
     required this.authInterface,
-  });
+  }) {
+    _loadUser();
+  }
 
   @override
   final PortalAuthInterface authInterface;
 
+  static const _kUser = "user";
   PortalUserData? _activeUser;
 
   @override
   PortalUserData? get activeUser => _activeUser;
+
+  void _loadUser() async {
+    final _storedEncodedUser = await Hover.loadSetting(_kUser);
+    if (_storedEncodedUser != null) {
+      _activeUser = PortalUserData.parse(_storedEncodedUser);
+      assert(_activeUser != null);
+      setState(AuthenticationFlowState.LOGGED_IN);
+    }
+  }
 
   @override
   String? get errorMessage => _errorMessage;
@@ -81,6 +94,8 @@ class PortalAppAuthState extends PortalAppAuthFlow {
       _getErrorFromResponse(loginResult);
     } else if (loginResult.isSuccessful) {
       _activeUser = PortalUserData.fromJSON(loginResult.bodyAsJson()!);
+      assert(_activeUser != null);
+      await Hover.saveSetting(_kUser, _activeUser!.encode());
     }
 
     return loginResult.isSuccessful;
@@ -138,7 +153,7 @@ class PortalAppAuthState extends PortalAppAuthFlow {
   }
 
   @override
-  void onSuccessfulLoginWithEmail() {
+  void onSuccessfulLoginWithEmail() async {
     _clearAwait();
   }
 
@@ -205,6 +220,9 @@ class PortalAppAuthState extends PortalAppAuthFlow {
   void otpValidationExceptionHandler(Object error) {
     // No OTP so do nothing.
   }
+
+  @override
+  void onStateUpdated(AuthenticationFlowState newState) => notifyListeners();
 }
 
 class PortalAppAuthStateConsumer extends StatelessWidget {

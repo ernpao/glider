@@ -18,9 +18,14 @@ class PortalUserData extends Parseable
   @override
   String get accessToken => get<String>("accessToken") ?? "";
 
+  static final parser = _PortalUserDataParser();
   static PortalUserData fromJSON(JSON json) {
-    final parser = _PortalUserDataParser();
     PortalUserData user = parser.translateFrom<JSON>(json);
+    return user;
+  }
+
+  static PortalUserData parse(String string) {
+    PortalUserData user = parser.parse(string);
     return user;
   }
 }

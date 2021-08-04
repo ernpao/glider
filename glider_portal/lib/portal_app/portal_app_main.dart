@@ -98,9 +98,8 @@ class _HeaderState extends State<_Header> {
               child: const SizedBox.shrink(),
             ),
             HoverCircleIconButton(
-              onTap: () {
-                _showMenu(context, widget.mediaQuery, widget.authState);
-              },
+              onTap: () =>
+                  _showMenu(context, widget.mediaQuery, widget.authState),
               color: Colors.blue,
               iconColor: Colors.white,
               iconData: Icons.menu,
@@ -115,50 +114,78 @@ class _HeaderState extends State<_Header> {
     BuildContext context,
     HoverResponsiveHelper mediaQuery,
     PortalAppAuthFlow authState,
-  ) {
-    const onPhone = false; //mediaQuery.onPhone;
+  ) async {
     final screenWidth = mediaQuery.screenWidth;
     final screenHeight = mediaQuery.screenHeight;
-    const top = onPhone ? 80.0 : 100.0;
-    final right = onPhone ? screenWidth : 40.0;
-    final left = onPhone ? 30.0 : screenWidth - right;
-    // final menuItemWidth = onPhone ? 200.0 : screenWidth;
+    const top = 100.0;
+    const right = 40.0;
+    final left = screenWidth - right;
 
-    final Map<String, Map> menuItems = {
-      "Profile": {
-        "icon": Icons.verified_user,
-        "onTap": () {},
-        "color": Colors.grey.shade400,
-      },
-      "Settings": {
-        "icon": Icons.settings,
-        "onTap": () {},
-        "color": Colors.grey.shade400,
-      },
-      "Privacy Policy": {
-        "icon": Icons.privacy_tip,
-        "onTap": () {},
-        "color": Colors.grey.shade400,
-      },
-      "Logout": {
-        "icon": Icons.logout,
-        "onTap": authState.logOut,
-        "color": Colors.grey.shade400,
-      },
-    };
-
-    final items = <PopupMenuItem>[];
+    final items = <_HeaderPopupMenuItem>[];
 
     menuItems.forEach((label, menuItem) {
       items.add(
-        PopupMenuItem(
+        _HeaderPopupMenuItem(
+          label: label,
+          icon: menuItem[_kIcon],
+          iconColor: menuItem[_kColor],
+          callback: menuItem[_kCallback],
+        ),
+      );
+    });
+
+    final callback = await showMenu<Function>(
+      context: context,
+      position: RelativeRect.fromLTRB(left, top, right, screenHeight),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      items: items,
+    );
+
+    callback?.call();
+  }
+
+  late final Map<String, Map> menuItems = {
+    "Profile": {
+      _kIcon: Icons.verified_user,
+      _kCallback: () {},
+      _kColor: Colors.grey.shade400,
+    },
+    "Settings": {
+      _kIcon: Icons.settings,
+      _kCallback: () {},
+      _kColor: Colors.grey.shade400,
+    },
+    "Privacy Policy": {
+      _kIcon: Icons.privacy_tip,
+      _kCallback: () {},
+      _kColor: Colors.grey.shade400,
+    },
+    "Logout": {
+      _kIcon: Icons.logout,
+      _kCallback: widget.authState.logOut,
+      _kColor: Colors.grey.shade400,
+    },
+  };
+
+  static const String _kIcon = "icon";
+  static const String _kCallback = "callback";
+  static const String _kColor = "color";
+}
+
+class _HeaderPopupMenuItem extends PopupMenuItem<Function> {
+  _HeaderPopupMenuItem({
+    required IconData icon,
+    required String label,
+    required Function()? callback,
+    Color? iconColor,
+  }) : super(
           height: 60,
-          onTap: menuItem["onTap"],
+          value: callback,
           child: Row(
             children: [
               HoverCircleIconButton(
-                iconData: menuItem["icon"],
-                color: menuItem["color"],
+                iconData: icon,
+                color: iconColor,
                 iconColor: Colors.white,
               ),
               Expanded(
@@ -167,23 +194,10 @@ class _HeaderState extends State<_Header> {
                   child: Text(label),
                 ),
               ),
-              Icon(
-                Icons.chevron_right,
-                color: Colors.grey.shade400,
-              ),
+              Icon(Icons.chevron_right, color: Colors.grey.shade400),
             ],
           ),
-        ),
-      );
-    });
-
-    showMenu(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      context: context,
-      position: RelativeRect.fromLTRB(left, top, right, screenHeight),
-      items: items,
-    );
-  }
+        );
 }
 
 class _Drawer extends StatelessWidget {

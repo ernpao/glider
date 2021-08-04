@@ -19,19 +19,12 @@ class PortalAppMain extends StatelessWidget {
           drawer: mediaQuery.onPhone ? _Drawer() : null,
           body: Column(
             children: [
-              _Header(
-                mediaQuery: mediaQuery,
-                authState: authState,
-              ),
+              _Header(mediaQuery: mediaQuery, authState: authState),
               Expanded(
                 child: Row(
                   children: [
                     if (!mediaQuery.onPhone) _Drawer(),
-                    Expanded(
-                      child: _Body(
-                        authState: authState,
-                      ),
-                    ),
+                    Expanded(child: _Body(authState: authState)),
                   ],
                 ),
               ),
@@ -76,6 +69,8 @@ class _Header extends StatefulWidget {
 }
 
 class _HeaderState extends State<_Header> {
+  bool _isPopupMenuOpen = false;
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -86,21 +81,25 @@ class _HeaderState extends State<_Header> {
           children: [
             Expanded(
               flex: 1,
-              child: SizedBox(
-                child: HoverSearchBar(
-                  elevation: 4,
-                  backgroundColor: Colors.grey.shade100,
-                ),
+              child: HoverSearchBar(
+                elevation: 4,
+                backgroundColor: Colors.grey.shade200,
               ),
             ),
-            Expanded(
-              flex: widget.mediaQuery.onPhone ? 0 : 6,
-              child: const SizedBox.shrink(),
+            SizedBox(
+              width: widget.mediaQuery.onPhone
+                  ? 0
+                  : (Hover.getScreenWidth(context) -
+                      HoverResponsiveHelper.defaultBreakpointForPhones),
             ),
             HoverCircleIconButton(
-              onTap: () =>
-                  _showMenu(context, widget.mediaQuery, widget.authState),
-              color: Colors.blue,
+              onTap: () {
+                _showMenu(context, widget.mediaQuery, widget.authState);
+                setState(() {
+                  _isPopupMenuOpen = true;
+                });
+              },
+              color: _isPopupMenuOpen ? Colors.blue : Colors.white30,
               iconColor: Colors.white,
               iconData: Icons.menu,
             ),
@@ -142,6 +141,9 @@ class _HeaderState extends State<_Header> {
     );
 
     callback?.call();
+    setState(() {
+      _isPopupMenuOpen = false;
+    });
   }
 
   late final Map<String, Map> menuItems = {

@@ -5,12 +5,21 @@ import 'package:glider_portal/glider_portal.dart';
 void main() {
   test("Portal Chat", () async {});
 
+  test("Portal Chat - Test Authenticate", () async {
+    final api = ChatEngineAPI();
+    const secret = "password";
+    final response = await api.authenticate("ernpao", secret);
+    assert(response.isSuccessful);
+  });
+
   test("Portal Chat - Test Chat Engine Create and Delete User", () async {
     final api = ChatEngineAPI();
 
+    const secret = "password";
+
     final response = await api.createUser(
-      username: "ernpao",
-      secret: "password",
+      username: "test",
+      secret: secret,
       firstName: "test",
       lastName: "user",
     );
@@ -19,6 +28,9 @@ void main() {
     assert(response.isSuccessful);
 
     final user = ChatUser(response.bodyAsJson()!);
+
+    final authenticateResponse = await api.authenticate(user.username, secret);
+    assert(authenticateResponse.isSuccessful);
 
     final deleteResponse = await api.deleteUser(user.id);
     debugPrintSynchronously(deleteResponse.bodyAsJson()?.prettify());

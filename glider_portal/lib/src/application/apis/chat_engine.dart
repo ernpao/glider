@@ -17,6 +17,9 @@ abstract class ChatEngineInterface {
   Future<WebResponse> getUser(int userId);
 
   Future<WebResponse> deleteUser(int userId);
+
+  /// My Details (Authenticate)
+  Future<WebResponse> authenticate(String username, String secret);
 }
 
 class ChatEngineAPI implements ChatEngineInterface {
@@ -31,6 +34,7 @@ class ChatEngineAPI implements ChatEngineInterface {
   static const String _privateKey = "d243c478-85ad-49d5-80da-f4673bfda05d";
 
   static const String _usersPath = "/users";
+  static const String _authenticatePath = "/users/me/";
 
   T _createRequest<T extends WebRequest>(String? path) {
     WebRequest request;
@@ -97,5 +101,10 @@ class ChatEngineAPI implements ChatEngineInterface {
   Future<WebResponse> deleteUser(int userId) {
     final request = _createPrivateRequest<DELETE>(_usersPath + "/$userId/");
     return request.send();
+  }
+
+  @override
+  Future<WebResponse> authenticate(String username, String secret) {
+    return _createUserRequest<GET>(_authenticatePath, username, secret).send();
   }
 }

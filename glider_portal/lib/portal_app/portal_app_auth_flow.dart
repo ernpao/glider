@@ -95,7 +95,7 @@ class PortalAppAuthState extends PortalAppAuthFlow {
     if (loginResult.isNotSuccessful) {
       _getErrorFromResponse(loginResult);
     } else if (loginResult.isSuccessful) {
-      _activeUser = User.fromJSON(loginResult.bodyAsJson()!);
+      _activeUser = User.fromJson(loginResult.bodyAsJson()!);
       assert(_activeUser != null);
       await Hover.saveSetting(_kUser, _activeUser!.encode());
     }

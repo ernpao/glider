@@ -74,7 +74,7 @@ abstract class Parser<T extends Parseable> {
   /// in the base object created by `createModel`.
   Map<String, Type?>? get typeMap;
 
-  /// Attempt to parse string into a [Parseable] object.
+  /// Attempt to parse a string into a [Parseable] `T` object.
   ///
   /// This will also convert nested [KeyValueStore]
   /// objects into [Parseable] objects and any strings that are found to
@@ -84,6 +84,7 @@ abstract class Parser<T extends Parseable> {
     return decoded is T ? decoded : parseFromMap(decoded as KeyValueStore);
   }
 
+  /// Attempt to parse a string into a list of [Parseable] `T` objects.
   List<T> parseList(String string) {
     final parsedList = <T>[];
     final decodedList = jsonDecode(string, reviver: _reviver) as List;
@@ -143,9 +144,7 @@ abstract class Parser<T extends Parseable> {
 
     if (typeMap != null) {
       typeMap!.forEach((key, value) {
-        if (from.contains(key)) {
-          model.set(key, from._get(key));
-        }
+        if (from.contains(key)) model.set(key, from._get(key));
       });
     } else {
       model._setContent(from.map(), typeMap);

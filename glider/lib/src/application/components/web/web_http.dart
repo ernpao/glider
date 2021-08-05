@@ -183,6 +183,17 @@ class WebResponse extends Result {
     }
   }
 
+  List<JSON>? bodyAsJsonList() {
+    try {
+      return JSON.parseList(httpResponse.body);
+    } catch (e) {
+      throw Exception(
+        "Can't parse the body of WebResponse into a list of JSON objects:"
+        "\n${httpResponse.body}",
+      );
+    }
+  }
+
   /// The HTTP status code for this response.
   int get statusCode => httpResponse.statusCode;
 

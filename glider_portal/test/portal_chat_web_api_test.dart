@@ -3,8 +3,9 @@ import 'package:glider_portal/glider_portal.dart';
 
 void main() {
   test("Portal Chat", () async {});
-  test("Portal Chat - ChatUser Parsing", () async {
-    const responseString = ''
+
+  test("Portal Chat - ChatMessage Parsing", () async {
+    const chatMessageListString = ''
         '['
         ' {'
         '   "id": 941,'
@@ -26,11 +27,20 @@ void main() {
         ' }'
         ']';
 
-    final json = JSON.parseList(responseString);
+    final messages = ChatMessage.parseList(chatMessageListString);
+    final message = messages[0];
 
-    final sender = JSON.fromMap(json[0].getProperty("sender"));
+    assert(message.created.year == 2021);
+    assert(message.text == "Hello world!");
 
-    const jsonString = ''
+    final sender = message.sender;
+    assert(sender.isOnline == false);
+    assert(sender.username == "John_Doe");
+    assert(sender.firstName == "John");
+    assert(sender.lastName == "Doe");
+  });
+  test("Portal Chat - ChatUser Parsing", () async {
+    const userJsonString = ''
         '{'
         ' "username": "John_Doe",'
         ' "first_name": "John",'
@@ -39,7 +49,7 @@ void main() {
         ' "is_online": false'
         '}';
 
-    final user = ChatUser.parse(jsonString);
+    final user = ChatUser.parse(userJsonString);
     assert(user.isOnline == false);
     assert(user.username == "John_Doe");
     assert(user.firstName == "John");
@@ -48,8 +58,6 @@ void main() {
       user.avatar ==
           "https://api-chat-engine-io-dev.s3.amazonaws.com/avatars/Screen_Shot_2020-12-15_at_7.42.34_AM.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAZA5RH3ECSKRVH2UM%2F20210504%2Fca-central-1%2Fs3%2Faws4_request&X-Amz-Date=20210504T155211Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=b9b9d3c4798f07705ea7988de72afbcf8e4f2827bbccf4d6fa236450c78cb9c2",
     );
-
-    assert(user.encode() == ChatUser.fromJSON(sender).encode());
   });
 
   test("Portal Chat - ChatMessage Parsing", () async {

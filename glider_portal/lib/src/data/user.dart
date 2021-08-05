@@ -18,7 +18,7 @@ class User extends Parseable with Username, EmailAddress implements UserModel {
   String get accessToken => get<String>("accessToken") ?? "";
 
   static final parser = _PortalUserDataParser();
-  static User fromJSON(JSON json) {
+  static User fromJson(JSON json) {
     User user = parser.translateFrom<JSON>(json);
     return user;
   }

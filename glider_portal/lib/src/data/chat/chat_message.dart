@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:glider_models/glider_models.dart';
 
 import 'chat_user.dart';
@@ -11,8 +10,10 @@ abstract class ChatMessageModel {
   String get text;
 }
 
-class ChatMessage extends Parseable with ChatMessageModel {
-  ChatMessage._();
+class ChatMessage implements ChatMessageModel {
+  ChatMessage(this.data);
+
+  final JSON data;
 
   static const String _kCreated = "created";
   static const String _kText = "text";
@@ -21,36 +22,24 @@ class ChatMessage extends Parseable with ChatMessageModel {
   static const String _kAttachments = "attachments";
 
   @override
-  DateTime get created => DateTime.parse((super.get<String>(_kCreated)!));
+  DateTime get created =>
+      DateTime.parse((data.getProperty<String>(_kCreated)!));
 
   @override
-  String get text => super.get<String>(_kText)!;
+  String get text => data.getProperty<String>(_kText)!;
 
   @override
-  ChatUser get sender => ChatUser.fromMap(super.get<KeyValueStore>(_kSender)!);
-
-  static final _MessageParser _parser = _MessageParser();
-
-  @override
-  int get id => super.get<int>(_kId)!;
+  ChatUser get sender =>
+      ChatUser.fromMap(data.getProperty<KeyValueStore>(_kSender)!);
 
   @override
-  List get attachments => super.getListOf(_kAttachments)!;
-
-  factory ChatMessage.parse(String string) => _parser.parse(string);
-}
-
-class _MessageParser extends Parser<ChatMessage> {
-  @protected
-  @override
-  ChatMessage createModel() => ChatMessage._();
+  int get id => data.getProperty<int>(_kId)!;
 
   @override
-  Map<String, Type?>? get typeMap => {
-        ChatMessage._kCreated: String,
-        ChatMessage._kText: String,
-        ChatMessage._kSender: null,
-        ChatMessage._kId: int,
-        ChatMessage._kAttachments: List,
-      };
+  List get attachments => data.getProperty(_kAttachments) ?? [];
+
+  factory ChatMessage.parse(String string) => ChatMessage(JSON.parse(string));
+
+  static List<ChatMessage> parseList(String string) =>
+      JSON.parseList(string).map((json) => ChatMessage(json)).toList();
 }

@@ -1,5 +1,5 @@
-import 'package:glider_portal/glider_portal.dart';
+library chat;
 
-class ChatModel {}
-
-class Chat extends Parseable {}
+export 'chat_message.dart';
+export 'chat_room.dart';
+export 'chat_user.dart';

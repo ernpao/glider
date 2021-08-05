@@ -11,11 +11,11 @@ abstract class Encodable extends Mappable {
   /// This will also convert [DateTime]
   /// objects in the map into ISO8601 strings and [Mappable] objects
   /// into [KeyValueStore] in order for `jsonEncode` to work.
-  String encode() => jsonEncode(map(), toEncodable: toEncodeable);
+  String encode() => jsonEncode(map(), toEncodable: _toEncodeable);
 
   /// Converts [nonEncodable] to an encodable object for use
   /// with encoding functions such as `jsonEncode`.
-  static Object? toEncodeable(Object? nonEncodable) {
+  static Object? _toEncodeable(Object? nonEncodable) {
     if (nonEncodable is Mappable) {
       return nonEncodable.map();
     } else if (nonEncodable is DateTime) {
@@ -25,6 +25,6 @@ abstract class Encodable extends Mappable {
 
   /// Create a prettified string of this [Encodable] object.
   String prettify() {
-    return const JsonEncoder.withIndent('  ', toEncodeable).convert(map());
+    return const JsonEncoder.withIndent('  ', _toEncodeable).convert(map());
   }
 }

@@ -65,7 +65,7 @@ class WebSocketMessage extends JSON {
   void setBody(String? body) => set(kBody, body);
 
   /// Parse a [JSON] object into a [WebSocketMessage].
-  static WebSocketMessage fromJSON(JSON json) {
+  static WebSocketMessage fromJson(JSON json) {
     final message = WebSocketMessage(
       sender: json.get<String>(kSender) ?? "Undefined",
       type: json.get<String>(kType),

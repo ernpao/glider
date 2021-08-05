@@ -24,7 +24,7 @@ void main() {
     assert(response.isSuccessful);
     assert(body != null);
 
-    final user = User.fromJSON(body!);
+    final user = User.fromJson(body!);
 
     final token = user.accessToken;
     response = await api.verify(token);

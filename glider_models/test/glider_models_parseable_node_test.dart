@@ -1,6 +1,6 @@
 import 'dart:math';
 
-// import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:glider_models/glider_models.dart';
 
@@ -80,10 +80,11 @@ const int generations = 5;
 final root = _createTree(perGeneration, generations);
 
 class SampleNodeParser extends NodeParser<SampleNode> {
+  @protected
   @override
   SampleNode createModel() => SampleNode();
   @override
-  Map<String, Type>? get nodeMap => null;
+  Map<String, Type?>? get nodeMap => null;
 }
 
 class SampleNode extends ParseableNode {

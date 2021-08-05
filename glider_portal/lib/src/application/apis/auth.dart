@@ -1,6 +1,6 @@
 import 'package:glider/glider.dart';
 
-abstract class PortalAuthInterface {
+abstract class AuthInterface {
   /// Generate and resolve a POST request for login.
   Future<WebResponse> logIn(String username, String password);
 
@@ -18,8 +18,8 @@ abstract class PortalAuthInterface {
   Future<WebResponse> verify(String accessToken);
 }
 
-class PortalAuthWebAPI extends WebClient implements PortalAuthInterface {
-  PortalAuthWebAPI() : super(host: "portal.codera.tech", useHttps: true);
+class AuthWebAPI extends WebClient implements AuthInterface {
+  AuthWebAPI() : super(host: "portal.codera.tech", useHttps: true);
 
   @override
   Future<WebResponse> logIn(String username, String password) {

@@ -31,28 +31,20 @@ class Parseable extends Encodable with Stringifiable {
   }
 
   /// Copy [content] into this object
-  void _setContent(Map<String, dynamic> content, Map<String, Type>? typeMap) {
+  void _setContent(
+      Map<String, dynamic> content, Map<String, dynamic>? typeMap) {
     if (typeMap != null) {
       typeMap.forEach((key, value) {
-        final parseMapType = typeMap[key].toString();
+        final parseMapType = typeMap[key]?.toString();
         final contentValue = content[key];
         final contentValueType = contentValue.runtimeType.toString();
 
-        if (contentValue == null) {
+        if (parseMapType != null &&
+            parseMapType != contentValueType &&
+            contentValue != null) {
           throw Exception(
-            "Parse map error in Parseable."
-            "The '$key' element is missing in the content and is expected to "
-            "not be null since it is defined in the parse map of ${runtimeType.toString()}.",
-          );
-        }
-
-        if (parseMapType != contentValueType) {
-          throw Exception(
-            "Parse map error in Parseable."
-            "Value in the Parseable's content has a type of"
-            "'$contentValueType' but '$parseMapType' is expected as defined in the parse map."
-            "Make sure that the type set in the parse map of ${runtimeType.toString()} for '$key'"
-            "is the same as the type of the content value.  ",
+            "Parse map error in Parseable. A type of '$parseMapType' is expected "
+            "for the value of '$key' but '$contentValueType' was found.",
           );
         }
 
@@ -80,43 +72,48 @@ abstract class Parser<T extends Parseable> {
   /// will use to determine which key/value pairs
   /// to copy from the parsed content and insert
   /// in the base object created by `createModel`.
-  Map<String, Type>? get typeMap;
+  Map<String, Type?>? get typeMap;
 
-  /// Attempt to parse [string] into a [Parseable] object.
+  /// Attempt to parse string into a [Parseable] object.
   ///
   /// This will also convert nested [Map<String, dynamic>]
   /// objects into [Parseable] objects and any strings that are found to
   /// match the ISO8601 date time string format into [DateTime] objects.
   T parse(String string) {
     final decoded = jsonDecode(string, reviver: _reviver);
-    if (decoded is T) {
-      return decoded;
-    } else {
-      final map = decoded as Map<String, dynamic>;
-      return createModel().._setContent(map, typeMap);
+    return decoded is T
+        ? decoded
+        : parseFromMap(decoded as Map<String, dynamic>);
+  }
+
+  List<T> parseList(String string) {
+    final parsedList = <T>[];
+    final decodedList = jsonDecode(string, reviver: _reviver) as List;
+
+    for (var item in decodedList) {
+      final map = item as Map<String, dynamic>;
+      parsedList.add(parseFromMap(map));
     }
+
+    return parsedList;
   }
 
   T parseFromMap(Map<String, dynamic> map) {
     return createModel().._setContent(map, typeMap);
   }
 
-  late final String _modelTypeAsString = T.toString();
+  late final String _expectedType = T.toString();
 
   /// The reviver function used with `jsonDecode` in `parse`.
   ///
   /// This will ensure that the item returned by `jsonDecode`
   /// is either an instance of the [Parseable] handled by this
-  /// parser, or a [Map<String, dynamic>] which is then set
+  /// parser, or a [Map]<String, dynamic> which is then set
   /// as the content of a new instance of the [Parseable].
   Object? _reviver(Object? key, Object? value) {
     if (value is Map<String, dynamic>) {
       final valueType = value[Parseable._typeKey];
-      if (valueType == _modelTypeAsString) {
-        return createModel().._setContent(value, typeMap);
-      } else {
-        return value;
-      }
+      return valueType == _expectedType ? parseFromMap(value) : value;
     } else if (value is String && _iso8601RegExp.hasMatch(value)) {
       return DateTime.parse(value);
     } else {

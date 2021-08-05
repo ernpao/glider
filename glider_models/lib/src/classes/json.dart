@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 import 'parseable.dart';
 
 class JSON extends Parseable {
@@ -5,6 +7,10 @@ class JSON extends Parseable {
 
   /// Create a new `JSON` object by parsing a string.
   factory JSON.parse(String string) => _parser.parse(string);
+
+  factory JSON.fromMap(Map<String, dynamic> map) => _parser.parseFromMap(map);
+
+  static List<JSON> parseList(String string) => _parser.parseList(string);
 
   static final _parser = _JSONParser();
 
@@ -16,13 +22,10 @@ class JSON extends Parseable {
 }
 
 class _JSONParser extends Parser<JSON> {
-  _JSONParser({
-    this.typeMap,
-  });
-
   @override
-  final Map<String, Type>? typeMap;
+  final Map<String, Type?>? typeMap = null;
 
+  @protected
   @override
   JSON createModel() => JSON();
 }

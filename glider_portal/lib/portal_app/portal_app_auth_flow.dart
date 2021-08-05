@@ -24,7 +24,7 @@ abstract class PortalAppAuthFlow extends ChangeNotifier
   /// connect to the remote host to access
   /// its authentication functions such as
   /// login and signup.
-  PortalAuthInterface get authInterface;
+  AuthInterface get authInterface;
 }
 
 class PortalAppAuthState extends PortalAppAuthFlow {
@@ -35,19 +35,19 @@ class PortalAppAuthState extends PortalAppAuthFlow {
   }
 
   @override
-  final PortalAuthInterface authInterface;
+  final AuthInterface authInterface;
 
   static const _kUser = "user";
-  PortalUserData? _activeUser;
+  User? _activeUser;
 
   @override
-  PortalUserData? get activeUser => _activeUser;
+  User? get activeUser => _activeUser;
 
   void _loadUser() async {
     final _storedEncodedUser = await Hover.loadSetting(_kUser);
     if (_storedEncodedUser != null) {
       if (_storedEncodedUser.isNotEmpty) {
-        _activeUser = PortalUserData.parse(_storedEncodedUser);
+        _activeUser = User.parse(_storedEncodedUser);
         assert(_activeUser != null);
         setState(AuthenticationFlowState.LOGGED_IN);
       }
@@ -95,7 +95,7 @@ class PortalAppAuthState extends PortalAppAuthFlow {
     if (loginResult.isNotSuccessful) {
       _getErrorFromResponse(loginResult);
     } else if (loginResult.isSuccessful) {
-      _activeUser = PortalUserData.fromJSON(loginResult.bodyAsJson()!);
+      _activeUser = User.fromJSON(loginResult.bodyAsJson()!);
       assert(_activeUser != null);
       await Hover.saveSetting(_kUser, _activeUser!.encode());
     }

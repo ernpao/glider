@@ -12,7 +12,7 @@ class PortalApp extends StatelessWidget {
   }) : super(key: key);
 
   /// State management model for authentication
-  final authFlowState = PortalAppAuthState(authInterface: PortalAuthWebAPI());
+  final authFlowState = PortalAppAuthState(authInterface: AuthWebAPI());
 
   @override
   Widget build(BuildContext context) {

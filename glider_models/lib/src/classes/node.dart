@@ -386,11 +386,11 @@ abstract class ParseableNode extends Parseable
 }
 
 abstract class NodeParser<T extends ParseableNode> extends Parser<T> {
-  Map<String, Type>? get nodeMap;
+  Map<String, Type?>? get nodeMap;
 
   @override
-  Map<String, Type>? get typeMap {
-    final baseMap = {
+  Map<String, Type?>? get typeMap {
+    final Map<String, Type?> baseMap = {
       ParseableNode._childrenKey: List,
       ParseableNode._identifierKey: String,
     };

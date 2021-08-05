@@ -189,11 +189,12 @@ class MidiWidgetParameters extends Parseable
 }
 
 class MidiWidgetParametersParser extends Parser<MidiWidgetParameters> {
+  @protected
   @override
   MidiWidgetParameters createModel() => MidiWidgetParameters._();
 
   @override
-  Map<String, Type>? get typeMap {
+  Map<String, Type?>? get typeMap {
     return {
       "targetDevice": String,
       Midi.kChannel: int,

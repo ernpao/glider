@@ -1,7 +1,7 @@
 import 'package:glider/glider.dart';
 
-abstract class PortalOcrInterface {}
+abstract class OcrInterface {}
 
-class PortalOcrWebAPI extends WebClient implements PortalOcrInterface {
-  PortalOcrWebAPI() : super(host: "portal.codera.tech", useHttps: true);
+class OcrWebAPI extends WebClient implements OcrInterface {
+  OcrWebAPI() : super(host: "portal.codera.tech", useHttps: true);
 }

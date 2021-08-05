@@ -7,6 +7,7 @@ abstract class ChatMessageModel {
   int get id;
   ChatUserModel get sender;
   DateTime get created;
+  List get attachments;
   String get text;
 }
 
@@ -17,6 +18,7 @@ class ChatMessage extends Parseable with ChatMessageModel {
   static const String _kText = "text";
   static const String _kSender = "sender";
   static const String _kId = "id";
+  static const String _kAttachments = "attachments";
 
   @override
   DateTime get created => DateTime.parse((super.get<String>(_kCreated)!));
@@ -33,6 +35,9 @@ class ChatMessage extends Parseable with ChatMessageModel {
   @override
   int get id => super.get<int>(_kId)!;
 
+  @override
+  List get attachments => super.getListOf(_kAttachments)!;
+
   factory ChatMessage.parse(String string) => _parser.parse(string);
 }
 
@@ -47,5 +52,6 @@ class _MessageParser extends Parser<ChatMessage> {
         ChatMessage._kText: String,
         ChatMessage._kSender: null,
         ChatMessage._kId: int,
+        ChatMessage._kAttachments: List,
       };
 }

@@ -10,7 +10,7 @@ abstract class Encodable extends Mappable {
   ///
   /// This will also convert [DateTime]
   /// objects in the map into ISO8601 strings and [Mappable] objects
-  /// into [Map<String, dynamic>] in order for `jsonEncode` to work.
+  /// into [KeyValueStore] in order for `jsonEncode` to work.
   String encode() => jsonEncode(map(), toEncodable: toEncodeable);
 
   /// Converts [nonEncodable] to an encodable object for use

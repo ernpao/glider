@@ -27,10 +27,10 @@ void main() {
     final testModelCreatedType = testModel.getProperty("created").runtimeType;
     assert(parsedCreatedType == testModelCreatedType);
 
-    final Map<String, dynamic> nested = parsed.getProperty("nested");
+    final KeyValueStore nested = parsed.getProperty("nested");
     final JSON nestedBody = nested["body"];
     final List nestedBodyItems = nestedBody.getProperty("items");
-    assert(nested is Map<String, dynamic>);
+    assert(nested is KeyValueStore);
     assert(nestedBody is JSON);
     assert(nestedBodyItems is List);
   });

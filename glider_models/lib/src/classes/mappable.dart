@@ -1,9 +1,11 @@
 import 'package:flutter/foundation.dart';
 
+typedef KeyValueStore = Map<String, dynamic>;
+
 /// An object that can be mapped into a series of key/value pairs.
 abstract class Mappable {
   /// Create a key/value map of this object.
-  Map<String, dynamic> map();
+  KeyValueStore map();
 
   /// Checks if this object contains the key specified.
   bool contains(String key) => keys.contains(key);

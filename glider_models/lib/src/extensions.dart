@@ -3,14 +3,16 @@ import 'dart:typed_data';
 
 import 'package:http/http.dart';
 
+import 'classes/mappable.dart';
+
 extension ResponseExtensions on Response {
   dynamic get decodedBody => jsonDecode(body);
-  Map<String, dynamic>? get bodyAsMap {
+  KeyValueStore? get bodyAsMap {
     try {
-      return decodedBody as Map<String, dynamic>;
+      return decodedBody as KeyValueStore;
     } catch (e) {
       throw Exception(
-        "Can't convert the body of this Response into a Map<String, dynamic>: $body",
+        "Can't convert the body of this Response into a KeyValueStore: $body",
       );
     }
   }

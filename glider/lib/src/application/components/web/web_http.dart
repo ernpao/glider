@@ -1,10 +1,10 @@
-library web;
-
 import 'package:glider_models/glider_models.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 
 import 'web_mixins.dart';
+
+typedef WebRequestHeaders = Map<String, String>;
 
 abstract class WebInterface {
   Future<WebResponse> index();
@@ -36,7 +36,7 @@ class WebClient extends WebInterface with WebHttpScheme, WebHost, UUID {
 
   /// A set of headers that will be included
   /// in all requests made by this client.
-  final Map<String, String>? fixedHeaders;
+  final WebRequestHeaders? fixedHeaders;
 
   /// If set, all requests will be made to this port.
   final int? defaultPort;
@@ -77,8 +77,8 @@ abstract class WebRequest with WebHttpScheme, WebHost {
 
   final String? path;
 
-  Map<String, dynamic> _queryParameters = {};
-  Map<String, dynamic> get queryParameters => _queryParameters;
+  KeyValueStore _queryParameters = {};
+  KeyValueStore get queryParameters => _queryParameters;
 
   /// Adds a query paramter to the request.
   void withParameter(String key, dynamic value) =>
@@ -90,11 +90,11 @@ abstract class WebRequest with WebHttpScheme, WebHost {
   /// Set the target port of the request.
   void withPort(int? port) => _port = port;
 
-  Map<String, String> _headers = {};
-  Map<String, String> get headers => _headers;
+  WebRequestHeaders _headers = {};
+  WebRequestHeaders get headers => _headers;
 
   /// Adds headers to this request.
-  void withHeaders(Map<String, String> headers) => _headers.addAll(headers);
+  void withHeaders(WebRequestHeaders headers) => _headers.addAll(headers);
 
   /// Adds or overrides a request header.
   void withHeader(String key, String value) => _headers[key] = value;
@@ -186,5 +186,5 @@ class WebResponse extends Result {
   /// The HTTP status code for this response.
   int get statusCode => httpResponse.statusCode;
 
-  Map<String, String> get headers => httpResponse.headers;
+  WebRequestHeaders get headers => httpResponse.headers;
 }

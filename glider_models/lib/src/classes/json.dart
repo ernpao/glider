@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 
+import 'mappable.dart';
 import 'parseable.dart';
 
 class JSON extends Parseable {
@@ -8,7 +9,7 @@ class JSON extends Parseable {
   /// Create a new `JSON` object by parsing a string.
   factory JSON.parse(String string) => _parser.parse(string);
 
-  factory JSON.fromMap(Map<String, dynamic> map) => _parser.parseFromMap(map);
+  factory JSON.fromMap(KeyValueStore map) => _parser.parseFromMap(map);
 
   static List<JSON> parseList(String string) => _parser.parseList(string);
 

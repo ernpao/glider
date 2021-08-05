@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 
 import 'encodable.dart';
+import 'mappable.dart';
 import 'stringifiable.dart';
 
 class Parseable extends Encodable with Stringifiable {
@@ -16,10 +17,10 @@ class Parseable extends Encodable with Stringifiable {
     _content[_typeKey] = runtimeType.toString();
   }
 
-  Map<String, dynamic> _content = {};
+  KeyValueStore _content = {};
 
   @override
-  Map<String, dynamic> map() => _content;
+  KeyValueStore map() => _content;
 
   @protected
   @override
@@ -31,8 +32,7 @@ class Parseable extends Encodable with Stringifiable {
   }
 
   /// Copy [content] into this object
-  void _setContent(
-      Map<String, dynamic> content, Map<String, dynamic>? typeMap) {
+  void _setContent(KeyValueStore content, KeyValueStore? typeMap) {
     if (typeMap != null) {
       typeMap.forEach((key, value) {
         final parseMapType = typeMap[key]?.toString();
@@ -76,14 +76,12 @@ abstract class Parser<T extends Parseable> {
 
   /// Attempt to parse string into a [Parseable] object.
   ///
-  /// This will also convert nested [Map<String, dynamic>]
+  /// This will also convert nested [KeyValueStore]
   /// objects into [Parseable] objects and any strings that are found to
   /// match the ISO8601 date time string format into [DateTime] objects.
   T parse(String string) {
     final decoded = jsonDecode(string, reviver: _reviver);
-    return decoded is T
-        ? decoded
-        : parseFromMap(decoded as Map<String, dynamic>);
+    return decoded is T ? decoded : parseFromMap(decoded as KeyValueStore);
   }
 
   List<T> parseList(String string) {
@@ -91,14 +89,14 @@ abstract class Parser<T extends Parseable> {
     final decodedList = jsonDecode(string, reviver: _reviver) as List;
 
     for (var item in decodedList) {
-      final map = item as Map<String, dynamic>;
+      final map = item as KeyValueStore;
       parsedList.add(parseFromMap(map));
     }
 
     return parsedList;
   }
 
-  T parseFromMap(Map<String, dynamic> map) {
+  T parseFromMap(KeyValueStore map) {
     return createModel().._setContent(map, typeMap);
   }
 
@@ -111,7 +109,7 @@ abstract class Parser<T extends Parseable> {
   /// parser, or a [Map]<String, dynamic> which is then set
   /// as the content of a new instance of the [Parseable].
   Object? _reviver(Object? key, Object? value) {
-    if (value is Map<String, dynamic>) {
+    if (value is KeyValueStore) {
       final valueType = value[Parseable._typeKey];
       return valueType == _expectedType ? parseFromMap(value) : value;
     } else if (value is String && _iso8601RegExp.hasMatch(value)) {

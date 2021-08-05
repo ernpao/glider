@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 
+import 'mappable.dart';
 import 'parseable.dart';
 import 'traversible.dart';
 
@@ -239,8 +240,8 @@ abstract class ParseableNode extends Parseable
 
         if (parser != null) {
           final first = list.first;
-          if (first is Map<String, dynamic>) {
-            var castedList = list.cast<Map<String, dynamic>>();
+          if (first is KeyValueStore) {
+            var castedList = list.cast<KeyValueStore>();
             for (final item in castedList) {
               final node = parser.parseFromMap(item);
               nodes.add(node);
@@ -260,7 +261,7 @@ abstract class ParseableNode extends Parseable
       if (throwException) {
         throw Exception(
           "Invalid value: Attempted to set ${value.runtimeType.toString()} as children of node $identifier."
-          "The children of a node must be a list of Node or Map<String, dynamic> that conforms to the parseMap "
+          "The children of a node must be a list of Node or KeyValueStore that conforms to the parseMap "
           "of this node's childParser.",
         );
       }

@@ -39,8 +39,7 @@ class ChatUser extends Parseable with ChatUserModel {
 
   factory ChatUser.fromJSON(JSON from) => _parser.translateFrom<JSON>(from);
 
-  factory ChatUser.fromMap(Map<String, dynamic> map) =>
-      _parser.parseFromMap(map);
+  factory ChatUser.fromMap(KeyValueStore map) => _parser.parseFromMap(map);
 }
 
 class _SenderParser extends Parser<ChatUser> {

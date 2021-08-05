@@ -27,8 +27,7 @@ class ChatMessage extends Parseable with ChatMessageModel {
   String get text => super.get<String>(_kText)!;
 
   @override
-  ChatUser get sender =>
-      ChatUser.fromMap(super.get<Map<String, dynamic>>(_kSender)!);
+  ChatUser get sender => ChatUser.fromMap(super.get<KeyValueStore>(_kSender)!);
 
   static final _MessageParser _parser = _MessageParser();
 

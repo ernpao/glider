@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
 
 import 'classes/mappable.dart';
@@ -11,9 +12,10 @@ extension ResponseExtensions on Response {
     try {
       return decodedBody as KeyValueStore;
     } catch (e) {
-      throw Exception(
-        "Can't convert the body of this Response into a KeyValueStore: $body",
+      debugPrint(
+        "ResponseExtensions.bodyAsMap can't convert the body of this http response into a KeyValueStore: '$body'",
       );
+      return null;
     }
   }
 

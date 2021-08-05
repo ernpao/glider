@@ -20,6 +20,8 @@ abstract class WebInterface {
 
   /// Create a POST request.
   POST createPOST(String? path);
+
+  DELETE createDELETE(String? path);
 }
 
 class WebClient extends WebInterface with WebHttpScheme, WebHost, UUID {
@@ -60,10 +62,15 @@ class WebClient extends WebInterface with WebHttpScheme, WebHost, UUID {
     ..withPort(defaultPort);
 
   @override
+  DELETE createDELETE(String? path) => DELETE(host, path, useHttps: withHttps)
+    ..withHeaders(fixedHeaders ?? {})
+    ..withPort(defaultPort);
+
+  @override
   Future<WebResponse> get(String? path) => createGET(path).send();
 
   @override
-  Future<WebResponse> post(String? path) async => createPOST(path).send();
+  Future<WebResponse> post(String? path) => createPOST(path).send();
 }
 
 abstract class WebRequest with WebHttpScheme, WebHost {
@@ -102,27 +109,28 @@ abstract class WebRequest with WebHttpScheme, WebHost {
   /// Sets the "Content-Type" header to "application/json".
   void withJsonContentType() => withHeader("Content-Type", "application/json");
 
+  Encodable? _body;
+  Encodable? get body => _body;
+  void withBody(Encodable body) => _body = body;
+
+  late final Uri uri = Uri(
+    host: host,
+    path: path,
+    port: port,
+    queryParameters: queryParameters,
+    scheme: webScheme,
+  );
+
   /// Send this web request.
   Future<WebResponse> send();
 }
 
 class GET extends WebRequest {
   GET(String host, String? path, {bool useHttps = true})
-      : super(
-          host,
-          path,
-          withHttps: useHttps,
-        );
+      : super(host, path, withHttps: useHttps);
 
   @override
   Future<WebResponse> send() async {
-    Uri uri = Uri(
-      host: host,
-      path: path,
-      port: port,
-      queryParameters: queryParameters,
-      scheme: webScheme,
-    );
     final response = await http.get(uri, headers: headers);
     return WebResponse(response);
   }
@@ -130,30 +138,26 @@ class GET extends WebRequest {
 
 class POST extends WebRequest {
   POST(String host, String? path, {bool useHttps = true})
-      : super(
-          host,
-          path,
-          withHttps: useHttps,
-        );
-
-  Encodable? _body;
-  Encodable? get body => _body;
-  void withBody(Encodable body) => _body = body;
+      : super(host, path, withHttps: useHttps);
 
   @override
   Future<WebResponse> send() async {
-    Uri uri = Uri(
-      host: host,
-      path: path,
-      port: port,
-      queryParameters: queryParameters,
-      scheme: webScheme,
-    );
     final response = await http.post(
       uri,
       headers: headers,
       body: body?.encode(),
     );
+    return WebResponse(response);
+  }
+}
+
+class DELETE extends WebRequest {
+  DELETE(String host, String? path, {bool useHttps = true})
+      : super(host, path, withHttps: useHttps);
+
+  @override
+  Future<WebResponse> send() async {
+    final response = await http.delete(uri, headers: headers);
     return WebResponse(response);
   }
 }

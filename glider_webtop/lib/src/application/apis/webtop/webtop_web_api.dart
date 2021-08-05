@@ -78,4 +78,7 @@ class WebtopWebAPI
 
   @override
   POST createPOST(String? path) => _client.createPOST(path);
+
+  @override
+  DELETE createDELETE(String? path) => _client.createDELETE(path);
 }

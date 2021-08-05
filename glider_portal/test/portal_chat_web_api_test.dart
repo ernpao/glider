@@ -1,8 +1,29 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:glider_portal/glider_portal.dart';
 
 void main() {
   test("Portal Chat", () async {});
+
+  test("Portal Chat - Test Chat Engine Create and Delete User", () async {
+    final api = ChatAPI();
+
+    final response = await api.createUser(
+      username: "ernpao",
+      secret: "password",
+      firstName: "test",
+      lastName: "user",
+    );
+
+    debugPrintSynchronously(response.bodyAsJson()?.prettify());
+    assert(response.isSuccessful);
+
+    final user = ChatUser(response.bodyAsJson()!);
+
+    final deleteResponse = await api.deleteUser(user.id);
+    debugPrintSynchronously(deleteResponse.bodyAsJson()?.prettify());
+    assert(deleteResponse.isSuccessful);
+  });
 
   test("Portal Chat - ChatMessage Parsing", () async {
     const chatMessageListString = ''

@@ -1,6 +1,7 @@
 import 'package:glider_models/glider_models.dart';
 
 abstract class ChatUserModel {
+  int get id;
   String get username;
   String? get firstName;
   String? get lastName;
@@ -28,6 +29,9 @@ class ChatUser implements ChatUserModel {
   @override
   late final String username = data.getProperty<String>(_kUsername)!;
 
+  @override
+  late final int id = data.getProperty<int>(_kId)!;
+
   factory ChatUser.parse(String string) => ChatUser(JSON.parse(string));
 
   factory ChatUser.fromMap(KeyValueStore map) => ChatUser(JSON.fromMap(map));
@@ -37,4 +41,5 @@ class ChatUser implements ChatUserModel {
   static const String _kFirstName = "first_name";
   static const String _kLastName = "last_name";
   static const String _kIsOnline = "is_online";
+  static const String _kId = "id";
 }

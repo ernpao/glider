@@ -1,6 +1,6 @@
 import 'package:glider_portal/glider_portal.dart';
 
-abstract class ChatInterface {
+abstract class ChatEngineInterface {
   /// Users (Private API - requires private key)
 
   Future<WebResponse> createUser({
@@ -19,8 +19,8 @@ abstract class ChatInterface {
   Future<WebResponse> deleteUser(int userId);
 }
 
-class ChatAPI implements ChatInterface {
-  ChatAPI();
+class ChatEngineAPI implements ChatEngineInterface {
+  ChatEngineAPI();
 
   static final _webClient = WebClient(
     host: "api.chatengine.io",
@@ -32,7 +32,7 @@ class ChatAPI implements ChatInterface {
 
   static const String _usersPath = "/users";
 
-  T _createPrivateRequest<T extends WebRequest>(String path) {
+  T _createRequest<T extends WebRequest>(String? path) {
     WebRequest request;
     switch (T) {
       case POST:
@@ -45,8 +45,22 @@ class ChatAPI implements ChatInterface {
         request = _webClient.createGET(path);
         break;
     }
-    request.withHeader("PRIVATE-KEY", _privateKey);
     return request as T;
+  }
+
+  T _createPrivateRequest<T extends WebRequest>(String? path) {
+    final request = _createRequest<T>(path)
+      ..withHeader("PRIVATE-KEY", _privateKey);
+    return request;
+  }
+
+  T _createUserRequest<T extends WebRequest>(
+      String? path, String username, String secret) {
+    final request = _createRequest<T>(path);
+    request.withHeader("Project-ID", _projectId);
+    request.withHeader("User-Name", username);
+    request.withHeader("User-Secret", secret);
+    return request;
   }
 
   @override

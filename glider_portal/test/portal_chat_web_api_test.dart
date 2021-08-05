@@ -6,7 +6,7 @@ void main() {
   test("Portal Chat", () async {});
 
   test("Portal Chat - Test Chat Engine Create and Delete User", () async {
-    final api = ChatAPI();
+    final api = ChatEngineAPI();
 
     final response = await api.createUser(
       username: "ernpao",

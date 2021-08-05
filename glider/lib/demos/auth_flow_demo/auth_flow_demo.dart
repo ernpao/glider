@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hover/hover.dart';
-import 'package:provider/provider.dart';
 
-import '../../glider.dart';
+import 'package:glider/glider.dart';
 import 'auth_flow_demo_state.dart';
 
 class AuthFlowDemo extends StatelessWidget {

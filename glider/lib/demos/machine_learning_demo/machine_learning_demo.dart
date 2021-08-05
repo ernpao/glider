@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hover/hover.dart';
 
-import '../../glider.dart';
+import 'package:glider/glider.dart';
 
 class MachineLearningDemo extends StatelessWidget {
   @override

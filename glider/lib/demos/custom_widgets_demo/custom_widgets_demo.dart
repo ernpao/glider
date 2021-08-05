@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:hover/hover.dart';
 
-import '../../glider.dart';
+import 'package:glider/glider.dart';
 
 class CustomWidgetsDemo extends StatelessWidget {
   final bool demoCamera;

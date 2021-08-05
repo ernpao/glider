@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 
-import '../../glider.dart';
+import 'package:glider/glider.dart';
 
 class AuthFlowDemoState extends ChangeNotifier
     with AuthenticationFlow, ActiveUser {

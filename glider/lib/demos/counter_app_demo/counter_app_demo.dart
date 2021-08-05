@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
-import '../../glider.dart';
+import 'package:glider/glider.dart';
 
 class CounterAppDemo extends StatelessWidget {
   @override

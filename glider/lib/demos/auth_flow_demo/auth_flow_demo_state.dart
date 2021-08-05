@@ -104,6 +104,8 @@ class AuthFlowDemoState extends ChangeNotifier
 }
 
 class AuthFlowDemoUser extends AuthenticatedUser {
-  final String username;
   AuthFlowDemoUser(this.username);
+
+  @override
+  final String username;
 }

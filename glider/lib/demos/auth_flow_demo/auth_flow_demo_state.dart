@@ -103,7 +103,7 @@ class AuthFlowDemoState extends ChangeNotifier
   void onStateUpdated(AuthenticationFlowState newState) => notifyListeners();
 }
 
-class AuthFlowDemoUser with Username {
+class AuthFlowDemoUser extends AuthenticatedUser {
   final String username;
   AuthFlowDemoUser(this.username);
 }

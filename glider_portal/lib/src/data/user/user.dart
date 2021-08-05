@@ -1,21 +1,23 @@
 import 'package:flutter/foundation.dart';
-import 'package:glider_models/glider_models.dart';
+import 'package:glider/glider.dart';
 
-abstract class UserModel with Username, EmailAddress {
+abstract class UserModel extends AuthenticatedUser with EmailAddress {
   String get accessToken;
 }
 
 /// An implementation of the [UserModel]
 /// that is parseable.
 class User extends Parseable with Username, EmailAddress implements UserModel {
-  @override
-  String get username => get<String>("username") ?? "";
+  User._();
 
   @override
-  String get email => get<String>("email") ?? "";
+  String get username => super.get<String>("username") ?? "";
 
   @override
-  String get accessToken => get<String>("accessToken") ?? "";
+  String get email => super.get<String>("email") ?? "";
+
+  @override
+  String get accessToken => super.get<String>("accessToken") ?? "";
 
   static final parser = _PortalUserDataParser();
   static User fromJson(JSON json) {
@@ -32,7 +34,7 @@ class User extends Parseable with Username, EmailAddress implements UserModel {
 class _PortalUserDataParser extends Parser<User> {
   @protected
   @override
-  User createModel() => User();
+  User createModel() => User._();
 
   @override
   Map<String, Type?>? get typeMap {

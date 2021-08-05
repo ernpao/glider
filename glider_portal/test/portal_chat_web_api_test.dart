@@ -46,7 +46,7 @@ void main() {
         '     "username": "John_Doe",'
         '     "first_name": "John",'
         '     "last_name": "Doe",'
-        '     "avatar": "https://api-chat-engine-io-dev.s3.amazonaws.com/avatars/Screen_Shot_2020-12-15_at_7.42.34_AM.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAZA5RH3ECSKRVH2UM%2F20210504%2Fca-central-1%2Fs3%2Faws4_request&X-Amz-Date=20210504T155211Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=b9b9d3c4798f07705ea7988de72afbcf8e4f2827bbccf4d6fa236450c78cb9c2",'
+        '     "avatar": null,'
         '     "custom_json": {},'
         '     "is_online": false'
         '   },'
@@ -78,7 +78,7 @@ void main() {
         ' "username": "John_Doe",'
         ' "first_name": "John",'
         ' "last_name": "Doe",'
-        ' "avatar": "https://api-chat-engine-io-dev.s3.amazonaws.com/avatars/Screen_Shot_2020-12-15_at_7.42.34_AM.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAZA5RH3ECSKRVH2UM%2F20210504%2Fca-central-1%2Fs3%2Faws4_request&X-Amz-Date=20210504T155211Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=b9b9d3c4798f07705ea7988de72afbcf8e4f2827bbccf4d6fa236450c78cb9c2",'
+        ' "avatar": null,'
         ' "is_online": false'
         '}';
 
@@ -88,8 +88,7 @@ void main() {
     assert(user.firstName == "John");
     assert(user.lastName == "Doe");
     assert(
-      user.avatar ==
-          "https://api-chat-engine-io-dev.s3.amazonaws.com/avatars/Screen_Shot_2020-12-15_at_7.42.34_AM.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAZA5RH3ECSKRVH2UM%2F20210504%2Fca-central-1%2Fs3%2Faws4_request&X-Amz-Date=20210504T155211Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=b9b9d3c4798f07705ea7988de72afbcf8e4f2827bbccf4d6fa236450c78cb9c2",
+      user.avatar == null,
     );
   });
 

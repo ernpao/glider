@@ -1,0 +1,23 @@
+name: glider_portal_demo
+description: Demo of the glider_portal_demo library.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.13.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  glider_portal:
+    path: ../../glider_portal
+  hover:
+    path: ../../hover
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^1.0.0
+
+flutter:
+  uses-material-design: true

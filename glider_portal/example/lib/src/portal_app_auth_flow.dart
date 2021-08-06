@@ -3,8 +3,8 @@ import 'package:glider_portal/glider_portal.dart';
 import 'package:hover/hover.dart';
 
 /// Abstraction of the state management model for user authentication.
-abstract class PortalAppAuthFlow extends ChangeNotifier
-    with ActiveUser, AuthenticationFlow {
+abstract class PortalAppAuthFlow<T extends AuthenticatedUser>
+    extends ChangeNotifier with ActiveUser, Secret, AuthenticationFlow {
   /// Indicates if the authentication flow
   /// has encountered an error.
   bool get hasError;
@@ -25,10 +25,23 @@ abstract class PortalAppAuthFlow extends ChangeNotifier
   /// its authentication functions such as
   /// login and signup.
   AuthInterface get authInterface;
+
+  /// Convert a successful login response and secret into
+  /// an [AuthenticatedUser].
+  T createAuthenticatedUser(JSON responseBody, String secret);
+
+  @protected
+  String encodeUserForStorage(T user);
+
+  @protected
+  T loadStoredUser(String encodedUserData, String secret);
+
+  String createErrorMessageOnFailedAuth(WebResponse failedLoginResponse);
 }
 
-class PortalAppAuthState extends PortalAppAuthFlow {
-  PortalAppAuthState({
+abstract class PortalAppAuthFlowBase<T extends AuthenticatedUser>
+    extends PortalAppAuthFlow<T> {
+  PortalAppAuthFlowBase({
     required this.authInterface,
   }) {
     _loadUser();
@@ -38,17 +51,30 @@ class PortalAppAuthState extends PortalAppAuthFlow {
   final AuthInterface authInterface;
 
   static const _kUser = "user";
-  User? _activeUser;
+  T? _activeUser;
+
+  static const _kSecret = "secret";
+  String? _secret;
 
   @override
-  User? get activeUser => _activeUser;
+  String get secret {
+    assert(
+      _secret != null,
+      "The secret for this auth flow has not yet been initialized!",
+    );
+    return _secret!;
+  }
+
+  @override
+  T? get activeUser => _activeUser;
 
   void _loadUser() async {
     final _storedEncodedUser = await Hover.loadSetting(_kUser);
+    final _storedSecret = await Hover.loadSetting(_kSecret);
     if (_storedEncodedUser != null) {
       if (_storedEncodedUser.isNotEmpty) {
-        _activeUser = User.parse(_storedEncodedUser);
-        assert(_activeUser != null);
+        assert(_storedSecret != null && _storedSecret.isNotEmpty);
+        _activeUser = loadStoredUser(_storedEncodedUser, _storedSecret!);
         setState(AuthenticationFlowState.LOGGED_IN);
       }
     }
@@ -64,8 +90,7 @@ class PortalAppAuthState extends PortalAppAuthFlow {
 
   void _getErrorFromResponse(WebResponse response) {
     assert(response.isNotSuccessful);
-    final responseBody = response.bodyAsJson()!;
-    _errorMessage = responseBody.getProperty<String>("error");
+    _errorMessage = createErrorMessageOnFailedAuth(response);
   }
 
   void _clearError() => _errorMessage = null;
@@ -75,11 +100,13 @@ class PortalAppAuthState extends PortalAppAuthFlow {
   @override
   bool get awaitingResponse => _awaitingResponse;
 
+  /// Set the `_awaitingResponse` flag to true and call `notifyListeners`.
   void _setAwait() {
     _awaitingResponse = true;
     notifyListeners();
   }
 
+  /// Set the `_awaitingResponse` flag to false and call `notifyListeners`.
   void _clearAwait() {
     _awaitingResponse = false;
     notifyListeners();
@@ -92,21 +119,30 @@ class PortalAppAuthState extends PortalAppAuthFlow {
 
     final loginResult = await authInterface.logIn(username, password);
 
-    if (loginResult.isNotSuccessful) {
+    if (loginResult.isSuccessful) {
+      _setAuthenticatedUser(loginResult, password);
+    } else {
       _getErrorFromResponse(loginResult);
-    } else if (loginResult.isSuccessful) {
-      _activeUser = User.fromJson(loginResult.bodyAsJson()!);
-      assert(_activeUser != null);
-      await Hover.saveSetting(_kUser, _activeUser!.encode());
     }
 
     return loginResult.isSuccessful;
   }
 
+  void _setAuthenticatedUser(WebResponse webResponse, String secret) async {
+    _secret = secret;
+    _activeUser = createAuthenticatedUser(webResponse.bodyAsJson()!, _secret!);
+    assert(_secret != null);
+    assert(_activeUser != null);
+    await Hover.saveSetting(_kSecret, _secret!);
+    await Hover.saveSetting(_kUser, encodeUserForStorage(_activeUser!));
+  }
+
   @override
   Future<bool> processLogOut() async {
     _activeUser = null;
+    _secret = null;
     await Hover.saveSetting(_kUser, "");
+    await Hover.saveSetting(_kSecret, "");
     return true;
   }
 
@@ -134,9 +170,14 @@ class PortalAppAuthState extends PortalAppAuthFlow {
   Future<bool> processSignUp(String username, String password) async {
     _clearError();
     _setAwait();
-    final result = await authInterface.register(username, password);
-    if (result.isNotSuccessful) _getErrorFromResponse(result);
-    return result.isSuccessful;
+    final signUpResult = await authInterface.signUp(username, password);
+    if (signUpResult.isNotSuccessful) {
+      _getErrorFromResponse(signUpResult);
+    }
+    // else {
+    // _setAuthenticatedUser(signUpResult, password);
+    // }
+    return signUpResult.isSuccessful;
   }
 
   @override
@@ -151,12 +192,12 @@ class PortalAppAuthState extends PortalAppAuthFlow {
   }
 
   @override
-  void onFailureToLoginWithEmail() {
+  void onFailureToLogin() {
     _clearAwait();
   }
 
   @override
-  void onSuccessfulLoginWithEmail() async {
+  void onSuccessfulLogin() async {
     _clearAwait();
   }
 
@@ -171,12 +212,12 @@ class PortalAppAuthState extends PortalAppAuthFlow {
   }
 
   @override
-  void onFailureToSignUpWithEmail() {
+  void onFailureToSignUp() {
     _clearAwait();
   }
 
   @override
-  void onSuccessfulSignUpWithEmail() {
+  void onSuccessfulSignUp() {
     _clearAwait();
   }
 
@@ -202,7 +243,7 @@ class PortalAppAuthState extends PortalAppAuthFlow {
   }
 
   @override
-  void loginWithEmailExceptionHandler(Object error) {
+  void loginExceptionHandler(Object error) {
     _errorMessage = error.toString();
     _clearAwait();
   }
@@ -214,7 +255,7 @@ class PortalAppAuthState extends PortalAppAuthFlow {
   }
 
   @override
-  void signUpWithEmailExceptionHandler(Object error) {
+  void signUpExceptionHandler(Object error) {
     _errorMessage = error.toString();
     _clearAwait();
   }
@@ -226,6 +267,57 @@ class PortalAppAuthState extends PortalAppAuthFlow {
 
   @override
   void onStateUpdated(AuthenticationFlowState newState) => notifyListeners();
+}
+
+class PortalAuthFlow extends PortalAppAuthFlowBase<PortalUser> {
+  PortalAuthFlow()
+      : super(
+          authInterface: PortalAuthAPI(),
+        );
+
+  @override
+  String encodeUserForStorage(PortalUser user) => user.encode();
+
+  @override
+  PortalUser createAuthenticatedUser(
+    JSON responseBody,
+    String secret,
+  ) =>
+      PortalUser.fromJson(responseBody);
+
+  @override
+  PortalUser loadStoredUser(String encodedUserData, String secret) =>
+      PortalUser.parse(encodedUserData);
+
+  @override
+  String createErrorMessageOnFailedAuth(WebResponse failedLoginResponse) {
+    return failedLoginResponse.bodyAsJson()!.getProperty<String>("error")!;
+  }
+}
+
+class ChatEngineAuthFlow extends PortalAppAuthFlowBase<ChatEngineActiveUser> {
+  ChatEngineAuthFlow() : super(authInterface: ChatEngineAPI());
+
+  @override
+  ChatEngineActiveUser createAuthenticatedUser(
+    JSON responseBody,
+    String secret,
+  ) =>
+      ChatEngineActiveUser(responseBody, secret);
+
+  @override
+  ChatEngineActiveUser loadStoredUser(String encodedUserData, String secret) {
+    final json = JSON.parse(encodedUserData);
+    return ChatEngineActiveUser(json, secret);
+  }
+
+  @override
+  String encodeUserForStorage(ChatEngineActiveUser user) => user.data.encode();
+
+  @override
+  String createErrorMessageOnFailedAuth(WebResponse failedLoginResponse) {
+    return failedLoginResponse.bodyAsJson()!.getProperty<String>("detail")!;
+  }
 }
 
 class PortalAppAuthStateConsumer extends StatelessWidget {

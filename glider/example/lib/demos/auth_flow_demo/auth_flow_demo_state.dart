@@ -16,7 +16,7 @@ class AuthFlowDemoState extends ChangeNotifier
 
   @override
   Future<bool> processCredentials(String username, String password) async {
-    _activeUser = AuthFlowDemoUser(username);
+    _activeUser = AuthFlowDemoUser(username, password);
     return true;
   }
 
@@ -31,7 +31,7 @@ class AuthFlowDemoState extends ChangeNotifier
 
   @override
   Future<bool> processSignUp(String username, String password) async {
-    _activeUser = AuthFlowDemoUser(username);
+    _activeUser = AuthFlowDemoUser(username, password);
     return true;
   }
 
@@ -48,10 +48,10 @@ class AuthFlowDemoState extends ChangeNotifier
   void onCancelOtpSuccess() => notifyListeners();
 
   @override
-  void onFailureToLoginWithEmail() => notifyListeners();
+  void onFailureToLogin() => notifyListeners();
 
   @override
-  void onSuccessfulLoginWithEmail() => notifyListeners();
+  void onSuccessfulLogin() => notifyListeners();
 
   @override
   void onFailureToLogout() => notifyListeners();
@@ -60,10 +60,10 @@ class AuthFlowDemoState extends ChangeNotifier
   void onSuccessfulLogout() => notifyListeners();
 
   @override
-  void onFailureToSignUpWithEmail() => notifyListeners();
+  void onFailureToSignUp() => notifyListeners();
 
   @override
-  void onSuccessfulSignUpWithEmail() => notifyListeners();
+  void onSuccessfulSignUp() => notifyListeners();
 
   @override
   void onFailureToValidateOtp() => notifyListeners();
@@ -80,7 +80,7 @@ class AuthFlowDemoState extends ChangeNotifier
   }
 
   @override
-  void loginWithEmailExceptionHandler(Object error) {
+  void loginExceptionHandler(Object error) {
     // Demo only - no errors expected.
   }
 
@@ -90,7 +90,7 @@ class AuthFlowDemoState extends ChangeNotifier
   }
 
   @override
-  void signUpWithEmailExceptionHandler(Object error) {
+  void signUpExceptionHandler(Object error) {
     // Demo only - no errors expected.
   }
 
@@ -104,8 +104,11 @@ class AuthFlowDemoState extends ChangeNotifier
 }
 
 class AuthFlowDemoUser extends AuthenticatedUser {
-  AuthFlowDemoUser(this.username);
+  AuthFlowDemoUser(this.username, this.secret);
 
   @override
   final String username;
+
+  @override
+  final String secret;
 }

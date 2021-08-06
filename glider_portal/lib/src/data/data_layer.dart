@@ -1,4 +1,4 @@
 library data_layer;
 
-export 'chat/chat.dart';
-export 'user/user.dart';
+export 'chat_engine/chat_engine.dart';
+export 'portal/portal_user.dart';

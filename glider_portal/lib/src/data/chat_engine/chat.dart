@@ -1,24 +1,25 @@
 import 'package:glider_models/glider_models.dart';
 
-import 'chat_room_user.dart';
 import 'chat_user.dart';
+import 'chat_engine_user.dart';
 
-abstract class ChatRoomModel {
+abstract class ChatModel {
   int get id;
-  ChatUserModel get admin;
-  List<ChatRoomUserModel> get people;
+  ChatEngineUserModel get admin;
+  List<ChatUserModel> get people;
 }
 
-class ChatRoom implements ChatRoomModel {
+class Chat implements ChatModel {
   final JSON data;
 
-  ChatRoom(this.data) {
+  Chat(this.data) {
     final jsonList = data.getListProperty<JSON>("people") ?? [];
     people = jsonList.map((json) => ChatRoomUser(json)).toList();
   }
 
   @override
-  late final ChatUser admin = ChatUser(data.getProperty<JSON>("admin")!);
+  late final ChatEngineUser admin =
+      ChatEngineUser(data.getProperty<JSON>("admin")!);
 
   @override
   late final int id = data.getProperty<int>("id")!;

@@ -2,7 +2,7 @@ import 'package:glider_webtop/glider_webtop.dart';
 import 'control_change.dart';
 import 'midi_interface.dart';
 
-class MidiWebAPI with WebHost implements MidiInterface, WebSocketManagement {
+class MidiWebAPI with WebHost implements MidiInterface, WebSocketManager {
   @override
   final String host;
 

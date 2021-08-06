@@ -1,13 +1,13 @@
 import 'package:glider_models/glider_models.dart';
 
-import 'chat_user.dart';
+import 'chat_engine_user.dart';
 
-abstract class ChatRoomUserModel {
-  ChatUserModel get person;
+abstract class ChatUserModel {
+  ChatEngineUserModel get person;
   int get lastRead;
 }
 
-class ChatRoomUser implements ChatRoomUserModel {
+class ChatRoomUser implements ChatUserModel {
   ChatRoomUser(this.data);
 
   final JSON data;
@@ -16,8 +16,8 @@ class ChatRoomUser implements ChatRoomUserModel {
   int get lastRead => data.getProperty<int>(_kLastRead)!;
 
   @override
-  ChatUser get person =>
-      ChatUser.fromMap(data.getProperty<KeyValueStore>(_kPerson)!);
+  ChatEngineUser get person =>
+      ChatEngineUser.fromMap(data.getProperty<KeyValueStore>(_kPerson)!);
 
   factory ChatRoomUser.parse(String string) => ChatRoomUser(JSON.parse(string));
 

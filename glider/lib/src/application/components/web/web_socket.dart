@@ -9,7 +9,7 @@ import 'web_socket_event.dart';
 import 'web_socket_message.dart';
 
 /// Interface for managing a WebSocket connection.
-abstract class WebSocketManagement {
+abstract class WebSocketManager {
   /// Establish a connection with the WebSocket server.
   void openSocket({
     WebSocketEventHandler? eventHandler,
@@ -21,7 +21,7 @@ abstract class WebSocketManagement {
 }
 
 /// Interface for sending messages to a WebSocket server.
-abstract class WebSocketMessaging {
+abstract class WebSocketMessenger {
   /// Function for sending string content to the WebSocket server.
   void send(String body, {String? type, String? category, String? topic});
 
@@ -36,9 +36,7 @@ abstract class WebSocketMessaging {
 /// Interface for an object that makes use of a WebSocket for
 /// communication.
 abstract class WebSocketInterface
-    implements WebSocketManagement, WebSocketMessaging {
-  /// Send a message to the WebSocket server with a [String] message body.
-
+    implements WebSocketManager, WebSocketMessenger {
   /// Indicates if the WebSocket has a listener attached to the stream.
   bool get hasListener;
 
@@ -53,6 +51,7 @@ abstract class WebSocketInterface
 }
 
 /// Basic implementation of the [WebSocketInterface] interface.
+/// The [UUID] of the [WebSocket] is set in the
 class WebSocket extends WebSocketInterface with WebHost, UUID {
   WebSocket({
     required this.host,

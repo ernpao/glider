@@ -1,17 +1,17 @@
 import 'package:glider_models/glider_models.dart';
 
-import 'chat_user.dart';
+import 'chat_engine_user.dart';
 
-abstract class ChatMessageModel {
+abstract class MessageModel {
   int get id;
-  ChatUserModel get sender;
+  ChatEngineUserModel get sender;
   DateTime get created;
   List get attachments;
   String get text;
 }
 
-class ChatMessage implements ChatMessageModel {
-  ChatMessage(this.data);
+class Message implements MessageModel {
+  Message(this.data);
 
   final JSON data;
 
@@ -29,8 +29,8 @@ class ChatMessage implements ChatMessageModel {
   String get text => data.getProperty<String>(_kText)!;
 
   @override
-  ChatUser get sender =>
-      ChatUser.fromMap(data.getProperty<KeyValueStore>(_kSender)!);
+  ChatEngineUser get sender =>
+      ChatEngineUser.fromMap(data.getProperty<KeyValueStore>(_kSender)!);
 
   @override
   int get id => data.getProperty<int>(_kId)!;
@@ -38,8 +38,8 @@ class ChatMessage implements ChatMessageModel {
   @override
   List get attachments => data.getProperty(_kAttachments) ?? [];
 
-  factory ChatMessage.parse(String string) => ChatMessage(JSON.parse(string));
+  factory Message.parse(String string) => Message(JSON.parse(string));
 
-  static List<ChatMessage> parseList(String string) =>
-      JSON.parseList(string).map((json) => ChatMessage(json)).toList();
+  static List<Message> parseList(String string) =>
+      JSON.parseList(string).map((json) => Message(json)).toList();
 }

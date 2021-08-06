@@ -12,7 +12,8 @@ class PortalApp extends StatelessWidget {
   }) : super(key: key);
 
   /// State management model for authentication
-  final authFlowState = PortalAppAuthState(authInterface: AuthWebAPI());
+  final authFlowState = PortalAuthFlow();
+  // final authFlowState = ChatEngineAuthFlow();
 
   @override
   Widget build(BuildContext context) {
@@ -30,11 +31,60 @@ class PortalApp extends StatelessWidget {
               return const _LoginPage();
             case AuthenticationFlowState.SIGNING_UP:
               return const _SignUpPage();
+            case AuthenticationFlowState.AWAITING_VERIFICATION:
+              return const _AwaitingVerificationPage();
             default:
               return const Text("Invalid State");
           }
         },
       ),
+    );
+  }
+}
+
+class _AwaitingVerificationPage extends StatelessWidget {
+  const _AwaitingVerificationPage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return PortalAppAuthStateConsumer(
+      builder: (context, authState) {
+        return Scaffold(
+          body: !authState.awaitingResponse
+              ? Center(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const _ErrorMessage(),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            HoverHeading(
+                              "You Have Successfully Signed Up!",
+                              bottomPadding: 16,
+                              fontSize: 28,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            HoverText(
+                              "Please verify your registration by clicking on the link on the \nemail we have sent to your email address.",
+                              textAlign: TextAlign.center,
+                              lineHeight: 1.5,
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 18),
+                        HoverLinkText(
+                          "Login With Your Account",
+                          onTap: authState.resetFlow,
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              : const Center(child: CircularProgressIndicator()),
+        );
+      },
     );
   }
 }
@@ -76,7 +126,7 @@ class _LoginPage extends StatelessWidget {
                       children: [
                         const _ErrorMessage(),
                         HoverEmailLoginForm(
-                          onSubmit: authState.logInWithEmail,
+                          onSubmit: authState.logIn,
                           emailController: _loginEmailController,
                           passwordController: _loginPasswordController,
                         ),

@@ -10,6 +10,12 @@ mixin Username {
   String get username;
 }
 
+/// A mixin used to give a class a
+/// [secret] string property.
+mixin Secret {
+  String get secret;
+}
+
 /// A mixin that gives an object the
 /// [mobileNumber] string property.
 mixin MobileNumber {

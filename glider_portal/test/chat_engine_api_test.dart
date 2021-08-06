@@ -3,16 +3,16 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:glider_portal/glider_portal.dart';
 
 void main() {
-  test("Portal Chat", () async {});
+  test("Chat Engine API", () async {});
 
-  test("Portal Chat - Test Authenticate", () async {
+  test("Chat Engine API - Test Authenticate", () async {
     final api = ChatEngineAPI();
     const secret = "password";
     final response = await api.authenticate("ernpao", secret);
     assert(response.isSuccessful);
   });
 
-  test("Portal Chat - Test Chat Engine Create and Delete User", () async {
+  test("Chat Engine API - Test Chat Engine Create and Delete User", () async {
     final api = ChatEngineAPI();
 
     const secret = "password";
@@ -27,7 +27,7 @@ void main() {
     debugPrintSynchronously(response.bodyAsJson()?.prettify());
     assert(response.isSuccessful);
 
-    final user = ChatUser(response.bodyAsJson()!);
+    final user = ChatEngineUser(response.bodyAsJson()!);
 
     final authenticateResponse = await api.authenticate(user.username, secret);
     assert(authenticateResponse.isSuccessful);
@@ -37,7 +37,7 @@ void main() {
     assert(deleteResponse.isSuccessful);
   });
 
-  test("Portal Chat - ChatMessage Parsing", () async {
+  test("Chat Engine API - ChatMessage Parsing", () async {
     const chatMessageListString = ''
         '['
         ' {'
@@ -60,7 +60,7 @@ void main() {
         ' }'
         ']';
 
-    final messages = ChatMessage.parseList(chatMessageListString);
+    final messages = Message.parseList(chatMessageListString);
     final message = messages[0];
 
     assert(message.created.year == 2021);
@@ -72,7 +72,7 @@ void main() {
     assert(sender.firstName == "John");
     assert(sender.lastName == "Doe");
   });
-  test("Portal Chat - ChatUser Parsing", () async {
+  test("Chat Engine API - ChatEngineUser Parsing", () async {
     const userJsonString = ''
         '{'
         ' "username": "John_Doe",'
@@ -82,7 +82,7 @@ void main() {
         ' "is_online": false'
         '}';
 
-    final user = ChatUser.parse(userJsonString);
+    final user = ChatEngineUser.parse(userJsonString);
     assert(user.isOnline == false);
     assert(user.username == "John_Doe");
     assert(user.firstName == "John");
@@ -92,7 +92,7 @@ void main() {
     );
   });
 
-  test("Portal Chat - ChatMessage Parsing", () async {
+  test("Chat Engine API - ChatMessage Parsing", () async {
     const messageJsonString = ''
         '{'
         ' "id": 353,'
@@ -108,7 +108,7 @@ void main() {
         ' "text": "Hello world!"'
         '}';
 
-    final parsedMessage = ChatMessage.parse(messageJsonString);
+    final parsedMessage = Message.parse(messageJsonString);
     final parsedSender = parsedMessage.sender;
     assert(parsedMessage.id == 353);
     assert(parsedMessage.attachments.isEmpty);

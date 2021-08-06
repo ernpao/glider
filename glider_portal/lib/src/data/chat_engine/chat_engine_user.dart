@@ -1,6 +1,6 @@
-import 'package:glider_models/glider_models.dart';
+import 'package:glider/glider.dart';
 
-abstract class ChatUserModel {
+abstract class ChatEngineUserModel {
   int get id;
   String get username;
   String? get firstName;
@@ -9,8 +9,8 @@ abstract class ChatUserModel {
   bool get isOnline;
 }
 
-class ChatUser implements ChatUserModel {
-  ChatUser(this.data);
+class ChatEngineUser implements ChatEngineUserModel {
+  ChatEngineUser(this.data);
 
   final JSON data;
 
@@ -32,9 +32,11 @@ class ChatUser implements ChatUserModel {
   @override
   late final int id = data.getProperty<int>(_kId)!;
 
-  factory ChatUser.parse(String string) => ChatUser(JSON.parse(string));
+  factory ChatEngineUser.parse(String string) =>
+      ChatEngineUser(JSON.parse(string));
 
-  factory ChatUser.fromMap(KeyValueStore map) => ChatUser(JSON.fromMap(map));
+  factory ChatEngineUser.fromMap(KeyValueStore map) =>
+      ChatEngineUser(JSON.fromMap(map));
 
   static const String _kAvatar = "avatar";
   static const String _kUsername = "username";
@@ -42,4 +44,13 @@ class ChatUser implements ChatUserModel {
   static const String _kLastName = "last_name";
   static const String _kIsOnline = "is_online";
   static const String _kId = "id";
+}
+
+class ChatEngineActiveUser extends ChatEngineUser
+    with Secret
+    implements AuthenticatedUser {
+  ChatEngineActiveUser(JSON data, this.secret) : super(data);
+
+  @override
+  final String secret;
 }

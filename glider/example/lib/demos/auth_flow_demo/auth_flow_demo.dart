@@ -80,7 +80,7 @@ class _LoginPage extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         HoverEmailLoginForm(
-          onSubmit: state.logInWithEmail,
+          onSubmit: state.logIn,
           formName: "aws-cognito-login",
           emailController: emailController,
           passwordController: passwordController,

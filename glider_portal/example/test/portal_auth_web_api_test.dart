@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:glider_portal/glider_portal.dart';
 
 void main() {
-  final api = AuthWebAPI();
+  final api = PortalAuthAPI();
   test("Portal API Index", () async {
     final result = await api.index();
     assert(result.isSuccessful);
@@ -24,10 +24,10 @@ void main() {
     assert(response.isSuccessful);
     assert(body != null);
 
-    final user = User.fromJson(body!);
+    final user = PortalUser.fromJson(body!);
 
-    final token = user.accessToken;
-    response = await api.verify(token);
+    final token = user.secret;
+    response = await api.verifyToken(token);
     assert(response.isSuccessful);
   });
 }

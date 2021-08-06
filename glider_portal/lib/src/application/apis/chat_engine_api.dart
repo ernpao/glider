@@ -1,4 +1,6 @@
-import 'package:glider_portal/glider_portal.dart';
+import 'package:glider/glider.dart';
+
+import 'interfaces/auth_interface.dart';
 
 abstract class ChatEngineInterface {
   /// Users (Private API - requires private key)
@@ -22,7 +24,7 @@ abstract class ChatEngineInterface {
   Future<WebResponse> authenticate(String username, String secret);
 }
 
-class ChatEngineAPI implements ChatEngineInterface {
+class ChatEngineAPI implements ChatEngineInterface, AuthInterface {
   ChatEngineAPI();
 
   static final _webClient = WebClient(
@@ -71,8 +73,8 @@ class ChatEngineAPI implements ChatEngineInterface {
   Future<WebResponse> createUser({
     required String username,
     required String secret,
-    required String firstName,
-    required String lastName,
+    String? firstName,
+    String? lastName,
   }) {
     final request = _createPrivateRequest<POST>(_usersPath);
     request.withBody(
@@ -107,4 +109,19 @@ class ChatEngineAPI implements ChatEngineInterface {
   Future<WebResponse> authenticate(String username, String secret) {
     return _createUserRequest<GET>(_authenticatePath, username, secret).send();
   }
+
+  @override
+  Future<WebResponse> logIn(
+    String username,
+    String password,
+  ) =>
+      authenticate(username, password);
+
+  @override
+  Future<WebResponse> signUp(String username, String password) => createUser(
+        username: username,
+        secret: password,
+        firstName: "",
+        lastName: "",
+      );
 }

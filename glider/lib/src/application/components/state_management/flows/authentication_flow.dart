@@ -4,6 +4,7 @@ enum AuthenticationFlowState {
   LOGGED_IN,
   LOGGED_OUT,
   SIGNING_UP,
+  AWAITING_VERIFICATION,
   AWAITING_OTP,
 }
 
@@ -20,12 +21,16 @@ mixin AuthenticationFlow {
   bool get isSigningUp => currentState == AuthenticationFlowState.SIGNING_UP;
   bool get isAwaitingOtp =>
       currentState == AuthenticationFlowState.AWAITING_OTP;
+  bool get isAwaitingVerification =>
+      currentState == AuthenticationFlowState.AWAITING_VERIFICATION;
 
   @protected
   void setState(AuthenticationFlowState newState) {
     _currentState = newState;
     onStateUpdated(_currentState);
   }
+
+  void resetFlow() => setState(AuthenticationFlowState.LOGGED_OUT);
 
   @protected
   void onStateUpdated(AuthenticationFlowState newState);
@@ -80,18 +85,18 @@ mixin AuthenticationFlow {
   void onLogoutException(Object error);
 
   @protected
-  void onSuccessfulLoginWithEmail();
+  void onSuccessfulLogin();
   @protected
-  void onFailureToLoginWithEmail();
+  void onFailureToLogin();
   @protected
-  void loginWithEmailExceptionHandler(Object error);
+  void loginExceptionHandler(Object error);
 
   @protected
-  void onSuccessfulSignUpWithEmail();
+  void onSuccessfulSignUp();
   @protected
-  void onFailureToSignUpWithEmail();
+  void onFailureToSignUp();
   @protected
-  void signUpWithEmailExceptionHandler(Object error);
+  void signUpExceptionHandler(Object error);
 
   @protected
   void onCancelOtpSuccess();
@@ -186,7 +191,7 @@ mixin AuthenticationFlow {
   ///
   /// Doesn't change [currentState] if an error
   /// or exception occured.
-  Future<bool> logInWithEmail(String email, String password) async {
+  Future<bool> logIn(String username, String password) async {
     _printBasedOnCurrentState(
       whileAwaitingOTP: "Can't log in while waiting for OTP.",
       whenLoggedIn: "Already logged in!",
@@ -195,18 +200,18 @@ mixin AuthenticationFlow {
     if (!isLoggedOut) return false;
 
     try {
-      bool loginSuccessful = await processCredentials(email, password);
+      bool loginSuccessful = await processCredentials(username, password);
       if (loginSuccessful) {
-        onSuccessfulLoginWithEmail();
+        onSuccessfulLogin();
         setState(otpRequired
             ? AuthenticationFlowState.AWAITING_OTP
             : AuthenticationFlowState.LOGGED_IN);
       } else {
-        onFailureToLoginWithEmail();
+        onFailureToLogin();
       }
       return loginSuccessful;
     } catch (e) {
-      _executeErrorHandler(e, loginWithEmailExceptionHandler);
+      _executeErrorHandler(e, loginExceptionHandler);
     }
     return false;
   }
@@ -232,16 +237,16 @@ mixin AuthenticationFlow {
     try {
       bool signUpSuccessful = await processSignUp(email, password);
       if (signUpSuccessful) {
-        onSuccessfulSignUpWithEmail();
+        onSuccessfulSignUp();
         setState(otpRequired
             ? AuthenticationFlowState.AWAITING_OTP
-            : AuthenticationFlowState.LOGGED_IN);
+            : AuthenticationFlowState.AWAITING_VERIFICATION);
       } else {
-        onFailureToSignUpWithEmail();
+        onFailureToSignUp();
       }
       return signUpSuccessful;
     } catch (e) {
-      _executeErrorHandler(e, signUpWithEmailExceptionHandler);
+      _executeErrorHandler(e, signUpExceptionHandler);
     }
     return false;
   }

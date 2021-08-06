@@ -27,7 +27,7 @@ void main() {
         ' }'
         ']';
 
-    final messages = ChatMessage.parseList(chatMessageListString);
+    final messages = Message.parseList(chatMessageListString);
     final message = messages[0];
 
     assert(message.created.year == 2021);
@@ -49,7 +49,7 @@ void main() {
         ' "is_online": false'
         '}';
 
-    final user = ChatUser.parse(userJsonString);
+    final user = ChatEngineUser.parse(userJsonString);
     assert(user.isOnline == false);
     assert(user.username == "John_Doe");
     assert(user.firstName == "John");
@@ -76,7 +76,7 @@ void main() {
         ' "text": "Hello world!"'
         '}';
 
-    final parsedMessage = ChatMessage.parse(messageJsonString);
+    final parsedMessage = Message.parse(messageJsonString);
     final parsedSender = parsedMessage.sender;
     assert(parsedMessage.id == 353);
     assert(parsedMessage.attachments.isEmpty);

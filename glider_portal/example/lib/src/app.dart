@@ -22,7 +22,7 @@ class App extends StatelessWidget {
     return Application(
       providers: [
         ChangeNotifierProvider<AppAuthenticationState>.value(
-          value: portalAuthFlow,
+          value: chatEngineAuthFlow,
         ),
       ],
       theme: HoverThemeData.light.data,

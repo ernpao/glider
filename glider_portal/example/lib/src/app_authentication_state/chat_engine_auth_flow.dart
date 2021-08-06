@@ -25,7 +25,12 @@ class ChatEngineAuthFlow
 
   @override
   String createErrorMessageOnFailedAuth(WebResponse failedLoginResponse) {
-    return failedLoginResponse.bodyAsJson()!.getProperty<String>("detail")!;
+    final jsonBody = (failedLoginResponse.bodyAsJson())!;
+    final detail = jsonBody.getProperty<String>("detail");
+    final message = jsonBody.getProperty<String>("message");
+    return (detail != null)
+        ? detail
+        : message ?? "Can't authenticate with the credentials provided.";
   }
 
   @override

@@ -60,22 +60,20 @@ abstract class ChatEngineInterface {
   Future<WebResponse> getOrCreateChat({
     String? title,
     List<String>? usernames,
-    bool isDirectChat = false,
+    bool? isDirectChat,
   });
 
   /// This request will get the n latest chats where n is {{chat_count}}.
   ///
   /// Latest is determined by last created message or chat creation time (if no messages yet).
-  Future<WebResponse> getMyLatestChats(String username, String secret);
+  Future<WebResponse> getMyLatestChats(int chatCount);
 
   /// This request takes a "before" date-time attribute, and a {{chat_count}} in the URL route,
   /// and will get the n latest chats before the specified time.
   ///
   /// Latest is determined by last created message or chat creation time (if no messages yet).
   Future<WebResponse> getMyLatestChatsBeforeTime(
-    DateTime before, {
-    int? count,
-  });
+      DateTime before, int chatCount);
 
   // Chat Details
   // The "Chat Details" requests let you view a chat, update its content, and delete it.
@@ -88,8 +86,8 @@ abstract class ChatEngineInterface {
   /// This request partially updates and returns a chat's data.
   Future<WebResponse> updateChatDetails(
     int chatId, {
-    String? title,
-    bool isDirectChat = false,
+    String? newTitle,
+    bool? isDirectChat,
   });
 
   /// This message deletes and returns the deleted chat's data.

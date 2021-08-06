@@ -1,14 +1,35 @@
+import 'package:flutter/foundation.dart';
 import 'package:glider/glider.dart';
 
 import 'web_interfaces/web_interfaces.dart';
 
-mixin _ChatEnginePaths {
+@protected
+mixin ChatEnginePaths {
   final String usersPath = "/users";
-  String userPathWithUserId(int userId) => "$usersPath/$userId/";
-  final String mePath = "/users/me/";
+  String usersPathWithUserId(int userId) => "$usersPath/$userId/";
+
+  late final String mePath = "$usersPath/me/";
+
   final String chatsPath = "/chats";
+  String latestChatsPath(int chatCount) => "$chatsPath/latest/$chatCount";
+  String chatsPathWithChatId(int chatId) => "$chatsPath/$chatId/";
+  String chatsPathWithPeople(int chatId) => "$chatsPath/$chatId/people/";
+  String chatsPathWithOthers(int chatId) => "$chatsPath/$chatId/others/";
+
+  String typingPath(int chatId) => "$chatsPath/$chatId/typing/";
+
+  String messagesPath(int chatId) => "$chatsPath/$chatId/messages";
+
+  String messagesPathWithMessageId(int chatId, int messageId) {
+    return "${messagesPath(chatId)}/$messageId";
+  }
+
+  String latestMessagesPath(int chatId, int chatCount) {
+    return "${messagesPath(chatId)}/latest/$chatCount";
+  }
 }
 
+@protected
 mixin _RequestHelper {
   final String chatEngineProjectId = "ab2204ec-10bc-4807-9f61-ecf012787ced";
 
@@ -23,6 +44,7 @@ mixin _RequestHelper {
     request.withHeader("Project-ID", chatEngineProjectId);
     request.withHeader("User-Name", username);
     request.withHeader("User-Secret", secret);
+    request.withJsonContentType();
     return request;
   }
 
@@ -35,7 +57,7 @@ mixin _RequestHelper {
 }
 
 class ChatEnginePrivateAPI
-    with _ChatEnginePaths, _RequestHelper
+    with ChatEnginePaths, _RequestHelper
     implements AuthInterface, ChatEnginePrivateInterface {
   static const String _privateKey = "d243c478-85ad-49d5-80da-f4673bfda05d";
 
@@ -55,22 +77,15 @@ class ChatEnginePrivateAPI
     if (firstName != null) body.setProperty("first_name", firstName);
     if (lastName != null) body.setProperty("last_name", lastName);
 
-    request.withBody(
-      JSON()
-        ..setProperty("username", username)
-        ..setProperty("first_name", firstName)
-        ..setProperty("last_name", lastName)
-        ..setProperty("secret", secret),
-    );
+    request.withBody(body);
 
-    request.withJsonContentType();
     return request.send();
   }
 
   @override
   Future<WebResponse> getUser(int userId) {
     final request =
-        createPrivateRequest<GET>(userPathWithUserId(userId), _privateKey);
+        createPrivateRequest<GET>(usersPathWithUserId(userId), _privateKey);
     return request.send();
   }
 
@@ -83,7 +98,7 @@ class ChatEnginePrivateAPI
   @override
   Future<WebResponse> deleteUser(int userId) {
     final request =
-        createPrivateRequest<DELETE>(userPathWithUserId(userId), _privateKey);
+        createPrivateRequest<DELETE>(usersPathWithUserId(userId), _privateKey);
     return request.send();
   }
 
@@ -115,7 +130,7 @@ class ChatEnginePrivateAPI
 }
 
 class ChatEngineAPI
-    with _ChatEnginePaths, _RequestHelper
+    with ChatEnginePaths, _RequestHelper
     implements ChatEngineInterface {
   ChatEngineAPI({
     required this.username,
@@ -132,136 +147,225 @@ class ChatEngineAPI
   final String username;
 
   @override
-  Future<WebResponse> addChatMember(int chatId, String usernameToAdd) {
-    // TODO: implement addChatMember
-    throw UnimplementedError();
-  }
+  Future<WebResponse> addChatMember(int chatId, String usernameToAdd) =>
+      createUserRequest<POST>("/chats/$chatId/people/", username, secret)
+          .send();
 
   @override
   Future<WebResponse> createChat(String title, {bool isDirectChat = false}) {
-    // TODO: implement createChat
-    throw UnimplementedError();
+    final body = JSON()
+      ..setProperty("title", title)
+      ..setProperty("is_direct_chat", isDirectChat);
+
+    final post = createUserRequest<POST>(chatsPath, username, secret);
+    post.withBody(body);
+
+    return post.send();
   }
 
   @override
-  Future<WebResponse> deleteChat(int chatId) {
-    // TODO: implement deleteChat
-    throw UnimplementedError();
-  }
+  Future<WebResponse> deleteChat(int chatId) =>
+      createUserRequest<DELETE>(chatsPathWithChatId(chatId), username, secret)
+          .send();
 
   @override
-  Future<WebResponse> getChatDetails(int chatId) {
-    // TODO: implement getChatDetails
-    throw UnimplementedError();
-  }
+  Future<WebResponse> getChatDetails(int chatId) =>
+      createUserRequest<GET>(chatsPathWithChatId(chatId), username, secret)
+          .send();
 
   @override
-  Future<WebResponse> getMyChats() {
-    // TODO: implement getMyChats
-    throw UnimplementedError();
-  }
+  Future<WebResponse> getMyChats() =>
+      createUserRequest<GET>(chatsPath, username, secret).send();
 
   @override
-  Future<WebResponse> getMyLatestChats(String username, String secret) {
-    // TODO: implement getMyLatestChats
-    throw UnimplementedError();
-  }
+  Future<WebResponse> getMyLatestChats(int chatCount) =>
+      createUserRequest<GET>(latestChatsPath(chatCount), username, secret)
+          .send();
 
   @override
-  Future<WebResponse> getMyLatestChatsBeforeTime(DateTime before,
-      {int? count}) {
-    // TODO: implement getMyLatestChatsBeforeTime
-    throw UnimplementedError();
+  Future<WebResponse> getMyLatestChatsBeforeTime(
+    DateTime before,
+    int chatCount,
+  ) {
+    final body = JSON()..setProperty("before", before.toIso8601String());
+    final put = createUserRequest<PUT>(
+      latestChatsPath(chatCount),
+      username,
+      secret,
+    );
+    put.withBody(body);
+    return put.send();
   }
 
   @override
   Future<WebResponse> getOrCreateChat({
     String? title,
     List<String>? usernames,
-    bool isDirectChat = false,
+    bool? isDirectChat,
   }) {
-    // TODO: implement getOrCreateChat
-    throw UnimplementedError();
+    final body = JSON();
+    if (usernames != null) body.setProperty("usernames", usernames);
+    if (title != null) body.setProperty("title", title);
+    if (isDirectChat != null) body.setProperty("is_direct_chat", isDirectChat);
+
+    final request = createUserRequest<PUT>(chatsPath, username, secret);
+    request.withBody(body);
+    return request.send();
   }
 
   @override
-  Future<WebResponse> updateChatDetails(int chatId,
-      {String? title, bool isDirectChat = false}) {
-    // TODO: implement updateChatDetails
-    throw UnimplementedError();
+  Future<WebResponse> updateChatDetails(
+    int chatId, {
+    String? newTitle,
+    bool? isDirectChat,
+  }) {
+    final body = JSON();
+    if (newTitle != null) body.setProperty("title", newTitle);
+    if (isDirectChat != null) body.setProperty("is_direct_chat", isDirectChat);
+
+    final request = createUserRequest<PATCH>(
+      chatsPathWithChatId(chatId),
+      username,
+      secret,
+    );
+
+    request.withBody(body);
+    return request.send();
   }
 
   @override
   Future<WebResponse> getChatMembers(int chatId) {
-    // TODO: implement getChatMembers
-    throw UnimplementedError();
+    final request = createUserRequest<GET>(
+      chatsPathWithPeople(chatId),
+      username,
+      secret,
+    );
+    return request.send();
   }
 
   @override
   Future<WebResponse> getOtherUsers(int chatId) {
-    // TODO: implement getOtherUsers
-    throw UnimplementedError();
+    final request = createUserRequest<GET>(
+      chatsPathWithOthers(chatId),
+      username,
+      secret,
+    );
+    return request.send();
   }
 
   @override
   Future<WebResponse> removeChatMember(int chatId, String usernameToRemove) {
-    // TODO: implement removeChatMember
-    throw UnimplementedError();
+    final body = JSON()..setProperty("username", usernameToRemove);
+    final request = createUserRequest<PUT>(
+      chatsPathWithPeople(chatId),
+      username,
+      secret,
+    );
+    request.withBody(body);
+    return request.send();
   }
 
   @override
   Future<WebResponse> searchOtherUsers(int chatId, String search) {
-    // TODO: implement searchOtherUsers
-    throw UnimplementedError();
+    final body = JSON()..setProperty("search", search);
+    final request = createUserRequest<POST>(
+      chatsPathWithOthers(chatId),
+      username,
+      secret,
+    );
+    request.withBody(body);
+    return request.send();
   }
 
   @override
-  Future<WebResponse> deleteMessage(int chatId, int messageId) {
-    // TODO: implement deleteMessage
-    throw UnimplementedError();
-  }
+  Future<WebResponse> deleteMessage(int chatId, int messageId) =>
+      createUserRequest<DELETE>(
+        messagesPathWithMessageId(chatId, messageId),
+        username,
+        secret,
+      ).send();
 
   @override
-  Future<WebResponse> getChatMessages(int chatId) {
-    // TODO: implement getChatMessages
-    throw UnimplementedError();
-  }
+  Future<WebResponse> getChatMessages(int chatId) => createUserRequest<GET>(
+        messagesPath(chatId),
+        username,
+        secret,
+      ).send();
 
   @override
-  Future<WebResponse> getLatestChatMessages(int chatId, int chatCount) {
-    // TODO: implement getLatestChatMessages
-    throw UnimplementedError();
-  }
+  Future<WebResponse> getLatestChatMessages(int chatId, int chatCount) =>
+      createUserRequest<GET>(
+        latestMessagesPath(chatId, chatCount),
+        username,
+        secret,
+      ).send();
 
   @override
-  Future<WebResponse> getMessageDetails(int chatId, int messageId) {
-    // TODO: implement getMessageDetails
-    throw UnimplementedError();
-  }
+  Future<WebResponse> getMessageDetails(int chatId, int messageId) =>
+      createUserRequest<GET>(
+        messagesPathWithMessageId(chatId, messageId),
+        username,
+        secret,
+      ).send();
 
   @override
   Future<WebResponse> readMessage(int chatId, int lastReadMessageId) {
-    // TODO: implement readMessage
-    throw UnimplementedError();
+    final body = JSON()..setProperty("last_read", lastReadMessageId);
+    final request = createUserRequest<PATCH>(
+      chatsPathWithPeople(chatId),
+      username,
+      secret,
+    );
+    request.withBody(body);
+    return request.send();
   }
 
   @override
-  Future<WebResponse> sendChatMessage(int chatId,
-      {String? text, List<String>? attachmentUrls, JSON? customJson}) {
-    // TODO: implement sendChatMessage
-    throw UnimplementedError();
+  Future<WebResponse> sendChatMessage(
+    int chatId, {
+    String? text,
+    List<String>? attachmentUrls,
+    JSON? customJson,
+  }) {
+    final body = JSON();
+
+    if (text != null) body.setProperty("text", text);
+    if (attachmentUrls != null) {
+      body.setProperty("attachment_urls", attachmentUrls);
+    }
+    if (customJson != null) body.setProperty("custom_json", customJson);
+
+    final request = createUserRequest<POST>(
+      messagesPath(chatId),
+      username,
+      secret,
+    );
+
+    request.withBody(body);
+    return request.send();
   }
 
   @override
   Future<WebResponse> updateMessageDetails(int chatId, int messageId,
       {String? newText}) {
-    // TODO: implement updateMessageDetails
-    throw UnimplementedError();
+    final body = JSON();
+
+    if (newText != null) body.setProperty("text", newText);
+
+    final request = createUserRequest<PATCH>(
+      messagesPath(chatId),
+      username,
+      secret,
+    );
+
+    request.withBody(body);
+    return request.send();
   }
 
   @override
-  Future<WebResponse> userIsTyping(int chatId) {
-    // TODO: implement userIsTyping
-    throw UnimplementedError();
-  }
+  Future<WebResponse> userIsTyping(int chatId) => createUserRequest<PATCH>(
+        typingPath(chatId),
+        username,
+        secret,
+      ).send();
 }

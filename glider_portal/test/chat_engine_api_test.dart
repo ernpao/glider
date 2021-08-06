@@ -2,19 +2,17 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:glider_portal/glider_portal.dart';
 
+// final api = ChatEngineAPI(username: "ernpao@g.com", secret: "password");
+final api = ChatEnginePrivateAPI();
 void main() {
   test("Chat Engine API", () async {});
 
   test("Chat Engine API - Test Authenticate", () async {
-    final api = ChatEngineAPI();
-    const secret = "password";
-    final response = await api.authenticate("ernpao@g.com", secret);
+    final response = await api.authenticate("ernpao@g.com", "password");
     assert(response.isSuccessful);
   });
 
   test("Chat Engine API - Test Chat Engine Create and Delete User", () async {
-    final api = ChatEngineAPI();
-
     const secret = "password";
 
     final response = await api.createUser(

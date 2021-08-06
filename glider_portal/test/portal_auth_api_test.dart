@@ -10,7 +10,7 @@ void main() {
 
   test("Portal Auth API Login", () async {
     // Test valid user login - should be successful
-    var response = await api.logIn("ernpao", "Zero1928!");
+    var response = await api.logIn("ernpao@gmail.com", "Zero1928!");
     assert(response.isSuccessful);
 
     // Test invalid user login - should be unsuccessful
@@ -19,7 +19,7 @@ void main() {
   });
 
   test("Portal Auth API Verify", () async {
-    var response = await api.logIn("ernpao", "Zero1928!");
+    var response = await api.logIn("ernpao@gmail.com", "Zero1928!");
     var body = response.bodyAsJson();
     assert(response.isSuccessful);
     assert(body != null);

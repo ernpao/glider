@@ -117,4 +117,10 @@ class KeynoteWebAPI
 
   @override
   DELETE createDELETE(String? path) => _client.createDELETE(path);
+
+  @override
+  PUT createPUT(String? path) => _client.createPUT(path);
+
+  @override
+  PATCH createPATCH(String? path) => _client.createPATCH(path);
 }

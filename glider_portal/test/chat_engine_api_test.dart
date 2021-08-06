@@ -8,7 +8,7 @@ void main() {
   test("Chat Engine API - Test Authenticate", () async {
     final api = ChatEngineAPI();
     const secret = "password";
-    final response = await api.authenticate("ernpao", secret);
+    final response = await api.authenticate("ernpao@g.com", secret);
     assert(response.isSuccessful);
   });
 

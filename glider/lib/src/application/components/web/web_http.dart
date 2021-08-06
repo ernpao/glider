@@ -20,11 +20,16 @@ abstract class WebInterface {
   /// Create a POST request.
   POST createPOST(String? path);
 
+  /// Create a DELETE request.
   DELETE createDELETE(String? path);
 
+  /// Create a PUT request.
   PUT createPUT(String? path);
 
+  /// Create a PATCH request.
   PATCH createPATCH(String? path);
+
+  T createRequest<T extends WebRequest>(String? path);
 }
 
 class WebClient extends WebInterface with WebHttpScheme, WebHost, UUID {
@@ -55,33 +60,50 @@ class WebClient extends WebInterface with WebHttpScheme, WebHost, UUID {
   Future<WebResponse> index() => createGET("/").send();
 
   @override
-  GET createGET(String? path) => GET(host, path, useHttps: withHttps)
-    ..withHeaders(fixedHeaders ?? {})
-    ..withPort(defaultPort);
+  GET createGET(String? path) => createRequest<GET>(path);
 
   @override
-  POST createPOST(String? path) => POST(host, path, useHttps: withHttps)
-    ..withHeaders(fixedHeaders ?? {})
-    ..withPort(defaultPort);
+  POST createPOST(String? path) => createRequest<POST>(path);
 
   @override
-  DELETE createDELETE(String? path) => DELETE(host, path, useHttps: withHttps)
-    ..withHeaders(fixedHeaders ?? {})
-    ..withPort(defaultPort);
+  DELETE createDELETE(String? path) => createRequest<DELETE>(path);
 
   @override
-  PUT createPUT(String? path) => PUT(host, path, useHttps: withHttps)
-    ..withHeaders(fixedHeaders ?? {})
-    ..withPort(defaultPort);
+  PUT createPUT(String? path) => createRequest<PUT>(path);
 
   @override
-  PATCH createPATCH(String? path) => PATCH(host, path, useHttps: withHttps)
-    ..withHeaders(fixedHeaders ?? {})
-    ..withPort(defaultPort);
+  PATCH createPATCH(String? path) => createRequest<PATCH>(path);
 
   @override
   Future<WebResponse> get(String? path) => createGET(path).send();
 
   @override
   Future<WebResponse> post(String? path) => createPOST(path).send();
+
+  @override
+  T createRequest<T extends WebRequest>(String? path) {
+    WebRequest request;
+    switch (T) {
+      case POST:
+        request = POST(host, path, useHttps: withHttps);
+        break;
+      case DELETE:
+        request = DELETE(host, path, useHttps: withHttps);
+        break;
+      case PUT:
+        request = PUT(host, path, useHttps: withHttps);
+        break;
+      case PATCH:
+        request = PATCH(host, path, useHttps: withHttps);
+        break;
+      default:
+        request = GET(host, path, useHttps: withHttps);
+        break;
+    }
+    request
+      ..withHeaders(fixedHeaders ?? {})
+      ..withPort(defaultPort);
+
+    return request as T;
+  }
 }

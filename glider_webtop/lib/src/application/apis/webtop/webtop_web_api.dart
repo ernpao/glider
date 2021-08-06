@@ -87,4 +87,8 @@ class WebtopWebAPI
 
   @override
   PATCH createPATCH(String? path) => _client.createPATCH(path);
+
+  @override
+  T createRequest<T extends WebRequest>(String? path) =>
+      _client.createRequest<T>(path);
 }

@@ -49,9 +49,11 @@ mixin _RequestHelper {
   }
 
   T createPrivateRequest<T extends WebRequest>(
-      String? path, String privateKey) {
-    final request = _webClient.createRequest<T>(path)
-      ..withHeader("PRIVATE-KEY", privateKey);
+    String? path,
+    String privateKey,
+  ) {
+    final request = _webClient.createRequest<T>(path);
+    request.withHeader("PRIVATE-KEY", privateKey);
     return request;
   }
 }
@@ -84,8 +86,10 @@ class ChatEnginePrivateAPI
 
   @override
   Future<WebResponse> getUser(int userId) {
-    final request =
-        createPrivateRequest<GET>(usersPathWithUserId(userId), _privateKey);
+    final request = createPrivateRequest<GET>(
+      usersPathWithUserId(userId),
+      _privateKey,
+    );
     return request.send();
   }
 
@@ -97,8 +101,10 @@ class ChatEnginePrivateAPI
 
   @override
   Future<WebResponse> deleteUser(int userId) {
-    final request =
-        createPrivateRequest<DELETE>(usersPathWithUserId(userId), _privateKey);
+    final request = createPrivateRequest<DELETE>(
+      usersPathWithUserId(userId),
+      _privateKey,
+    );
     return request.send();
   }
 
@@ -164,23 +170,32 @@ class ChatEngineAPI
   }
 
   @override
-  Future<WebResponse> deleteChat(int chatId) =>
-      createUserRequest<DELETE>(chatsPathWithChatId(chatId), username, secret)
-          .send();
+  Future<WebResponse> deleteChat(int chatId) => createUserRequest<DELETE>(
+        chatsPathWithChatId(chatId),
+        username,
+        secret,
+      ).send();
 
   @override
-  Future<WebResponse> getChatDetails(int chatId) =>
-      createUserRequest<GET>(chatsPathWithChatId(chatId), username, secret)
-          .send();
+  Future<WebResponse> getChatDetails(int chatId) => createUserRequest<GET>(
+        chatsPathWithChatId(chatId),
+        username,
+        secret,
+      ).send();
 
   @override
-  Future<WebResponse> getMyChats() =>
-      createUserRequest<GET>(chatsPath, username, secret).send();
+  Future<WebResponse> getMyChats() => createUserRequest<GET>(
+        chatsPath,
+        username,
+        secret,
+      ).send();
 
   @override
-  Future<WebResponse> getMyLatestChats(int chatCount) =>
-      createUserRequest<GET>(latestChatsPath(chatCount), username, secret)
-          .send();
+  Future<WebResponse> getMyLatestChats(int chatCount) => createUserRequest<GET>(
+        latestChatsPath(chatCount),
+        username,
+        secret,
+      ).send();
 
   @override
   Future<WebResponse> getMyLatestChatsBeforeTime(

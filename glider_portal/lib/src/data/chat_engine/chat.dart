@@ -7,14 +7,16 @@ abstract class ChatModel {
   int get id;
   ChatEngineUserModel get admin;
   List<ChatUserModel> get people;
+  String get title;
+  DateTime get created;
 }
 
 class Chat implements ChatModel {
   final JSON data;
 
   Chat(this.data) {
-    final jsonList = data.getListProperty<JSON>("people") ?? [];
-    people = jsonList.map((json) => ChatRoomUser(json)).toList();
+    final mapList = data.getListProperty<Map<String, dynamic>>("people") ?? [];
+    people = mapList.map((map) => ChatRoomUser(JSON.fromMap(map))).toList();
   }
 
   @override
@@ -26,4 +28,10 @@ class Chat implements ChatModel {
 
   @override
   late final List<ChatRoomUser> people;
+
+  @override
+  String get title => data.getProperty<String>("title")!;
+
+  @override
+  DateTime get created => data.getProperty<DateTime>("created")!;
 }

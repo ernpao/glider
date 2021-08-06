@@ -3,7 +3,7 @@ import 'package:glider_portal/glider_portal.dart';
 import 'package:hover/hover.dart';
 
 /// Abstraction of the state management model for user authentication.
-abstract class PortalAppAuthFlow<T extends AuthenticatedUser>
+abstract class AppAuthenticationState<T extends AuthenticatedUser>
     extends ChangeNotifier with ActiveUser, Secret, AuthenticationFlow {
   /// Indicates if the authentication flow
   /// has encountered an error.
@@ -39,9 +39,9 @@ abstract class PortalAppAuthFlow<T extends AuthenticatedUser>
   String createErrorMessageOnFailedAuth(WebResponse failedLoginResponse);
 }
 
-abstract class PortalAppAuthFlowBase<T extends AuthenticatedUser>
-    extends PortalAppAuthFlow<T> {
-  PortalAppAuthFlowBase({
+abstract class AppAuthenticationStateBase<T extends AuthenticatedUser>
+    extends AppAuthenticationState<T> {
+  AppAuthenticationStateBase({
     required this.authInterface,
   }) {
     _loadUser();
@@ -244,19 +244,19 @@ abstract class PortalAppAuthFlowBase<T extends AuthenticatedUser>
 
   @override
   void loginExceptionHandler(Object error) {
-    _errorMessage = error.toString();
+    _errorMessage = exceptionToErrorMessageString(error);
     _clearAwait();
   }
 
   @override
   void onLogoutException(Object error) {
-    _errorMessage = error.toString();
+    _errorMessage = exceptionToErrorMessageString(error);
     _clearAwait();
   }
 
   @override
   void signUpExceptionHandler(Object error) {
-    _errorMessage = error.toString();
+    _errorMessage = exceptionToErrorMessageString(error);
     _clearAwait();
   }
 
@@ -267,73 +267,24 @@ abstract class PortalAppAuthFlowBase<T extends AuthenticatedUser>
 
   @override
   void onStateUpdated(AuthenticationFlowState newState) => notifyListeners();
+
+  String exceptionToErrorMessageString(Object error);
 }
 
-class PortalAuthFlow extends PortalAppAuthFlowBase<PortalUser> {
-  PortalAuthFlow()
-      : super(
-          authInterface: PortalAuthAPI(),
-        );
-
-  @override
-  String encodeUserForStorage(PortalUser user) => user.encode();
-
-  @override
-  PortalUser createAuthenticatedUser(
-    JSON responseBody,
-    String secret,
-  ) =>
-      PortalUser.fromJson(responseBody);
-
-  @override
-  PortalUser loadStoredUser(String encodedUserData, String secret) =>
-      PortalUser.parse(encodedUserData);
-
-  @override
-  String createErrorMessageOnFailedAuth(WebResponse failedLoginResponse) {
-    return failedLoginResponse.bodyAsJson()!.getProperty<String>("error")!;
-  }
-}
-
-class ChatEngineAuthFlow extends PortalAppAuthFlowBase<ChatEngineActiveUser> {
-  ChatEngineAuthFlow() : super(authInterface: ChatEngineAPI());
-
-  @override
-  ChatEngineActiveUser createAuthenticatedUser(
-    JSON responseBody,
-    String secret,
-  ) =>
-      ChatEngineActiveUser(responseBody, secret);
-
-  @override
-  ChatEngineActiveUser loadStoredUser(String encodedUserData, String secret) {
-    final json = JSON.parse(encodedUserData);
-    return ChatEngineActiveUser(json, secret);
-  }
-
-  @override
-  String encodeUserForStorage(ChatEngineActiveUser user) => user.data.encode();
-
-  @override
-  String createErrorMessageOnFailedAuth(WebResponse failedLoginResponse) {
-    return failedLoginResponse.bodyAsJson()!.getProperty<String>("detail")!;
-  }
-}
-
-class PortalAppAuthStateConsumer extends StatelessWidget {
-  const PortalAppAuthStateConsumer({
+class AppAuthenticationStateConsumer extends StatelessWidget {
+  const AppAuthenticationStateConsumer({
     Key? key,
     required this.builder,
   }) : super(key: key);
 
   final Widget Function(
     BuildContext context,
-    PortalAppAuthFlow authState,
+    AppAuthenticationState authState,
   ) builder;
 
   @override
   Widget build(BuildContext context) {
-    final authState = Provider.of<PortalAppAuthFlow>(context);
+    final authState = Provider.of<AppAuthenticationState>(context);
     return builder(context, authState);
   }
 }

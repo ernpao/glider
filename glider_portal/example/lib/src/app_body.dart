@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:glider_portal/glider_portal.dart';
-import 'portal_app_auth_flow.dart';
+import 'app_authentication_state/app_authentication_state.dart';
 import 'package:hover/hover.dart';
 
-class PortalAppMain extends StatelessWidget {
-  const PortalAppMain({
+class AppBody extends StatelessWidget {
+  const AppBody({
     Key? key,
     required this.authState,
   }) : super(key: key);
-  final PortalAppAuthFlow authState;
+  final AppAuthenticationState authState;
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +38,7 @@ class PortalAppMain extends StatelessWidget {
 
 class _Body extends StatelessWidget {
   const _Body({required this.authState, Key? key}) : super(key: key);
-  final PortalAppAuthFlow authState;
+  final AppAuthenticationState authState;
   @override
   Widget build(BuildContext context) {
     return HoverBaseCard(
@@ -60,7 +60,7 @@ class _Header extends StatefulWidget {
     required this.authState,
     required this.mediaQuery,
   }) : super(key: key);
-  final PortalAppAuthFlow authState;
+  final AppAuthenticationState authState;
 
   final HoverResponsiveHelper mediaQuery;
 
@@ -112,7 +112,7 @@ class _HeaderState extends State<_Header> {
   void _showMenu(
     BuildContext context,
     HoverResponsiveHelper mediaQuery,
-    PortalAppAuthFlow authState,
+    AppAuthenticationState authState,
   ) async {
     final screenWidth = mediaQuery.screenWidth;
     final screenHeight = mediaQuery.screenHeight;

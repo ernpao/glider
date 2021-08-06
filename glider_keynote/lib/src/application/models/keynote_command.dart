@@ -1,6 +1,6 @@
 import 'package:glider/glider.dart';
 
-import 'enums.dart';
+import 'keynote_enums.dart';
 
 abstract class KeynoteCommand extends WebSocketMessage with EnumToString {
   KeynoteCommand({

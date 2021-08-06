@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 
-import 'mappable.dart';
-import 'parseable.dart';
+import '../abstractions/mappable.dart';
+import '../abstractions/parseable.dart';
 
 class JSON extends Parseable {
   JSON();

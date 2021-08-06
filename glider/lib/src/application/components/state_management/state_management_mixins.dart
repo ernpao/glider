@@ -1,4 +1,4 @@
-library mixins;
+library state_management_mixins;
 
 import 'package:glider_models/glider_models.dart';
 

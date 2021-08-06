@@ -1,4 +1,4 @@
-library chat;
+library chat_engine;
 
 export 'message.dart';
 export 'chat.dart';

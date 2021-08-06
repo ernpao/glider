@@ -1,4 +1,4 @@
-library examples;
+library demos;
 
 export 'auth_flow_demo/auth_flow_demo.dart';
 export 'machine_learning_demo/machine_learning_demo.dart';

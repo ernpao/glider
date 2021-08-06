@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
 
-import 'classes/mappable.dart';
+import 'abstractions/mappable.dart';
 
 extension ResponseExtensions on Response {
   dynamic get decodedBody => jsonDecode(body);

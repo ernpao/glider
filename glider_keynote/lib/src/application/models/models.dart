@@ -1,3 +1,4 @@
 library models;
 
-export 'enums.dart';
+export 'keynote_enums.dart';
+export 'keynote_command.dart';

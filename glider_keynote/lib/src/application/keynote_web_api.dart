@@ -1,5 +1,4 @@
 import 'package:glider/glider.dart';
-import 'package:glider_keynote/src/application/models/keynote_command.dart';
 
 import 'keynote_interface.dart';
 import 'models/models.dart';

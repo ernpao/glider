@@ -3,6 +3,8 @@ import 'package:glider_portal/glider_portal.dart';
 import 'app_authentication_state/app_authentication_state.dart';
 import 'package:hover/hover.dart';
 
+import 'app_chat/app_chat.dart';
+
 class AppBody extends StatelessWidget {
   const AppBody({
     Key? key,
@@ -45,9 +47,8 @@ class _Body extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Center(
-            child: Text("Welcome ${authState.activeUser!.username}"),
-          ),
+          Text("Welcome ${authState.activeUser!.username}"),
+          ChatEngineChat(),
         ],
       ),
     );

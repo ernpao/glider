@@ -1,6 +1,6 @@
 import 'package:glider/glider.dart';
 
-import 'interfaces/auth_interface.dart';
+import 'web_interfaces/web_interfaces.dart';
 
 class PortalAuthAPI extends WebClient implements AuthInterface {
   PortalAuthAPI() : super(host: "portal.codera.tech", useHttps: true);

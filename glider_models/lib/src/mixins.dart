@@ -60,8 +60,15 @@ extension DateTimeFormatting on DateTime {
   /// This in [h:mm:ss aa] format.
   String get formattedTime => _formatTime(this);
 
+  /// This in [h:mm aa] format.
+  String get formattedTimeWithoutSeconds => _formatTimeWithoutSeconds(this);
+
   /// This in [MMM d, yyyy H:m:s aa] format.
   String get formattedDateTime => _formatDateTime(this);
+
+  /// This in [MMM d, yyyy H:m aa] format.
+  String get formatDateTimeWithoutSeconds =>
+      _formatDateTimeWithoutSeconds(this);
 
   /// This in [MMMM d, yyyy] format.
   String get formattedDate => _formatDate(this);
@@ -70,9 +77,14 @@ extension DateTimeFormatting on DateTime {
 /// Formats a [DateTime] object and displays the time in 'h:mm:ss aa' format.
 String _formatTime(DateTime d) => DateFormat("h:mm:ss aa").format(d);
 
+String _formatTimeWithoutSeconds(DateTime d) => DateFormat("h:mm aa").format(d);
+
 /// Formats a [DateTime] object and displays the time in 'MMM d, yyyy H:m:s aa' format.
 String _formatDateTime(DateTime d) =>
     DateFormat("MMMM d, yyyy h:mm:ss aa").format(d);
+
+String _formatDateTimeWithoutSeconds(DateTime d) =>
+    DateFormat("MMMM d, yyyy h:mm aa").format(d);
 
 /// Formats a DateTime object and displays the time in 'MMMM d, yyyy' format.
 String _formatDate(DateTime d) => DateFormat("MMMM d, yyyy").format(d);

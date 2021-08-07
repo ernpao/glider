@@ -18,14 +18,14 @@ mixin ChatEnginePaths {
 
   String typingPath(int chatId) => "/chats/$chatId/typing/";
 
-  String messagesPath(int chatId) => "/chats/$chatId/messages";
+  String messagesPath(int chatId) => "/chats/$chatId/messages/";
 
   String messagesPathWithMessageId(int chatId, int messageId) {
-    return "${messagesPath(chatId)}/$messageId";
+    return "${messagesPath(chatId)}$messageId/";
   }
 
   String latestMessagesPath(int chatId, int chatCount) {
-    return "${messagesPath(chatId)}/latest/$chatCount";
+    return "${messagesPath(chatId)}latest/$chatCount/";
   }
 }
 

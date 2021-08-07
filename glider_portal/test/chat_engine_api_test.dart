@@ -19,6 +19,9 @@ void main() {
     assert(chats.isNotEmpty);
 
     for (final chat in chats) {
+      response = await api.sendChatMessage(chat.id, text: "Hello!");
+      assert(response.isSuccessful);
+
       /// Only delete chats if it was created by
       /// the same user.
       if (chat.admin.username == api.username) {

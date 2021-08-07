@@ -38,12 +38,12 @@ class ChatEngineUser implements ChatEngineUserModel {
   factory ChatEngineUser.fromMap(KeyValueStore map) =>
       ChatEngineUser(JSON.fromMap(map));
 
-  static const String _kAvatar = "avatar";
-  static const String _kUsername = "username";
-  static const String _kFirstName = "first_name";
-  static const String _kLastName = "last_name";
-  static const String _kIsOnline = "is_online";
-  static const String _kId = "id";
+  static const _kAvatar = "avatar";
+  static const _kUsername = "username";
+  static const _kFirstName = "first_name";
+  static const _kLastName = "last_name";
+  static const _kIsOnline = "is_online";
+  static const _kId = "id";
 }
 
 class ChatEngineActiveUser extends ChatEngineUser

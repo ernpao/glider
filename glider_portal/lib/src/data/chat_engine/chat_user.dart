@@ -27,6 +27,6 @@ class ChatRoomUser implements ChatUserModel {
   static List<ChatRoomUser> fromJsonList(List<JSON> jsonArray) =>
       jsonArray.map((json) => ChatRoomUser(json)).toList();
 
-  static const String _kPerson = "person";
-  static const String _kLastRead = "last_read";
+  static const _kPerson = "person";
+  static const _kLastRead = "last_read";
 }

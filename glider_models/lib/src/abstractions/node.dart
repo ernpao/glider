@@ -22,7 +22,8 @@ class Node extends AbstractNode with Traversible {
   /// Get the complete path of this node from the root node.
   static String getPathOfNode(Node node) {
     String p = node.identifier;
-    node.traverseAncestorsAs<Node>((n) => p = n.identifier + pathSeparator + p);
+    node.traverseAncestorsAs<Node>(
+        (n) => p = n.identifier + _pathSeparator + p);
     return p;
   }
 
@@ -137,10 +138,10 @@ class Node extends AbstractNode with Traversible {
     String fullPath = _isPathRelative(path) ? baseNode.path + path : path;
     isPathValid(fullPath, throwException: true);
 
-    final first = fullPath.indexOf(pathSeparator);
+    final first = fullPath.indexOf(_pathSeparator);
     final start = first != -1 ? first : 0;
 
-    final last = fullPath.lastIndexOf(pathSeparator);
+    final last = fullPath.lastIndexOf(_pathSeparator);
     final end = last != -1 ? last : null;
 
     final bridgePath = fullPath.substring(start, end);
@@ -171,7 +172,7 @@ class Node extends AbstractNode with Traversible {
   /// "/target"
   /// "/node1/node2/target"
   /// ```
-  static bool _isPathRelative(String path) => path.startsWith(pathSeparator);
+  static bool _isPathRelative(String path) => path.startsWith(_pathSeparator);
 
   /// Tests if the format of [path] is valid.
   ///
@@ -201,8 +202,8 @@ class Node extends AbstractNode with Traversible {
   /// "../"
   /// ```
   static bool isPathValid(String path, {bool throwException = false}) {
-    final isValid = !path.endsWith(pathSeparator) &&
-        !path.contains("$pathSeparator$pathSeparator") &&
+    final isValid = !path.endsWith(_pathSeparator) &&
+        !path.contains("$_pathSeparator$_pathSeparator") &&
         !path.startsWith(".");
 
     if (!isValid && throwException) {
@@ -212,7 +213,7 @@ class Node extends AbstractNode with Traversible {
     return isValid;
   }
 
-  static const String pathSeparator = "/";
+  static const _pathSeparator = "/";
 }
 
 abstract class ParseableNode extends Parseable
@@ -224,8 +225,8 @@ abstract class ParseableNode extends Parseable
     set(_childrenKey, <ParseableNode>[]);
   }
 
-  static const String _childrenKey = "__children";
-  static const String _identifierKey = "__id";
+  static const _childrenKey = "__children";
+  static const _identifierKey = "__id";
 
   @override
   void set(String key, dynamic value) {
@@ -362,7 +363,7 @@ abstract class ParseableNode extends Parseable
     super.dropChild(child);
   }
 
-  static const String _separator = Node.pathSeparator;
+  static const _separator = Node._pathSeparator;
 
   @override
   String get path => Node.getPathOfNode(this);

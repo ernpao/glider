@@ -1,4 +1,4 @@
-import 'package:glider_models/glider_models.dart';
+import 'package:glider_portal/glider_portal.dart';
 
 import 'chat_user.dart';
 import 'chat_engine_user.dart';
@@ -19,19 +19,41 @@ class Chat implements ChatModel {
     people = mapList.map((map) => ChatRoomUser(JSON.fromMap(map))).toList();
   }
 
-  @override
-  late final ChatEngineUser admin =
-      ChatEngineUser(data.getProperty<JSON>("admin")!);
+  static List<Chat> fromJsonArray(List<JSON> jsonArray) {
+    return jsonArray.map((json) => Chat(json)).toList();
+  }
+
+  ///
+  static List<Chat> fromWebResponse(WebResponse webResponse) {
+    if (webResponse.isSuccessful) {
+      return fromJsonArray(webResponse.bodyAsJsonList()!);
+    }
+    throw Exception(
+      "Can't get a list of Chats from an unsuccessful web request.",
+    );
+  }
 
   @override
-  late final int id = data.getProperty<int>("id")!;
+  late final ChatEngineUser admin = ChatEngineUser(
+    JSON.fromMap(
+      data.getProperty<KeyValueStore>(_kAdmin)!,
+    ),
+  );
+
+  @override
+  late final int id = data.getProperty<int>(_kId)!;
 
   @override
   late final List<ChatRoomUser> people;
 
   @override
-  String get title => data.getProperty<String>("title")!;
+  String get title => data.getProperty<String>(_kTitle)!;
 
   @override
-  DateTime get created => data.getProperty<DateTime>("created")!;
+  DateTime get created => data.getProperty<DateTime>(_kCreated)!;
+
+  static const _kAdmin = "admin";
+  static const _kId = "id";
+  static const _kTitle = "title";
+  static const _kCreated = "created";
 }

@@ -10,15 +10,15 @@ mixin ChatEnginePaths {
 
   late final String mePath = "$usersPath/me/";
 
-  final String chatsPath = "/chats";
-  String latestChatsPath(int chatCount) => "$chatsPath/latest/$chatCount";
-  String chatsPathWithChatId(int chatId) => "$chatsPath/$chatId/";
-  String chatsPathWithPeople(int chatId) => "$chatsPath/$chatId/people/";
-  String chatsPathWithOthers(int chatId) => "$chatsPath/$chatId/others/";
+  final String chatsPath = "/chats/";
+  String latestChatsPath(int chatCount) => "/chats/latest/$chatCount";
+  String chatsPathWithChatId(int chatId) => "/chats/$chatId/";
+  String chatsPathWithPeople(int chatId) => "/chats/$chatId/people/";
+  String chatsPathWithOthers(int chatId) => "/chats/$chatId/others/";
 
-  String typingPath(int chatId) => "$chatsPath/$chatId/typing/";
+  String typingPath(int chatId) => "/chats/$chatId/typing/";
 
-  String messagesPath(int chatId) => "$chatsPath/$chatId/messages";
+  String messagesPath(int chatId) => "/chats/$chatId/messages";
 
   String messagesPathWithMessageId(int chatId, int messageId) {
     return "${messagesPath(chatId)}/$messageId";
@@ -54,6 +54,7 @@ mixin _RequestHelper {
   ) {
     final request = _webClient.createRequest<T>(path);
     request.withHeader("PRIVATE-KEY", privateKey);
+    request.withJsonContentType();
     return request;
   }
 }
@@ -61,7 +62,7 @@ mixin _RequestHelper {
 class ChatEnginePrivateAPI
     with ChatEnginePaths, _RequestHelper
     implements AuthInterface, ChatEnginePrivateInterface {
-  static const String _privateKey = "d243c478-85ad-49d5-80da-f4673bfda05d";
+  static const _privateKey = "d243c478-85ad-49d5-80da-f4673bfda05d";
 
   @override
   Future<WebResponse> createUser({

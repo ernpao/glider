@@ -39,14 +39,14 @@ class Midi {
   static int getMin(String key) => _getMinOrMax(key, kMin);
   static int getMax(String key) => _getMinOrMax(key, kMax);
 
-  static const String kMin = "min";
-  static const String kMax = "max";
+  static const kMin = "min";
+  static const kMax = "max";
 
-  static const String kChannel = "channel";
-  static const String kValue = "value";
-  static const String kController = "controller";
-  static const String kVelocity = "velocity";
-  static const String kNote = "note";
+  static const kChannel = "channel";
+  static const kValue = "value";
+  static const kController = "controller";
+  static const kVelocity = "velocity";
+  static const kNote = "note";
 
   static const Map<String, Map<String, int>> minMaxValues = {
     kChannel: {kMin: 0, kMax: 15},

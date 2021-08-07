@@ -15,11 +15,11 @@ class Message implements MessageModel {
 
   final JSON data;
 
-  static const String _kCreated = "created";
-  static const String _kText = "text";
-  static const String _kSender = "sender";
-  static const String _kId = "id";
-  static const String _kAttachments = "attachments";
+  static const _kCreated = "created";
+  static const _kText = "text";
+  static const _kSender = "sender";
+  static const _kId = "id";
+  static const _kAttachments = "attachments";
 
   @override
   DateTime get created =>

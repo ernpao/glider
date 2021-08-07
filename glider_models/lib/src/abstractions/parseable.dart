@@ -31,6 +31,22 @@ class Parseable extends Encodable with Stringifiable {
     _content[key] = value;
   }
 
+  void remove(String key) {
+    if (key == _typeKey) {
+      throw Exception("$_typeKey is a reserved key for the Parseable class.");
+    }
+    _content.remove(key);
+  }
+
+  /// Copies the content from `from` and overwrites the content of
+  /// this [Parseable] object.
+  ///
+  /// The parameter `from` must be of the same class as this target [Parseable] object.
+  void copyContentFrom(Parseable from) {
+    assert(from.runtimeType == runtimeType);
+    _content = from._content;
+  }
+
   /// Copy [content] into this object
   void _setContent(KeyValueStore content, KeyValueStore? typeMap) {
     if (typeMap != null) {

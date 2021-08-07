@@ -4,12 +4,15 @@ import 'package:http/http.dart';
 import 'web_request_headers.dart';
 
 class WebResponse extends Result {
-  final Response httpResponse;
   WebResponse(this.httpResponse)
       : super(
           isSuccessful: httpResponse.isSuccessful,
           message: 'WebResponse Body: ${httpResponse.body}',
         );
+
+  /// The original Response object returned
+  /// by the http call.
+  final Response httpResponse;
 
   /// The body of the response as a string.
   String get body => httpResponse.body;

@@ -55,11 +55,13 @@ abstract class WebSocketInterface
 class WebSocket extends WebSocketInterface with WebHost, UUID {
   WebSocket({
     required this.host,
-    required this.port,
+    this.port,
+    this.path,
   });
 
   final String host;
-  final int port;
+  final int? port;
+  final String? path;
 
   WebSocketChannel? _channel;
   WebSocketEventHandler? _eventHandler;
@@ -72,12 +74,26 @@ class WebSocket extends WebSocketInterface with WebHost, UUID {
   @override
   bool get isOpen => _isOpen;
 
+  KeyValueStore _queryParameters = {};
+  KeyValueStore get queryParameters => _queryParameters;
+
+  /// Adds a query paramter to the URI of the port.
+  void withParameter(String key, dynamic value) =>
+      _queryParameters[key] = value;
+
   @override
   void openSocket({
     WebSocketEventHandler? eventHandler,
     bool reopenOnDone = true,
   }) {
-    _channel = WebSocketChannel.connect(Uri.parse('ws://$host:$port'));
+    final uri = Uri(
+      host: host,
+      scheme: "ws",
+      port: port,
+      path: path,
+      queryParameters: _queryParameters,
+    );
+    _channel = WebSocketChannel.connect(uri);
 
     _isOpen = true;
     _eventHandler = eventHandler;
@@ -133,11 +149,18 @@ class WebSocket extends WebSocketInterface with WebHost, UUID {
     _channel?.sink.add(message.encode());
   }
 
-  WebSocketMessage? _parseStreamData(d) {
-    if (d == null) return null;
-    final String jsonStr = d is String ? d : jsonEncode(d);
+  JSON? _streamDataToJson(data) {
+    if (data == null) return null;
+    final String jsonStr = data is String ? data : jsonEncode(data);
     final JSON json = JSON.parse(jsonStr);
-    final WebSocketMessage message = WebSocketMessage.fromJson(json);
-    return message;
+    return json;
+  }
+
+  WebSocketMessage? _parseStreamData(data) {
+    final json = _streamDataToJson(data);
+    if (json != null) {
+      final WebSocketMessage message = WebSocketMessage.fromJson(json);
+      return message;
+    }
   }
 }

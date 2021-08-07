@@ -1,7 +1,8 @@
-import 'package:glider_portal/glider_portal.dart';
+import 'package:glider/glider.dart';
 
 import 'chat_user.dart';
 import 'chat_engine_user.dart';
+import 'message.dart';
 
 abstract class ChatModel {
   int get id;
@@ -9,13 +10,14 @@ abstract class ChatModel {
   List<ChatUserModel> get people;
   String get title;
   DateTime get created;
+  Message get lastMessage;
 }
 
 class Chat implements ChatModel {
   final JSON data;
 
   Chat(this.data) {
-    final mapList = data.getListProperty<Map<String, dynamic>>("people") ?? [];
+    final mapList = data.getListProperty<Map<String, dynamic>>(_kPeople) ?? [];
     people = mapList.map((map) => ChatRoomUser(JSON.fromMap(map))).toList();
   }
 
@@ -52,8 +54,17 @@ class Chat implements ChatModel {
   @override
   DateTime get created => data.getProperty<DateTime>(_kCreated)!;
 
+  @override
+  late final Message lastMessage = Message(
+    JSON.fromMap(
+      data.getProperty<KeyValueStore>(_kLastMessage)!,
+    ),
+  );
+
   static const _kAdmin = "admin";
   static const _kId = "id";
   static const _kTitle = "title";
   static const _kCreated = "created";
+  static const _kPeople = "people";
+  static const _kLastMessage = "last_message";
 }

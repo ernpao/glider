@@ -63,6 +63,22 @@ class WebSocketMessage extends JSON {
   String? get body => get<String>(kBody);
   void setBody(String? body) => set(kBody, body);
 
+  /// The data from which this [WebSocketMessage] was created
+  /// from.
+  ///
+  /// This will only be set and not null if the [WebSocketMessage]
+  /// was created using the `fromJson` static method.
+  JSON? _rawData;
+  JSON? get rawData {
+    if (_rawData != null) return _rawData;
+    throw Exception(
+      "Error with WebSocketMessage:\n\n"
+      "${this.encode()}"
+      "\n\nWebSocketMessage.rawData was called on a WebSocketMessage "
+      "object that was not created from WebSocketMessage.fromJson.",
+    );
+  }
+
   /// Parse a [JSON] object into a [WebSocketMessage].
   static WebSocketMessage fromJson(JSON json) {
     final message = WebSocketMessage(
@@ -72,6 +88,9 @@ class WebSocketMessage extends JSON {
       topic: json.get<String>(kTopic),
       body: json.get<String>(kBody),
     );
+
+    /// Store json into _rawData
+    message._rawData = json;
 
     /// Parse the timestamp of the message
     final timestamp = json.get<String>(kCreated);

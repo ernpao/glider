@@ -1,11 +1,11 @@
-import 'package:glider_models/glider_models.dart';
+import 'package:glider/glider.dart';
 
 import 'chat_engine_user.dart';
 
 abstract class MessageModel {
   int get id;
   ChatEngineUserModel get sender;
-  DateTime get created;
+  DateTime? get created;
   List get attachments;
   String get text;
 }
@@ -15,6 +15,20 @@ class Message implements MessageModel {
 
   final JSON data;
 
+  static List<Message> fromJsonArray(List<JSON> jsonArray) {
+    return jsonArray.map((json) => Message(json)).toList();
+  }
+
+  static List<Message> fromWebResponse(WebResponse webResponse) {
+    if (webResponse.isSuccessful) {
+      assert(webResponse.httpResponse.decodedBody is List);
+      return fromJsonArray(webResponse.bodyAsJsonList()!);
+    }
+    throw Exception(
+      "Can't get a list of Messages from an unsuccessful web request.",
+    );
+  }
+
   static const _kCreated = "created";
   static const _kText = "text";
   static const _kSender = "sender";
@@ -22,8 +36,11 @@ class Message implements MessageModel {
   static const _kAttachments = "attachments";
 
   @override
-  DateTime get created =>
-      DateTime.parse((data.getProperty<String>(_kCreated)!));
+  DateTime? get created {
+    String timestamp = data.getProperty<String>(_kCreated)!;
+    timestamp = timestamp.split("+")[0];
+    return DateTime.tryParse(timestamp);
+  }
 
   @override
   String get text => data.getProperty<String>(_kText)!;

@@ -44,6 +44,22 @@ class ChatEngineUser implements ChatEngineUserModel {
   static const _kLastName = "last_name";
   static const _kIsOnline = "is_online";
   static const _kId = "id";
+
+  String get initials {
+    final first = firstName;
+    final last = lastName;
+    if (first != null && first.isNotEmpty && last != null && last.isNotEmpty) {
+      final firstInitial = first.split("").first.toUpperCase();
+      final lastInitial = last.split("").first.toUpperCase();
+      return firstInitial + lastInitial;
+    } else {
+      if (username.length > 1) {
+        return username.substring(0, 2).toUpperCase();
+      } else {
+        return username.toUpperCase();
+      }
+    }
+  }
 }
 
 class ChatEngineActiveUser extends ChatEngineUser

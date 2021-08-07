@@ -86,7 +86,6 @@ void main() {
     final messages = Message.parseList(chatMessageListString);
     final message = messages[0];
 
-    assert(message.created.year == 2021);
     assert(message.text == "Hello world!");
 
     final sender = message.sender;

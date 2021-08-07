@@ -16,7 +16,7 @@ import 'package:glider_models/glider_models.dart';
 /// Timestamp of when the [WebSocketMessage] was created.
 class WebSocketMessage extends JSON {
   WebSocketMessage({
-    required this.sender,
+    String? sender,
     String? category,
     String? type,
     String? topic,
@@ -31,9 +31,8 @@ class WebSocketMessage extends JSON {
   }
 
   /// A [String] value that is used to identify the sender of this [WebSocketMessage].
-  final String sender;
-
-  void _setSender(String sender) => set(kSender, sender);
+  String? get sender => get<String>(kSender);
+  void _setSender(String? sender) => set(kSender, sender);
 
   /// Indicates when this [WebSocketMessage] was created.
   DateTime? get created => DateTime.tryParse(get(kCreated));
@@ -67,7 +66,7 @@ class WebSocketMessage extends JSON {
   /// Parse a [JSON] object into a [WebSocketMessage].
   static WebSocketMessage fromJson(JSON json) {
     final message = WebSocketMessage(
-      sender: json.get<String>(kSender) ?? "Undefined",
+      sender: json.get<String>(kSender),
       type: json.get<String>(kType),
       category: json.get<String>(kCategory),
       topic: json.get<String>(kTopic),

@@ -4,37 +4,41 @@ import 'package:glider/glider.dart';
 import 'web_interfaces/web_interfaces.dart';
 
 @protected
-mixin ChatEnginePaths {
-  final String usersPath = "/users";
-  String usersPathWithUserId(int userId) => "$usersPath/$userId/";
+mixin _ChatEnginePaths {
+  final String _usersPath = "/users";
+  String _usersPathWithUserId(int userId) => "$_usersPath/$userId/";
 
-  late final String mePath = "$usersPath/me/";
+  late final String _mePath = "$_usersPath/me/";
 
-  final String chatsPath = "/chats/";
-  String latestChatsPath(int chatCount) => "/chats/latest/$chatCount";
-  String chatsPathWithChatId(int chatId) => "/chats/$chatId/";
-  String chatsPathWithPeople(int chatId) => "/chats/$chatId/people/";
-  String chatsPathWithOthers(int chatId) => "/chats/$chatId/others/";
+  final String _chatsPath = "/chats/";
+  String _latestChatsPath(int chatCount) => "/chats/latest/$chatCount";
+  String _chatsPathWithChatId(int chatId) => "/chats/$chatId/";
+  String _chatsPathWithPeople(int chatId) => "/chats/$chatId/people/";
+  String _chatsPathWithOthers(int chatId) => "/chats/$chatId/others/";
 
-  String typingPath(int chatId) => "/chats/$chatId/typing/";
+  String _typingPath(int chatId) => "/chats/$chatId/typing/";
 
-  String messagesPath(int chatId) => "/chats/$chatId/messages/";
+  String _messagesPath(int chatId) => "/chats/$chatId/messages/";
 
-  String messagesPathWithMessageId(int chatId, int messageId) {
-    return "${messagesPath(chatId)}$messageId/";
+  String _messagesPathWithMessageId(int chatId, int messageId) {
+    return "${_messagesPath(chatId)}$messageId/";
   }
 
-  String latestMessagesPath(int chatId, int chatCount) {
-    return "${messagesPath(chatId)}latest/$chatCount/";
+  String _latestMessagesPath(int chatId, int chatCount) {
+    return "${_messagesPath(chatId)}latest/$chatCount/";
   }
 }
 
 @protected
 mixin _RequestHelper {
-  final String chatEngineProjectId = "ab2204ec-10bc-4807-9f61-ecf012787ced";
+  static const _chatEngineUrl = "api.chatengine.io";
+  static const _chatEngineProjectId = "ab2204ec-10bc-4807-9f61-ecf012787ced";
+
+  String get chatEngineUrl => _chatEngineUrl;
+  String get chatEngineProjectId => _chatEngineProjectId;
 
   static final _webClient = WebClient(
-    host: "api.chatengine.io",
+    host: _chatEngineUrl,
     useHttps: true,
   );
 
@@ -60,7 +64,7 @@ mixin _RequestHelper {
 }
 
 class ChatEnginePrivateAPI
-    with ChatEnginePaths, _RequestHelper
+    with _ChatEnginePaths, _RequestHelper
     implements AuthInterface, ChatEnginePrivateInterface {
   static const _privateKey = "d243c478-85ad-49d5-80da-f4673bfda05d";
 
@@ -71,7 +75,7 @@ class ChatEnginePrivateAPI
     String? firstName,
     String? lastName,
   }) {
-    final request = createPrivateRequest<POST>(usersPath, _privateKey);
+    final request = createPrivateRequest<POST>(_usersPath, _privateKey);
 
     final body = JSON()
       ..setProperty("username", username)
@@ -88,7 +92,7 @@ class ChatEnginePrivateAPI
   @override
   Future<WebResponse> getUser(int userId) {
     final request = createPrivateRequest<GET>(
-      usersPathWithUserId(userId),
+      _usersPathWithUserId(userId),
       _privateKey,
     );
     return request.send();
@@ -96,14 +100,14 @@ class ChatEnginePrivateAPI
 
   @override
   Future<WebResponse> getUsers() {
-    final request = createPrivateRequest<GET>(usersPath, _privateKey);
+    final request = createPrivateRequest<GET>(_usersPath, _privateKey);
     return request.send();
   }
 
   @override
   Future<WebResponse> deleteUser(int userId) {
     final request = createPrivateRequest<DELETE>(
-      usersPathWithUserId(userId),
+      _usersPathWithUserId(userId),
       _privateKey,
     );
     return request.send();
@@ -111,7 +115,7 @@ class ChatEnginePrivateAPI
 
   @override
   Future<WebResponse> authenticate(String username, String secret) {
-    return createUserRequest<GET>(mePath, username, secret).send();
+    return createUserRequest<GET>(_mePath, username, secret).send();
   }
 
   @override
@@ -137,7 +141,7 @@ class ChatEnginePrivateAPI
 }
 
 class ChatEngineAPI
-    with ChatEnginePaths, _RequestHelper
+    with _ChatEnginePaths, _RequestHelper
     implements ChatEngineInterface {
   ChatEngineAPI({
     required this.username,
@@ -164,7 +168,7 @@ class ChatEngineAPI
       ..setProperty("title", title)
       ..setProperty("is_direct_chat", isDirectChat);
 
-    final post = createUserRequest<POST>(chatsPath, username, secret);
+    final post = createUserRequest<POST>(_chatsPath, username, secret);
     post.withBody(body);
 
     return post.send();
@@ -172,28 +176,28 @@ class ChatEngineAPI
 
   @override
   Future<WebResponse> deleteChat(int chatId) => createUserRequest<DELETE>(
-        chatsPathWithChatId(chatId),
+        _chatsPathWithChatId(chatId),
         username,
         secret,
       ).send();
 
   @override
   Future<WebResponse> getChatDetails(int chatId) => createUserRequest<GET>(
-        chatsPathWithChatId(chatId),
+        _chatsPathWithChatId(chatId),
         username,
         secret,
       ).send();
 
   @override
   Future<WebResponse> getMyChats() => createUserRequest<GET>(
-        chatsPath,
+        _chatsPath,
         username,
         secret,
       ).send();
 
   @override
   Future<WebResponse> getMyLatestChats(int chatCount) => createUserRequest<GET>(
-        latestChatsPath(chatCount),
+        _latestChatsPath(chatCount),
         username,
         secret,
       ).send();
@@ -205,7 +209,7 @@ class ChatEngineAPI
   ) {
     final body = JSON()..setProperty("before", before.toIso8601String());
     final put = createUserRequest<PUT>(
-      latestChatsPath(chatCount),
+      _latestChatsPath(chatCount),
       username,
       secret,
     );
@@ -224,7 +228,7 @@ class ChatEngineAPI
     if (title != null) body.setProperty("title", title);
     if (isDirectChat != null) body.setProperty("is_direct_chat", isDirectChat);
 
-    final request = createUserRequest<PUT>(chatsPath, username, secret);
+    final request = createUserRequest<PUT>(_chatsPath, username, secret);
     request.withBody(body);
     return request.send();
   }
@@ -240,7 +244,7 @@ class ChatEngineAPI
     if (isDirectChat != null) body.setProperty("is_direct_chat", isDirectChat);
 
     final request = createUserRequest<PATCH>(
-      chatsPathWithChatId(chatId),
+      _chatsPathWithChatId(chatId),
       username,
       secret,
     );
@@ -252,7 +256,7 @@ class ChatEngineAPI
   @override
   Future<WebResponse> getChatMembers(int chatId) {
     final request = createUserRequest<GET>(
-      chatsPathWithPeople(chatId),
+      _chatsPathWithPeople(chatId),
       username,
       secret,
     );
@@ -262,7 +266,7 @@ class ChatEngineAPI
   @override
   Future<WebResponse> getOtherUsers(int chatId) {
     final request = createUserRequest<GET>(
-      chatsPathWithOthers(chatId),
+      _chatsPathWithOthers(chatId),
       username,
       secret,
     );
@@ -273,7 +277,7 @@ class ChatEngineAPI
   Future<WebResponse> removeChatMember(int chatId, String usernameToRemove) {
     final body = JSON()..setProperty("username", usernameToRemove);
     final request = createUserRequest<PUT>(
-      chatsPathWithPeople(chatId),
+      _chatsPathWithPeople(chatId),
       username,
       secret,
     );
@@ -285,7 +289,7 @@ class ChatEngineAPI
   Future<WebResponse> searchOtherUsers(int chatId, String search) {
     final body = JSON()..setProperty("search", search);
     final request = createUserRequest<POST>(
-      chatsPathWithOthers(chatId),
+      _chatsPathWithOthers(chatId),
       username,
       secret,
     );
@@ -296,14 +300,14 @@ class ChatEngineAPI
   @override
   Future<WebResponse> deleteMessage(int chatId, int messageId) =>
       createUserRequest<DELETE>(
-        messagesPathWithMessageId(chatId, messageId),
+        _messagesPathWithMessageId(chatId, messageId),
         username,
         secret,
       ).send();
 
   @override
   Future<WebResponse> getChatMessages(int chatId) => createUserRequest<GET>(
-        messagesPath(chatId),
+        _messagesPath(chatId),
         username,
         secret,
       ).send();
@@ -311,7 +315,7 @@ class ChatEngineAPI
   @override
   Future<WebResponse> getLatestChatMessages(int chatId, int chatCount) =>
       createUserRequest<GET>(
-        latestMessagesPath(chatId, chatCount),
+        _latestMessagesPath(chatId, chatCount),
         username,
         secret,
       ).send();
@@ -319,7 +323,7 @@ class ChatEngineAPI
   @override
   Future<WebResponse> getMessageDetails(int chatId, int messageId) =>
       createUserRequest<GET>(
-        messagesPathWithMessageId(chatId, messageId),
+        _messagesPathWithMessageId(chatId, messageId),
         username,
         secret,
       ).send();
@@ -328,7 +332,7 @@ class ChatEngineAPI
   Future<WebResponse> readMessage(int chatId, int lastReadMessageId) {
     final body = JSON()..setProperty("last_read", lastReadMessageId);
     final request = createUserRequest<PATCH>(
-      chatsPathWithPeople(chatId),
+      _chatsPathWithPeople(chatId),
       username,
       secret,
     );
@@ -352,7 +356,7 @@ class ChatEngineAPI
     if (customJson != null) body.setProperty("custom_json", customJson);
 
     final request = createUserRequest<POST>(
-      messagesPath(chatId),
+      _messagesPath(chatId),
       username,
       secret,
     );
@@ -369,7 +373,7 @@ class ChatEngineAPI
     if (newText != null) body.setProperty("text", newText);
 
     final request = createUserRequest<PATCH>(
-      messagesPath(chatId),
+      _messagesPath(chatId),
       username,
       secret,
     );
@@ -380,8 +384,44 @@ class ChatEngineAPI
 
   @override
   Future<WebResponse> userIsTyping(int chatId) => createUserRequest<PATCH>(
-        typingPath(chatId),
+        _typingPath(chatId),
         username,
         secret,
       ).send();
+}
+
+class ChatEngineSocketListener extends AuthenticatedUser with _RequestHelper {
+  ChatEngineSocketListener({
+    required this.username,
+    required this.secret,
+  }) {
+    _initializeSocket();
+  }
+
+  void _initializeSocket() {
+    _socket.openSocket(
+      reopenOnDone: true,
+      eventHandler: WebSocketEventHandler(
+        onEvent: (event) {
+          if (event.isMessageEvent) {
+            final message = (event as WebSocketMessageEvent).message;
+            if (message != null) {
+              final json = message.rawData;
+              if (json != null) {
+                debugPrint(json.prettify());
+              }
+            }
+          }
+        },
+      ),
+    );
+  }
+
+  late final _socket = WebSocket(host: chatEngineUrl, port: 80);
+
+  @override
+  final String secret;
+
+  @override
+  final String username;
 }

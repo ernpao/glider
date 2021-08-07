@@ -23,9 +23,9 @@ class Chat implements ChatModel {
     return jsonArray.map((json) => Chat(json)).toList();
   }
 
-  ///
   static List<Chat> fromWebResponse(WebResponse webResponse) {
     if (webResponse.isSuccessful) {
+      assert(webResponse.httpResponse.decodedBody is List);
       return fromJsonArray(webResponse.bodyAsJsonList()!);
     }
     throw Exception(

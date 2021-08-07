@@ -11,7 +11,7 @@ class Parseable extends Encodable with Stringifiable {
     _setTypeInContent();
   }
 
-  static const String _typeKey = "__type";
+  static const _typeKey = "__type";
 
   void _setTypeInContent() {
     _content[_typeKey] = runtimeType.toString();

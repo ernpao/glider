@@ -83,11 +83,11 @@ class WebSocketMessage extends JSON {
     return message;
   }
 
-  static const String _prefix = "_ws_";
-  static const String kSender = "${_prefix}sender";
-  static const String kType = "${_prefix}type";
-  static const String kCategory = "${_prefix}category";
-  static const String kTopic = "${_prefix}topic";
-  static const String kBody = "${_prefix}body";
-  static const String kCreated = "${_prefix}created";
+  static const _prefix = "_ws_";
+  static const kSender = "${_prefix}sender";
+  static const kType = "${_prefix}type";
+  static const kCategory = "${_prefix}category";
+  static const kTopic = "${_prefix}topic";
+  static const kBody = "${_prefix}body";
+  static const kCreated = "${_prefix}created";
 }

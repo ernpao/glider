@@ -10,6 +10,7 @@ extension ResponseExtensions on Response {
   dynamic get decodedBody => jsonDecode(body);
   KeyValueStore? get bodyAsMap {
     try {
+      if (decodedBody is! Map) return null;
       return decodedBody as KeyValueStore;
     } catch (e) {
       debugPrint(

@@ -2,22 +2,41 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:glider_portal/glider_portal.dart';
 
+// final api = ChatEngineAPI(username: "ernpao@g.com", secret: "password");
+final privateAPI = ChatEnginePrivateAPI();
+final api = ChatEngineAPI(username: "ernpao@g.com", secret: "password");
 void main() {
   test("Chat Engine API", () async {});
 
+  test("Chat Engine API - Test Get, Create, and Delete Chats", () async {
+    var chats = <Chat>[];
+
+    WebResponse response = await api.createChat("Test Chat");
+    assert(response.isSuccessful);
+
+    response = await api.getMyChats();
+    chats = Chat.fromWebResponse(response);
+    assert(chats.isNotEmpty);
+
+    for (final chat in chats) {
+      /// Only delete chats if it was created by
+      /// the same user.
+      if (chat.admin.username == api.username) {
+        final response = await api.deleteChat(chat.id);
+        assert(response.isSuccessful);
+      }
+    }
+  });
+
   test("Chat Engine API - Test Authenticate", () async {
-    final api = ChatEngineAPI();
-    const secret = "password";
-    final response = await api.authenticate("ernpao", secret);
+    final response = await privateAPI.authenticate("ernpao@g.com", "password");
     assert(response.isSuccessful);
   });
 
-  test("Chat Engine API - Test Chat Engine Create and Delete User", () async {
-    final api = ChatEngineAPI();
-
+  test("Chat Engine API - Test Create and Delete User", () async {
     const secret = "password";
 
-    final response = await api.createUser(
+    final response = await privateAPI.createUser(
       username: "test",
       secret: secret,
       firstName: "test",
@@ -29,10 +48,11 @@ void main() {
 
     final user = ChatEngineUser(response.bodyAsJson()!);
 
-    final authenticateResponse = await api.authenticate(user.username, secret);
+    final authenticateResponse =
+        await privateAPI.authenticate(user.username, secret);
     assert(authenticateResponse.isSuccessful);
 
-    final deleteResponse = await api.deleteUser(user.id);
+    final deleteResponse = await privateAPI.deleteUser(user.id);
     debugPrintSynchronously(deleteResponse.bodyAsJson()?.prettify());
     assert(deleteResponse.isSuccessful);
   });

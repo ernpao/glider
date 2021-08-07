@@ -23,8 +23,15 @@ abstract class WebSocketEvent {
 class WebSocketDoneEvent extends WebSocketEvent {}
 
 class WebSocketMessageEvent extends WebSocketEvent {
-  final WebSocketMessage? message;
   WebSocketMessageEvent(this.message);
+
+  /// [WebSocketMessage] received from the [WebSocket].
+  ///
+  /// This [WebSocketMessage] will always be created from
+  /// [WebSocketMessage].`fromJson` so [WebSocketMessage].`rawData` can be
+  /// accessed to get the [JSON] data if `message` does not have the predefined
+  /// fields in [WebSocketMessage].
+  final WebSocketMessage? message;
 }
 
 class WebSocketErrorEvent extends WebSocketEvent {
@@ -35,7 +42,9 @@ class WebSocketErrorEvent extends WebSocketEvent {
 
 /// A class that processes WebSocket events (i.e. [WebSocketEvent] objects).
 class WebSocketEventHandler {
-  WebSocketEventHandler({required this.onEvent});
+  WebSocketEventHandler({
+    required this.onEvent,
+  });
 
   final Function(WebSocketEvent event) onEvent;
 

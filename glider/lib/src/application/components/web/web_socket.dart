@@ -57,11 +57,14 @@ class WebSocket extends WebSocketInterface with WebHost, UUID {
     required this.host,
     this.port,
     this.path,
+    this.useWss,
   });
 
   final String host;
   final int? port;
   final String? path;
+  final bool? useWss;
+  late final bool _useWss = useWss ?? true;
 
   WebSocketChannel? _channel;
   WebSocketEventHandler? _eventHandler;
@@ -81,37 +84,49 @@ class WebSocket extends WebSocketInterface with WebHost, UUID {
   void withParameter(String key, dynamic value) =>
       _queryParameters[key] = value;
 
+  late final query = _queryParameters.entries
+      .map((e) => '${Uri.encodeComponent(e.key)}=${e.value}')
+      .join('&');
+
+  late final uri = Uri(
+    host: host,
+    scheme: _useWss ? "wss" : "ws",
+    port: port,
+    path: path,
+    query: query,
+  );
+
+  bool _reopenOnDone = true;
+
   @override
   void openSocket({
     WebSocketEventHandler? eventHandler,
     bool reopenOnDone = true,
   }) {
-    final uri = Uri(
-      host: host,
-      scheme: "ws",
-      port: port,
-      path: path,
-      queryParameters: _queryParameters,
-    );
-    _channel = WebSocketChannel.connect(uri);
-
     _isOpen = true;
     _eventHandler = eventHandler;
+    _channel = WebSocketChannel.connect(uri);
+    _reopenOnDone = reopenOnDone;
+    _setupEventHandler();
+  }
 
+  void _setupEventHandler() {
     if (_eventHandler != null) {
       _channel?.stream.listen(
-        (d) => _eventHandler?.onMessage(_parseStreamData(d)),
+        (data) => _eventHandler?.onMessage(_parseStreamData(data)),
         onError: _eventHandler?.onError,
-        onDone: () => _onDone(reopenOnDone),
+        onDone: _onDone,
       );
     }
   }
 
-  void _onDone(bool reopenOnDone) {
-    _isOpen = false;
+  void _onDone() {
     _eventHandler?.onDone();
-    if (reopenOnDone) {
-      openSocket(eventHandler: _eventHandler, reopenOnDone: reopenOnDone);
+    if (_reopenOnDone) {
+      openSocket(eventHandler: _eventHandler, reopenOnDone: _reopenOnDone);
+    } else {
+      _isOpen = false;
+      _eventHandler = null;
     }
   }
 

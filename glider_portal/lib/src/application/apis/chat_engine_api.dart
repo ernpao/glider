@@ -32,9 +32,9 @@ mixin _ChatEnginePaths {
 @protected
 mixin _RequestHelper {
   static const _chatEngineUrl = "api.chatengine.io";
-  static const _chatEngineProjectId = "ab2204ec-10bc-4807-9f61-ecf012787ced";
-
   String get chatEngineUrl => _chatEngineUrl;
+
+  static const _chatEngineProjectId = "ab2204ec-10bc-4807-9f61-ecf012787ced";
   String get chatEngineProjectId => _chatEngineProjectId;
 
   static final _webClient = WebClient(
@@ -390,7 +390,7 @@ class ChatEngineAPI
       ).send();
 }
 
-class ChatEngineSocketListener extends AuthenticatedUser with _RequestHelper {
+class ChatEngineSocketListener with _RequestHelper, Secret, Username {
   ChatEngineSocketListener({
     required this.username,
     required this.secret,
@@ -398,30 +398,76 @@ class ChatEngineSocketListener extends AuthenticatedUser with _RequestHelper {
     _initializeSocket();
   }
 
-  void _initializeSocket() {
-    _socket.openSocket(
-      reopenOnDone: true,
-      eventHandler: WebSocketEventHandler(
-        onEvent: (event) {
-          if (event.isMessageEvent) {
-            final message = (event as WebSocketMessageEvent).message;
-            if (message != null) {
-              final json = message.rawData;
-              if (json != null) {
-                debugPrint(json.prettify());
-              }
-            }
-          }
-        },
-      ),
-    );
-  }
-
-  late final _socket = WebSocket(host: chatEngineUrl, port: 80);
-
   @override
   final String secret;
 
   @override
   final String username;
+
+  late final _socket = WebSocket(
+    host: chatEngineUrl,
+    useWss: true,
+    path: "/person/",
+  );
+
+  void _initializeSocket() {
+    _socket.withParameter("publicKey", chatEngineProjectId);
+    _socket.withParameter("username", username);
+    _socket.withParameter("secret", secret);
+
+    debugPrint("Opening Chat Engine socket...");
+    _socket.openSocket(
+      reopenOnDone: true,
+      eventHandler: WebSocketEventHandler(
+        onEvent: (event) {
+          if (event.isMessageEventWithMessage) {
+            final eventMessage = (event as WebSocketMessageEvent).message!;
+            final json = eventMessage.rawData;
+            if (json != null) {
+              debugPrint(json.prettify());
+              final message = ChatEngineSocketMessage(json);
+              final action = message.action;
+
+              switch (action) {
+                case ChatEngineSocketMessage.actionLoginError:
+                  debugPrint("Chat Engine Socket login error:");
+                  debugPrint("Socket URI: ${_socket.uri}");
+                  debugPrint("Socket Query: ${_socket.query}");
+                  debugPrint(
+                    "Socket Query Parameters: ${_socket.queryParameters}",
+                  );
+                  break;
+                default:
+                  break;
+              }
+            }
+          }
+          if (event.isErrorEvent) {
+            final error = (event as WebSocketErrorEvent).error;
+            debugPrint("Chat Engine Socket Error: ${error.toString()}");
+            debugPrint("Socket URI: ${_socket.uri}");
+          }
+        },
+      ),
+    );
+    debugPrint("Chat Engine socket initialized!");
+  }
+}
+
+class ChatEngineSocketMessage {
+  ChatEngineSocketMessage(this.data);
+  final JSON data;
+
+  String get action => data.getProperty<String>(actionKey)!;
+
+  bool get isLoginErrorAction => action == actionLoginError;
+  bool get isTypingAction => action == actionIsTyping;
+  bool get isEditChatAction => action == actionEditChat;
+
+  static const actionKey = "action";
+  static const actionIsTyping = "is_typing";
+  static const actionEditChat = "edit_chat";
+  static const actionNewMessage = "new_message";
+  static const actionDeleteChat = "delete_chat";
+  static const actionLoginError = "login_error";
 }

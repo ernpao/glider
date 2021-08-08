@@ -6,7 +6,10 @@ import 'package:glider_portal/glider_portal.dart';
 final privateAPI = ChatEnginePrivateAPI();
 final api = ChatEngineAPI(username: "ernpao@g.com", secret: "password");
 void main() {
-  test("Chat Engine API", () async {});
+  test("Chat Engine API", () async {
+    final socket =
+        ChatEngineSocketListener(username: "ernpao@g.com", secret: "password");
+  });
 
   test("Chat Engine API - Test Get, Create, and Delete Chats", () async {
     var chats = <Chat>[];

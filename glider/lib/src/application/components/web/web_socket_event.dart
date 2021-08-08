@@ -2,6 +2,10 @@ import 'web_socket_message.dart';
 
 abstract class WebSocketEvent {
   bool get isMessageEvent => this is WebSocketMessageEvent;
+  bool get isMessageEventWithMessage {
+    return isMessageEvent && (this as WebSocketMessageEvent).withMessage;
+  }
+
   bool get isErrorEvent => this is WebSocketErrorEvent;
   bool get isDoneEvent => this is WebSocketDoneEvent;
 
@@ -32,6 +36,8 @@ class WebSocketMessageEvent extends WebSocketEvent {
   /// accessed to get the [JSON] data if `message` does not have the predefined
   /// fields in [WebSocketMessage].
   final WebSocketMessage? message;
+
+  bool get withMessage => message != null;
 }
 
 class WebSocketErrorEvent extends WebSocketEvent {

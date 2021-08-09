@@ -4,7 +4,7 @@ import 'package:glider_models/glider_models.dart';
 /// predefined fields:
 ///
 /// #### Sender
-/// A string that is used to identify the sender of this [WS_Message].
+/// A string that is used to identify the sender of this [WsData].
 ///
 /// #### Category, Type, and Topic
 /// String fields that can be used to describe payload of the message.
@@ -13,9 +13,9 @@ import 'package:glider_models/glider_models.dart';
 /// A string that contains the payload of the message.
 ///
 /// #### Created
-/// Timestamp of when the [WS_Message] was created.
-class WS_Message extends JSON {
-  WS_Message({
+/// Timestamp of when the [WsData] was created.
+class WsData extends JSON {
+  WsData({
     String? sender,
     String? category,
     String? type,
@@ -30,11 +30,11 @@ class WS_Message extends JSON {
     _setCreated(DateTime.now());
   }
 
-  /// A [String] value that is used to identify the sender of this [WS_Message].
+  /// A [String] value that is used to identify the sender of this [WsData].
   String? get sender => get<String>(kSender);
   void _setSender(String? sender) => set(kSender, sender);
 
-  /// Indicates when this [WS_Message] was created.
+  /// Indicates when this [WsData] was created.
   DateTime? get created => DateTime.tryParse(get(kCreated));
 
   void _setCreated(DateTime created) {
@@ -63,10 +63,10 @@ class WS_Message extends JSON {
   String? get body => get<String>(kBody);
   void setBody(String? body) => set(kBody, body);
 
-  /// The data from which this [WS_Message] was created
+  /// The data from which this [WsData] was created
   /// from.
   ///
-  /// This will only be set and not null if the [WS_Message]
+  /// This will only be set and not null if the [WsData]
   /// was created using the `fromJson` static method.
   JSON? _rawData;
   JSON? get rawData {
@@ -79,9 +79,9 @@ class WS_Message extends JSON {
     );
   }
 
-  /// Parse a [JSON] object into a [WS_Message].
-  static WS_Message fromJson(JSON json) {
-    final message = WS_Message(
+  /// Parse a [JSON] object into a [WsData].
+  static WsData fromJson(JSON json) {
+    final message = WsData(
       sender: json.get<String>(kSender),
       type: json.get<String>(kType),
       category: json.get<String>(kCategory),

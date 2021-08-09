@@ -4,14 +4,14 @@ import 'webtop_interface.dart';
 
 class WebtopWebAPI
     with WebURI
-    implements WebtopInterface, WebInterface, WS_Socket {
+    implements WebtopInterface, WebInterface, WsSocket {
   WebtopWebAPI({
     required this.host,
     required this.port,
     required this.socketPort,
   });
 
-  late final WS_Socket _socket = WS_Socket(
+  late final WsSocket _socket = WsSocket(
     host: host,
     port: socketPort,
   );
@@ -65,7 +65,7 @@ class WebtopWebAPI
   bool get isOpen => _socket.isOpen;
 
   @override
-  void sendWsMessage(WS_Message message) => _socket.sendWsMessage(message);
+  void sendWsData(WsData data) => _socket.sendWsData(data);
 
   @override
   GET createGET(String? requestPath) => _client.createGET(requestPath);

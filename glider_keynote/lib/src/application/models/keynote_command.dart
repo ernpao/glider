@@ -2,7 +2,7 @@ import 'package:glider/glider.dart';
 
 import 'keynote_enums.dart';
 
-abstract class KeynoteCommand extends WS_Message with EnumToString {
+abstract class KeynoteCommand extends WsData with EnumToString {
   KeynoteCommand({
     required String sender,
     required KeynoteCommandTopic topic,

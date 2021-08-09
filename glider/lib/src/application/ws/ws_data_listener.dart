@@ -1,11 +1,11 @@
 import 'package:glider_models/glider_models.dart';
 
 import '../components/web/web.dart';
-import 'ws_message.dart';
+import 'ws_data.dart';
 
-class WsMessageListener extends WebSocketJsonListener {
-  WsMessageListener({
-    required Function(WS_Message message) onMessage,
+class WsDataListener extends WebSocketJsonListener {
+  WsDataListener({
+    required Function(WsData message) onMessage,
     this.onDone,
     this.onError,
   }) : super(
@@ -20,7 +20,7 @@ class WsMessageListener extends WebSocketJsonListener {
   final Function(Object? error)? onError;
   final Function()? onDone;
 
-  static WS_Message _jsonToMessage(JSON json) {
-    return WS_Message.fromJson(json);
+  static WsData _jsonToMessage(JSON json) {
+    return WsData.fromJson(json);
   }
 }

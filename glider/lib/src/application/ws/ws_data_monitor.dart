@@ -2,19 +2,19 @@ import 'package:flutter/material.dart';
 
 import '../components/web/web.dart';
 import 'ws_event.dart';
-import 'ws_message_listener.dart';
+import 'ws_data_listener.dart';
 import 'ws_socket.dart';
 
-/// A widget for listening to WsMessages.
-class WS_SocketMonitor extends StatefulWidget {
-  WS_SocketMonitor({
+/// A widget for listening to WsDatas.
+class WsDataMonitor extends StatefulWidget {
+  WsDataMonitor({
     required this.socket,
     required this.builder,
     this.reopenOnDone = true,
   }) {
     if (socket.isOpen) {
       throw new Exception(
-        "WS_Socket provided to a WS_Monitor should be closed.",
+        "WsSocket provided to a WsMonitor should be closed.",
       );
     }
   }
@@ -23,27 +23,27 @@ class WS_SocketMonitor extends StatefulWidget {
   final bool reopenOnDone;
 
   /// An object that implements the [WebSocketStreamChannel] interface or an instance of the [WebSocketStreamChannel] class.
-  final WS_Socket socket;
+  final WsSocket socket;
 
-  final Widget Function(BuildContext context, WS_Event? event) builder;
+  final Widget Function(BuildContext context, WsEvent? event) builder;
 
   @override
-  _WS_SocketMonitorState createState() => _WS_SocketMonitorState();
+  _WsDataMonitorState createState() => _WsDataMonitorState();
 }
 
-class _WS_SocketMonitorState extends State<WS_SocketMonitor> {
-  WS_Event? _event;
+class _WsDataMonitorState extends State<WsDataMonitor> {
+  WsEvent? _lastEvent;
 
   @override
   void initState() {
     widget.socket.openSocket();
     widget.socket.listen(
-      WsMessageListener(onMessage: (webSocketMessage) {
-        setState(() => _event = WS_MessageEvent(webSocketMessage));
+      WsDataListener(onMessage: (webSocketMessage) {
+        setState(() => _lastEvent = WsDataEvent(webSocketMessage));
       }, onDone: () {
-        setState(() => _event = WS_DoneEvent());
+        setState(() => _lastEvent = WsDoneEvent());
       }, onError: (error) {
-        setState(() => _event = WS_ErrorEvent(error));
+        setState(() => _lastEvent = WsErrorEvent(error));
       }),
       reopenOnDone: widget.reopenOnDone,
     );
@@ -51,5 +51,5 @@ class _WS_SocketMonitorState extends State<WS_SocketMonitor> {
   }
 
   @override
-  Widget build(BuildContext context) => widget.builder(context, _event);
+  Widget build(BuildContext context) => widget.builder(context, _lastEvent);
 }

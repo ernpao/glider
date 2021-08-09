@@ -404,7 +404,7 @@ class ChatEngineSocketListener with _RequestHelper, Secret, Username {
   @override
   final String username;
 
-  late final _socket = WS_Socket(
+  late final _socket = WsSocket(
     host: chatEngineUrl,
     useWss: true,
     path: "/person/",

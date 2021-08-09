@@ -8,9 +8,9 @@ class KeynoteWebAPI
     implements
         KeynoteInterface,
         WebInterface,
-        WS_MessageSinkChannel,
+        WsDataSinkChannel,
         WebSocketConnection {
-  late final WS_Socket _socket = WS_Socket(host: host, port: socketPort);
+  late final WsSocket _socket = WsSocket(host: host, port: socketPort);
   late final WebClient _client = WebClient(
     host: host,
     defaultPort: port,
@@ -53,7 +53,7 @@ class KeynoteWebAPI
 
   @override
   void sendKeystroke(String key, {KeyboardModifier? modifier}) {
-    sendWsMessage(KeyboardKeystrokeCommand(
+    sendWsData(KeyboardKeystrokeCommand(
       sender: _socket.uuid,
       key: key,
     ));
@@ -61,12 +61,12 @@ class KeynoteWebAPI
 
   @override
   void moveMouse(int x, int y) {
-    sendWsMessage(KeynoteMouseMoveCommand(sender: _socket.uuid, x: x, y: y));
+    sendWsData(KeynoteMouseMoveCommand(sender: _socket.uuid, x: x, y: y));
   }
 
   @override
   void clickMouse(MouseButton button) {
-    sendWsMessage(KeynoteMouseClickCommand(
+    sendWsData(KeynoteMouseClickCommand(
       sender: _socket.uuid,
       button: button,
     ));
@@ -74,7 +74,7 @@ class KeynoteWebAPI
 
   @override
   void offsetMouse(int xOffset, int yOffset) {
-    sendWsMessage(KeynoteMouseOffsetCommand(
+    sendWsData(KeynoteMouseOffsetCommand(
       sender: _socket.uuid,
       xOffset: xOffset,
       yOffset: yOffset,
@@ -93,7 +93,7 @@ class KeynoteWebAPI
   bool get isOpen => _socket.isOpen;
 
   @override
-  void sendWsMessage(WS_Message message) => _socket.sendWsMessage(message);
+  void sendWsData(WsData data) => _socket.sendWsData(data);
 
   @override
   void printMessage(String text) {

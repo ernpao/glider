@@ -4,7 +4,7 @@ import 'midi_interface.dart';
 
 class MidiWebAPI
     with WebURI
-    implements MidiInterface, WebSocketConnection, WS_MessageSinkChannel {
+    implements MidiInterface, WebSocketConnection, WsDataSinkChannel {
   @override
   final String host;
 
@@ -15,7 +15,7 @@ class MidiWebAPI
 
   final int socketPort;
 
-  late final WS_Socket _socket = WS_Socket(host: host, port: socketPort);
+  late final WsSocket _socket = WsSocket(host: host, port: socketPort);
 
   @override
   void sendMidiCC(String deviceName, ControlChange message) {
@@ -55,8 +55,8 @@ class MidiWebAPI
   }
 
   @override
-  void sendWsMessage(WS_Message message) {
-    _socket.sendWsMessage(message);
+  void sendWsData(WsData data) {
+    _socket.sendWsData(data);
   }
 
   @override

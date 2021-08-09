@@ -138,14 +138,14 @@ class _WebWidgetsDemoState extends State<_WebWidgetsDemo> {
         ),
         SizedBox(
           width: Hover.getScreenWidth(context),
-          child: WS_SocketMonitor(
-            socket: WS_Socket(
+          child: WsDataMonitor(
+            socket: WsSocket(
               host: "192.168.100.191",
               port: 6868,
             ),
             builder: (context, event) {
               if (event != null) {
-                if (event is WS_MessageEvent) {
+                if (event is WsDataEvent) {
                   final message = event.data;
                   if (message != null) {
                     if (message.type == "buffer") {
@@ -159,7 +159,7 @@ class _WebWidgetsDemoState extends State<_WebWidgetsDemo> {
                     }
                     return Text(message.body ?? "");
                   }
-                } else if (event is WS_ErrorEvent) {
+                } else if (event is WsErrorEvent) {
                   return Text(event.error?.toString() ?? "");
                 }
               }

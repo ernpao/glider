@@ -3,19 +3,18 @@ import 'package:glider_models/glider_models.dart';
 import '../components/web/web.dart';
 import 'ws_data.dart';
 
-abstract class WsDataSinkChannel {
-  /// Function for sending string content to the WebSocket server.
+abstract class WsDataSink {
+  /// Send a WsData object with a string message body.
   void sendWs(String body, {String? type, String? category, String? topic});
 
-  /// Send JSON data to the WebSocket server. Essentially the same as sending
-  /// the stringified JSON data using `send`.
+  /// Send a WsData object with JSON body content.
   void sendWsJson(JSON body, {String? type, String? category, String? topic});
 
-  /// Send a [WsData] to the server.
+  /// Send [WsData].
   void sendWsData(WsData data);
 }
 
-class WsSocket extends WebSocket with UUID implements WsDataSinkChannel {
+class WsSocket extends WebSocket with UUID implements WsDataSink {
   WsSocket({
     required String host,
     int? port,
@@ -37,12 +36,12 @@ class WsSocket extends WebSocket with UUID implements WsDataSinkChannel {
       topic: topic,
       body: body,
     );
-    sendWsData(wsMessage);
+    this.sendWsData(wsMessage);
   }
 
   @override
   void sendWsJson(JSON body, {String? type, String? category, String? topic}) {
-    sendWs(body.encode(), type: type, category: category, topic: topic);
+    this.sendWs(body.encode(), type: type, category: category, topic: topic);
   }
 
   @override
@@ -52,6 +51,6 @@ class WsSocket extends WebSocket with UUID implements WsDataSinkChannel {
         "WsSocket should be open before calling sendWsData.",
       );
     }
-    send(data.encode());
+    super.send(data.encode());
   }
 }

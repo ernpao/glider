@@ -13,19 +13,6 @@ void main() {
     assert(result.isSuccessful);
   });
 
-  test("Webtop Websocket Connection", () async {
-    client.openSocket();
-
-    final json = JSON();
-    json.setProperty("message", "Testing Webtop WebSocket connection.");
-    json.setProperty("date", DateTime.now().formattedDate);
-    json.setProperty("time", DateTime.now().formattedTime);
-    client.sendWsJson(json);
-
-    await Future.delayed(const Duration(seconds: 3));
-    client.closeSocket();
-  });
-
   test("Webtop MIDI", () async {
     final api = MidiWebAPI(
       host: "192.168.100.192",

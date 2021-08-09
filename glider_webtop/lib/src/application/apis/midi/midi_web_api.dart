@@ -4,7 +4,7 @@ import 'midi_interface.dart';
 
 class MidiWebAPI
     with WebURI
-    implements MidiInterface, WebSocketConnection, WsDataSinkChannel {
+    implements MidiInterface, WebSocketConnection, WsDataSink {
   @override
   final String host;
 

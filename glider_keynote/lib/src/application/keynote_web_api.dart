@@ -5,11 +5,7 @@ import 'models/models.dart';
 
 class KeynoteWebAPI
     with WebURI
-    implements
-        KeynoteInterface,
-        WebInterface,
-        WsDataSinkChannel,
-        WebSocketConnection {
+    implements KeynoteInterface, WebInterface, WsDataSink, WebSocketConnection {
   late final WsSocket _socket = WsSocket(host: host, port: socketPort);
   late final WebClient _client = WebClient(
     host: host,

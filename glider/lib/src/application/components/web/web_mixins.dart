@@ -1,24 +1,54 @@
+import 'package:flutter/foundation.dart';
 import 'package:glider_models/glider_models.dart';
 
 import 'web_typedefs.dart';
 
 /// A mixin used to give an object a [Uri] property.
 mixin WebURI {
-  /// Scheme used by the URI
+  /// Scheme component of the URI.
   String get scheme;
 
+  /// Evaluates to "https".
+  ///
+  /// For use as a non-static
+  /// getter that returns a constant value and is
+  /// mainly used by classes that use this mixin.
+  @protected
   String get httpsScheme => "https";
+
+  /// Evaluates to "http".
+  ///
+  /// For use as a non-static
+  /// getter that returns a constant value and is
+  /// mainly used by classes that use this mixin.
+  @protected
   String get httpScheme => "http";
+
+  /// Evaluates to "ws".
+  ///
+  /// For use as a non-static
+  /// getter that returns a constant value and is
+  /// mainly used by classes that use this mixin.
+  @protected
   String get wsScheme => "ws";
+
+  /// Evaluates to "ws".
+  ///
+  /// For use as a non-static
+  /// getter that returns a constant value and is
+  /// mainly used by classes that use this mixin.
+  @protected
   String get wssScheme => "wss";
 
-  /// Name/IP address of the target host.
+  /// The host part of the authority component or the URI.
   String get host;
 
-  /// Path of the URI.
+  /// Path component of the URI.
   String? get path;
 
   int? _port;
+
+  /// The port part of the authority component or the URI.
   int? get port => _port;
 
   WebQueryParameters _queryParameters = {};
@@ -28,13 +58,18 @@ mixin WebURI {
   void withParameter(String key, dynamic value) =>
       _queryParameters[key] = value;
 
+  /// The query component of the URI.
   String get query => _queryParameters.entries
       .map((e) => '${Uri.encodeComponent(e.key)}=${e.value}')
       .join('&');
 
-  /// Set the target port of the request.
+  /// Set the port component of the URI to `port`.
   void withPort(int? port) => _port = port;
 
+  /// A parsed URI (such as a URL) that will be used
+  /// by an object with the [WebURI] mixin for web
+  /// related features such as HTTP requests or
+  /// WebSocket communications.
   late final Uri uri = Uri(
     scheme: scheme,
     host: host,
@@ -51,7 +86,7 @@ mixin WebHeaders {
   /// Adds headers to this request.
   void withHeaders(WebRequestHeaders headers) => _headers.addAll(headers);
 
-  /// Adds or overrides a request header.
+  /// Adds a request header or overwrites its value if it already exists.
   void withHeader(String key, String value) => _headers[key] = value;
 
   /// Sets the "Content-Type" header to "application/json".

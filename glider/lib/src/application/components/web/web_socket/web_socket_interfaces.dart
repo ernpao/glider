@@ -45,12 +45,16 @@ class WebSocketConnection with WebURI {
   bool _isOpen = false;
   bool get isOpen => _isOpen;
 
+  /// Open the connection with the WebSocketChannel with
+  /// the configured URI.
   @mustCallSuper
   void openSocket() {
     _isOpen = true;
     _channel = WebSocketChannel.connect(uri);
   }
 
+  /// Close the channel connection and send the
+  /// "going away" status.
   @mustCallSuper
   void closeSocket() {
     _isOpen = false;
@@ -78,6 +82,7 @@ abstract class WebSocketStreamConnection {
   /// Indicates if the WebSocket doesn't have a listener attached to the stream.
   bool get hasNoListener => !hasListener;
 
+  @protected
   WebSocketListener? get listener => _listener;
 
   void _startListening() {
@@ -101,6 +106,8 @@ abstract class WebSocketStreamConnection {
 /// An interface for sending data to a [WebSocketConnection] sink.
 abstract class WebSocketSinkConnection {
   WebSocketConnection get connection;
+
+  /// Send/sink string data to the WebSocket.
   void send(String data) {
     if (connection.isClosed) {
       throw new Exception(
@@ -110,5 +117,6 @@ abstract class WebSocketSinkConnection {
     connection.channel?.sink.add(data);
   }
 
+  /// Send/sink JSON data to the WebSocket.
   void sendJson(JSON json) => send(json.encode());
 }

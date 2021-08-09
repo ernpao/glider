@@ -37,7 +37,7 @@ class WebClient extends WebInterface with WebURI {
     this.fixedHeaders,
     this.defaultPort,
   }) {
-    withHttps = useHttps;
+    _withHttps = useHttps;
   }
 
   @override
@@ -52,10 +52,10 @@ class WebClient extends WebInterface with WebURI {
 
   /// Indicates whether requests made by this
   /// client use HTTPS (true by default).
-  late final bool withHttps;
+  late final bool _withHttps;
 
   @override
-  String get scheme => withHttps ? httpsScheme : httpScheme;
+  String get scheme => _withHttps ? httpsScheme : httpScheme;
 
   @override
   Future<WebResponse> index() => createGET("/").send();
@@ -88,19 +88,19 @@ class WebClient extends WebInterface with WebURI {
     WebRequest request;
     switch (T) {
       case POST:
-        request = POST(host, requestPath, useHttps: withHttps);
+        request = POST(host, requestPath, useHttps: _withHttps);
         break;
       case DELETE:
-        request = DELETE(host, requestPath, useHttps: withHttps);
+        request = DELETE(host, requestPath, useHttps: _withHttps);
         break;
       case PUT:
-        request = PUT(host, requestPath, useHttps: withHttps);
+        request = PUT(host, requestPath, useHttps: _withHttps);
         break;
       case PATCH:
-        request = PATCH(host, requestPath, useHttps: withHttps);
+        request = PATCH(host, requestPath, useHttps: _withHttps);
         break;
       default:
-        request = GET(host, requestPath, useHttps: withHttps);
+        request = GET(host, requestPath, useHttps: _withHttps);
         break;
     }
     request

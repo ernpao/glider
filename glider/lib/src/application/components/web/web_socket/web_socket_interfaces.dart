@@ -64,11 +64,10 @@ class WebSocketConnection with WebURI {
 
 /// An interface for attaching listeners to a [WebSocketConnection] stream.
 abstract class WebSocketStreamConnection {
-  WebSocketListener? _listener;
   WebSocketConnection get connection;
 
   bool _reopenOnDone = false;
-  bool get reopenOnDone => _reopenOnDone;
+  WebSocketListener? _listener;
 
   void listen(WebSocketListener listener, {bool reopenOnDone = true}) {
     _listener = listener;
@@ -84,6 +83,8 @@ abstract class WebSocketStreamConnection {
 
   @protected
   WebSocketListener? get listener => _listener;
+
+  bool get reopenOnDone => _reopenOnDone;
 
   void _startListening() {
     connection.channel?.stream.listen(

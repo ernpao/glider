@@ -13,17 +13,6 @@ void main() {
     assert(response.isSuccessful);
   });
 
-  test("Keynote Websocket Connection", () async {
-    client.openSocket();
-
-    final json = JSON();
-    json.setProperty("message", "Testing Keynote WebSocket connection.");
-    client.sendWsJson(json);
-
-    await delay(3);
-    client.closeSocket();
-  });
-
   test("Keynote Mouse Move Test", () async {
     client.openSocket();
     client.moveMouse(100, 100);

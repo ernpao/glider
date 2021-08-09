@@ -9,9 +9,9 @@ class WebtopWebAPI extends WsAPI implements WebtopInterface {
     required int socketPort,
   }) : super(
           host: host,
-          port: port,
+          httpPort: port,
           webSocketPort: socketPort,
-          useHttpsForWebClient: false,
-          useWssForWebSocket: false,
+          useHttps: false,
+          useWss: false,
         );
 }

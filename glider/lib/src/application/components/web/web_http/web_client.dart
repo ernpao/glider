@@ -1,5 +1,3 @@
-import 'package:glider_models/glider_models.dart';
-
 import '../web_mixins.dart';
 import '../web_typedefs.dart';
 import 'web_request.dart';
@@ -32,7 +30,7 @@ abstract class WebInterface {
   T createRequest<T extends WebRequest>(String? requestPath);
 }
 
-class WebClient extends WebInterface with WebURI, UUID {
+class WebClient extends WebInterface with WebURI {
   WebClient({
     required this.host,
     bool useHttps = true,
@@ -42,6 +40,7 @@ class WebClient extends WebInterface with WebURI, UUID {
     withHttps = useHttps;
   }
 
+  @override
   final String host;
 
   /// A set of headers that will be included

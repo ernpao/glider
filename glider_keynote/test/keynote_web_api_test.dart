@@ -18,7 +18,7 @@ void main() {
 
     final json = JSON();
     json.setProperty("message", "Testing Keynote WebSocket connection.");
-    client.sendJson(json);
+    client.sendWsJson(json);
 
     await delay(3);
     client.closeSocket();

@@ -4,15 +4,20 @@ import 'keynote_interface.dart';
 import 'models/models.dart';
 
 class KeynoteWebAPI
-    with WebHost
-    implements KeynoteInterface, WebInterface, WebSocketInterface {
-  late final WebSocket _socket = WebSocket(host: host, port: socketPort);
+    with WebURI
+    implements
+        KeynoteInterface,
+        WebInterface,
+        WS_MessageSinkChannel,
+        WebSocketConnection {
+  late final WS_Socket _socket = WS_Socket(host: host, port: socketPort);
   late final WebClient _client = WebClient(
     host: host,
     defaultPort: port,
     useHttps: false,
   );
 
+  @override
   final int port;
   final int socketPort;
 
@@ -29,31 +34,26 @@ class KeynoteWebAPI
   Future<WebResponse> index() => _client.index();
 
   @override
-  void openSocket({
-    WebSocketEventHandler? eventHandler,
-    bool reopenOnDone = true,
-  }) =>
-      _socket.openSocket(
-        eventHandler: eventHandler,
-        reopenOnDone: reopenOnDone,
-      );
+  void openSocket() {
+    _socket.openSocket();
+  }
 
   @override
-  void sendJson(JSON data, {String? type, String? category, String? topic}) =>
-      _socket.sendJson(data, type: type, category: category, topic: topic);
+  void sendWsJson(JSON data, {String? type, String? category, String? topic}) =>
+      _socket.sendWsJson(data, type: type, category: category, topic: topic);
 
   @override
   void closeSocket() => _socket.closeSocket();
 
   @override
-  Future<WebResponse> get(String? path) => _client.get(path);
+  Future<WebResponse> get(String? requestPath) => _client.get(requestPath);
 
   @override
-  Future<WebResponse> post(String? path) => _client.post(path);
+  Future<WebResponse> post(String? requestPath) => _client.post(requestPath);
 
   @override
   void sendKeystroke(String key, {KeyboardModifier? modifier}) {
-    sendMessage(KeyboardKeystrokeCommand(
+    sendWsMessage(KeyboardKeystrokeCommand(
       sender: _socket.uuid,
       key: key,
     ));
@@ -61,12 +61,12 @@ class KeynoteWebAPI
 
   @override
   void moveMouse(int x, int y) {
-    sendMessage(KeynoteMouseMoveCommand(sender: _socket.uuid, x: x, y: y));
+    sendWsMessage(KeynoteMouseMoveCommand(sender: _socket.uuid, x: x, y: y));
   }
 
   @override
   void clickMouse(MouseButton button) {
-    sendMessage(KeynoteMouseClickCommand(
+    sendWsMessage(KeynoteMouseClickCommand(
       sender: _socket.uuid,
       button: button,
     ));
@@ -74,7 +74,7 @@ class KeynoteWebAPI
 
   @override
   void offsetMouse(int xOffset, int yOffset) {
-    sendMessage(KeynoteMouseOffsetCommand(
+    sendWsMessage(KeynoteMouseOffsetCommand(
       sender: _socket.uuid,
       xOffset: xOffset,
       yOffset: yOffset,
@@ -82,14 +82,8 @@ class KeynoteWebAPI
   }
 
   @override
-  bool get hasListener => _socket.hasListener;
-
-  @override
-  bool get hasNoListener => _socket.hasNoListener;
-
-  @override
-  void send(String data, {String? type, String? category, String? topic}) {
-    _socket.send(data, type: type, category: category, topic: topic);
+  void sendWs(String body, {String? type, String? category, String? topic}) {
+    _socket.sendWs(body, type: type, category: category, topic: topic);
   }
 
   @override
@@ -99,7 +93,7 @@ class KeynoteWebAPI
   bool get isOpen => _socket.isOpen;
 
   @override
-  void sendMessage(WebSocketMessage message) => _socket.sendMessage(message);
+  void sendWsMessage(WS_Message message) => _socket.sendWsMessage(message);
 
   @override
   void printMessage(String text) {
@@ -110,21 +104,33 @@ class KeynoteWebAPI
   }
 
   @override
-  GET createGET(String? path) => _client.createGET(path);
+  GET createGET(String? requestPath) => _client.createGET(requestPath);
 
   @override
-  POST createPOST(String? path) => _client.createPOST(path);
+  POST createPOST(String? requestPath) => _client.createPOST(requestPath);
 
   @override
-  DELETE createDELETE(String? path) => _client.createDELETE(path);
+  DELETE createDELETE(String? requestPath) => _client.createDELETE(requestPath);
 
   @override
-  PUT createPUT(String? path) => _client.createPUT(path);
+  PUT createPUT(String? requestPath) => _client.createPUT(requestPath);
 
   @override
-  PATCH createPATCH(String? path) => _client.createPATCH(path);
+  PATCH createPATCH(String? requestPath) => _client.createPATCH(requestPath);
 
   @override
-  T createRequest<T extends WebRequest>(String? path) =>
-      _client.createRequest<T>(path);
+  T createRequest<T extends WebRequest>(String? requestPath) =>
+      _client.createRequest<T>(requestPath);
+
+  @override
+  String? get path => null;
+
+  @override
+  String get scheme => httpScheme;
+
+  @override
+  WebSocketChannel? get channel => _socket.channel;
+
+  @override
+  bool get useWss => _socket.useWss;
 }

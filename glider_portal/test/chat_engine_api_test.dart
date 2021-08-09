@@ -43,7 +43,7 @@ void main() {
     const secret = "password";
 
     final response = await privateAPI.createUser(
-      username: "test",
+      username: "test-${DateTime.now().toIso8601String()}",
       secret: secret,
       firstName: "test",
       lastName: "user",

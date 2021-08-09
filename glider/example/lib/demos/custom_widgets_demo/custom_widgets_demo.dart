@@ -138,12 +138,15 @@ class _WebWidgetsDemoState extends State<_WebWidgetsDemo> {
         ),
         SizedBox(
           width: Hover.getScreenWidth(context),
-          child: WebSocketMonitor(
-            webSocket: WebSocket(host: "192.168.100.191", port: 6868),
+          child: WS_SocketMonitor(
+            socket: WS_Socket(
+              host: "192.168.100.191",
+              port: 6868,
+            ),
             builder: (context, event) {
               if (event != null) {
-                if (event is WebSocketMessageEvent) {
-                  final message = event.message;
+                if (event is WS_MessageEvent) {
+                  final message = event.data;
                   if (message != null) {
                     if (message.type == "buffer") {
                       final List<dynamic> data = jsonDecode(message.body!);
@@ -156,7 +159,7 @@ class _WebWidgetsDemoState extends State<_WebWidgetsDemo> {
                     }
                     return Text(message.body ?? "");
                   }
-                } else if (event is WebSocketErrorEvent) {
+                } else if (event is WS_ErrorEvent) {
                   return Text(event.error?.toString() ?? "");
                 }
               }

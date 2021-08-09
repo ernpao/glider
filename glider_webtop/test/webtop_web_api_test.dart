@@ -20,7 +20,7 @@ void main() {
     json.setProperty("message", "Testing Webtop WebSocket connection.");
     json.setProperty("date", DateTime.now().formattedDate);
     json.setProperty("time", DateTime.now().formattedTime);
-    client.sendJson(json);
+    client.sendWsJson(json);
 
     await Future.delayed(const Duration(seconds: 3));
     client.closeSocket();

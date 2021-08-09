@@ -1,7 +1,7 @@
 import 'package:glider_models/glider_models.dart';
 import 'package:http/http.dart';
 
-import 'web_request_headers.dart';
+import '../web_typedefs.dart';
 
 class WebResponse extends Result {
   WebResponse(this.httpResponse)

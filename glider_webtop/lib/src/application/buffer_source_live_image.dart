@@ -42,21 +42,19 @@ class _BufferSourceLiveImageState extends State<BufferSourceLiveImage> {
 
   @override
   Widget build(BuildContext context) {
-    return WebSocketMonitor(
-      webSocket: widget.interface,
+    return WS_SocketMonitor(
+      socket: widget.interface,
       builder: (context, event) {
         if (event != null) {
-          if (event.isMessageEvent) {
-            final messageEvent = event.asMessageEvent();
-            final message = messageEvent.message;
-            if (message != null) {
-              if (message.hasBody && message.sender == "Buffer Source") {
-                final json = JSON.parse(message.body!);
-                final data = json.getProperty<String>("data");
-                if (data != null) {
-                  final bytes = data.toUint8List();
-                  if (bytes != null) _buildImage(bytes);
-                }
+          if (event.isMessageEventWithMessage) {
+            final messageEvent = event.asDataEvent();
+            final message = messageEvent.data;
+            if (message!.hasBody && message.sender == "Buffer Source") {
+              final json = JSON.parse(message.body!);
+              final data = json.getProperty<String>("data");
+              if (data != null) {
+                final bytes = data.toUint8List();
+                if (bytes != null) _buildImage(bytes);
               }
             }
           }

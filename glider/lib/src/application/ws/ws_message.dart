@@ -4,7 +4,7 @@ import 'package:glider_models/glider_models.dart';
 /// predefined fields:
 ///
 /// #### Sender
-/// A string that is used to identify the sender of this [WebSocketMessage].
+/// A string that is used to identify the sender of this [WS_Message].
 ///
 /// #### Category, Type, and Topic
 /// String fields that can be used to describe payload of the message.
@@ -13,9 +13,9 @@ import 'package:glider_models/glider_models.dart';
 /// A string that contains the payload of the message.
 ///
 /// #### Created
-/// Timestamp of when the [WebSocketMessage] was created.
-class WebSocketMessage extends JSON {
-  WebSocketMessage({
+/// Timestamp of when the [WS_Message] was created.
+class WS_Message extends JSON {
+  WS_Message({
     String? sender,
     String? category,
     String? type,
@@ -30,11 +30,11 @@ class WebSocketMessage extends JSON {
     _setCreated(DateTime.now());
   }
 
-  /// A [String] value that is used to identify the sender of this [WebSocketMessage].
+  /// A [String] value that is used to identify the sender of this [WS_Message].
   String? get sender => get<String>(kSender);
   void _setSender(String? sender) => set(kSender, sender);
 
-  /// Indicates when this [WebSocketMessage] was created.
+  /// Indicates when this [WS_Message] was created.
   DateTime? get created => DateTime.tryParse(get(kCreated));
 
   void _setCreated(DateTime created) {
@@ -63,10 +63,10 @@ class WebSocketMessage extends JSON {
   String? get body => get<String>(kBody);
   void setBody(String? body) => set(kBody, body);
 
-  /// The data from which this [WebSocketMessage] was created
+  /// The data from which this [WS_Message] was created
   /// from.
   ///
-  /// This will only be set and not null if the [WebSocketMessage]
+  /// This will only be set and not null if the [WS_Message]
   /// was created using the `fromJson` static method.
   JSON? _rawData;
   JSON? get rawData {
@@ -79,9 +79,9 @@ class WebSocketMessage extends JSON {
     );
   }
 
-  /// Parse a [JSON] object into a [WebSocketMessage].
-  static WebSocketMessage fromJson(JSON json) {
-    final message = WebSocketMessage(
+  /// Parse a [JSON] object into a [WS_Message].
+  static WS_Message fromJson(JSON json) {
+    final message = WS_Message(
       sender: json.get<String>(kSender),
       type: json.get<String>(kType),
       category: json.get<String>(kCategory),

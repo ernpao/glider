@@ -404,7 +404,7 @@ class ChatEngineSocketListener with _RequestHelper, Secret, Username {
   @override
   final String username;
 
-  late final _socket = WebSocket(
+  late final _socket = WS_Socket(
     host: chatEngineUrl,
     useWss: true,
     path: "/person/",
@@ -416,39 +416,30 @@ class ChatEngineSocketListener with _RequestHelper, Secret, Username {
     _socket.withParameter("secret", secret);
 
     debugPrint("Opening Chat Engine socket...");
-    _socket.openSocket(
-      reopenOnDone: true,
-      eventHandler: WebSocketEventHandler(
-        onEvent: (event) {
-          if (event.isMessageEventWithMessage) {
-            final eventMessage = (event as WebSocketMessageEvent).message!;
-            final json = eventMessage.rawData;
-            if (json != null) {
-              debugPrint(json.prettify());
-              final message = ChatEngineSocketMessage(json);
-              final action = message.action;
+    _socket.openSocket();
+    _socket.listen(
+      WebSocketJsonListener(onDataReceived: (json) {
+        debugPrint(json.prettify());
+        final message = ChatEngineSocketMessage(json);
+        final action = message.action;
 
-              switch (action) {
-                case ChatEngineSocketMessage.actionLoginError:
-                  debugPrint("Chat Engine Socket login error:");
-                  debugPrint("Socket URI: ${_socket.uri}");
-                  debugPrint("Socket Query: ${_socket.query}");
-                  debugPrint(
-                    "Socket Query Parameters: ${_socket.queryParameters}",
-                  );
-                  break;
-                default:
-                  break;
-              }
-            }
-          }
-          if (event.isErrorEvent) {
-            final error = (event as WebSocketErrorEvent).error;
-            debugPrint("Chat Engine Socket Error: ${error.toString()}");
+        switch (action) {
+          case ChatEngineSocketMessage.actionLoginError:
+            debugPrint("Chat Engine Socket login error:");
             debugPrint("Socket URI: ${_socket.uri}");
-          }
-        },
-      ),
+            debugPrint("Socket Query: ${_socket.query}");
+            debugPrint(
+              "Socket Query Parameters: ${_socket.queryParameters}",
+            );
+            break;
+          default:
+            break;
+        }
+      }, onError: (error) {
+        debugPrint("Chat Engine Socket Error: ${error.toString()}");
+        debugPrint("Socket URI: ${_socket.uri}");
+      }),
+      reopenOnDone: true,
     );
     debugPrint("Chat Engine socket initialized!");
   }

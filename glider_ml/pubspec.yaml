@@ -9,11 +9,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  glider_models: 
-    path: ../glider_models
+  glider_sensors:
+    path: ../glider_sensors 
   glider:
     path: ../glider 
-  google_ml_kit: ^0.6.0
+  google_ml_kit: ^0.7.0
   hover: 
     path: ../hover
 

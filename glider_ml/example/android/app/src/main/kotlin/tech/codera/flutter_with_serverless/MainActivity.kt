@@ -1,4 +1,4 @@
-package tech.codera.glider
+package tech.codera.glider_ml
 
 import io.flutter.embedding.android.FlutterActivity
 

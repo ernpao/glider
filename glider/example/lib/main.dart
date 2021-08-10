@@ -1,19 +1,11 @@
 import 'package:flutter/widgets.dart';
 
-import 'demos/demos.dart';
+import 'auth_flow_demo/auth_flow_demo.dart';
+import 'counter_app_demo/counter_app_demo.dart';
 
 final AuthFlowDemo authFlowDemo = AuthFlowDemo();
 final CounterAppDemo counterAppDemo = CounterAppDemo();
 
-const bool kDemoCamera = true;
-const bool kDemoSensors = true;
-const bool kDemoWidgets = true;
-final CustomWidgetsDemo customWidgetsDemo = CustomWidgetsDemo(
-  demoCamera: kDemoCamera,
-  demoSensors: kDemoSensors,
-  demoWebWidgets: kDemoWidgets,
-);
-
 void main() {
-  runApp(customWidgetsDemo);
+  runApp(authFlowDemo);
 }

@@ -1,4 +1,4 @@
-import 'package:glider/glider.dart';
+import 'package:glider_sensors/glider_sensors.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 
 final _textDetector = GoogleMlKit.vision.textDetector();

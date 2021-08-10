@@ -1,0 +1,24 @@
+name: glider_sensors_demo
+description: Glider Sensors demo app. 
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=2.13.0 <3.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  glider: 
+    path: ../../glider
+  glider_sensors: 
+    path: ../../glider_sensors
+  hover:
+    path: ../../hover
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true

@@ -199,9 +199,16 @@ packages:
     source: path
     version: "1.0.0+1"
   glider_models:
-    dependency: "direct main"
+    dependency: transitive
     description:
       path: "../glider_models"
+      relative: true
+    source: path
+    version: "1.0.0+1"
+  glider_sensors:
+    dependency: "direct main"
+    description:
+      path: "../glider_sensors"
       relative: true
     source: path
     version: "1.0.0+1"
@@ -218,7 +225,7 @@ packages:
       name: google_ml_kit
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.6.0"
+    version: "0.7.0"
   hover:
     dependency: "direct main"
     description:

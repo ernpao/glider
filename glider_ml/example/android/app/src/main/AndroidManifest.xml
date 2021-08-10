@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="tech.codera.glider">
+    package="tech.codera.glider_ml">
    <application
         android:label="Glider ML Demo"
         android:icon="@mipmap/ic_launcher">

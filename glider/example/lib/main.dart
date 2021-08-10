@@ -14,8 +14,6 @@ final CustomWidgetsDemo customWidgetsDemo = CustomWidgetsDemo(
   demoWebWidgets: kDemoWidgets,
 );
 
-final MachineLearningDemo machineLearningDemo = MachineLearningDemo();
-
 void main() {
-  runApp(machineLearningDemo);
+  runApp(customWidgetsDemo);
 }

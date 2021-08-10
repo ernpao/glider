@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:glider_ml/glider_ml.dart';
 import 'package:hover/hover.dart';
 
-import 'package:glider/glider.dart';
-
-class MachineLearningDemo extends StatelessWidget {
+class TextDetectorViewDemo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Application(

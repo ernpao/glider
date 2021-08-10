@@ -16,7 +16,6 @@ dependencies:
   glider: 
     path: ../../glider
   google_fonts: ^2.1.0
-  google_ml_kit: ^0.6.0
   hover:
     path: ../../hover
   http: ^0.13.3

@@ -23,7 +23,7 @@ packages:
     source: hosted
     version: "2.7.0"
   battery_plus:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: battery_plus
       url: "https://pub.dartlang.org"
@@ -72,7 +72,7 @@ packages:
     source: hosted
     version: "2.1.0"
   camera:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: camera
       url: "https://pub.dartlang.org"
@@ -128,7 +128,7 @@ packages:
     source: hosted
     version: "3.0.1"
   cupertino_icons:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: cupertino_icons
       url: "https://pub.dartlang.org"
@@ -192,6 +192,13 @@ packages:
     source: hosted
     version: "9.1.0"
   glider:
+    dependency: transitive
+    description:
+      path: "../../glider"
+      relative: true
+    source: path
+    version: "1.0.0+1"
+  glider_ml:
     dependency: "direct main"
     description:
       path: ".."
@@ -206,7 +213,7 @@ packages:
     source: path
     version: "1.0.0+1"
   google_fonts:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: google_fonts
       url: "https://pub.dartlang.org"
@@ -227,7 +234,7 @@ packages:
     source: path
     version: "0.4.1"
   http:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: http
       url: "https://pub.dartlang.org"
@@ -241,14 +248,14 @@ packages:
     source: hosted
     version: "4.0.0"
   image:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: image
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.2"
   image_picker:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: image_picker
       url: "https://pub.dartlang.org"
@@ -269,7 +276,7 @@ packages:
     source: hosted
     version: "2.2.0"
   intl:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: intl
       url: "https://pub.dartlang.org"
@@ -381,7 +388,7 @@ packages:
     source: hosted
     version: "4.2.1"
   provider:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: provider
       url: "https://pub.dartlang.org"
@@ -395,7 +402,7 @@ packages:
     source: hosted
     version: "3.0.1"
   sensors_plus:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: sensors_plus
       url: "https://pub.dartlang.org"
@@ -533,7 +540,7 @@ packages:
     source: hosted
     version: "2.1.0"
   web_socket_channel:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: web_socket_channel
       url: "https://pub.dartlang.org"

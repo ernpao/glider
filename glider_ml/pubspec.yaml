@@ -1,0 +1,25 @@
+name: glider_ml
+description: Glider library for machine learning components. 
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=2.13.0 <3.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  glider_models: 
+    path: ../glider_models
+  glider:
+    path: ../glider 
+  google_ml_kit: ^0.6.0
+  hover: 
+    path: ../hover
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true

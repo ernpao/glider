@@ -1,0 +1,23 @@
+name: glider_ml_demo
+description: Glider machine learning library demo app. 
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=2.13.0 <3.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  font_awesome_flutter: ^9.1.0
+  glider_ml: 
+    path: ../../glider_ml
+  hover:
+    path: ../../hover
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true

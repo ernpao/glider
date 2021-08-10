@@ -1,0 +1,23 @@
+{
+	"folders": [
+		{
+			"path": "glider"
+		},
+		{
+			"path": "glider_keynote"
+		},
+		{
+			"path": "glider_models"
+		},
+		{
+			"path": "glider_portal"
+		},
+		{
+			"path": "glider_webtop"
+		},
+		{
+			"path": "hover"
+		}
+	],
+	"settings": {}
+}

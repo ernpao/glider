@@ -47,10 +47,10 @@ class KeynoteWebAPI extends WsAPI implements KeynoteInterface {
   }
 
   @override
-  void printMessage(String text) {
+  Future<WebResponse> printMessage(String text) async {
     final request = createGET("/keyboard")
       ..withParameter("keyType", "string")
       ..withParameter("key", text);
-    request.send();
+    return request.send();
   }
 }

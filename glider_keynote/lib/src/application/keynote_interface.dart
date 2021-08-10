@@ -1,3 +1,5 @@
+import 'package:glider/glider.dart';
+
 import 'models/models.dart';
 
 abstract class KeynoteInterface {
@@ -5,5 +7,5 @@ abstract class KeynoteInterface {
   void offsetMouse(int xOffset, int yOffset);
   void clickMouse(MouseButton button);
   void sendKeystroke(String keys, {KeyboardModifier? modifier});
-  void printMessage(String text);
+  Future<WebResponse> printMessage(String text);
 }

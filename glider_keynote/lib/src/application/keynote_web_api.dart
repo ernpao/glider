@@ -21,6 +21,7 @@ class KeynoteWebAPI extends WsAPI implements KeynoteInterface {
     sendWsData(KeyboardKeystrokeCommand(
       sender: socket.uuid,
       key: key,
+      modifier: modifier,
     ));
   }
 

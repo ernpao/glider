@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-/// A [MaterialApp] wrapped with a MultiProvider widget used for
-/// general development of apps with state management
-/// and dependency injection.
+/// A [MaterialApp] wrapped with a [MultiProvider] widget used for
+/// creating apps with state management and dependency injection.
 class Application extends StatelessWidget {
   final Widget child;
   final List<InheritedProvider>? providers;

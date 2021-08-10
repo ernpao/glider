@@ -1,6 +1,6 @@
 import 'package:glider_models/glider_models.dart';
 
-import '../components/web/web.dart';
+import '../web/web.dart';
 import 'ws_data.dart';
 
 class WsDataListener extends WebSocketJsonListener {

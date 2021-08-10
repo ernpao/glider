@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../components/web/web.dart';
+import '../web/web.dart';
 import 'ws_event.dart';
 import 'ws_data_listener.dart';
 import 'ws_socket.dart';

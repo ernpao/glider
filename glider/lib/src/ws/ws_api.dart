@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:glider_models/glider_models.dart';
 
-import '../components/web/web.dart';
+import '../web/web.dart';
 import 'ws_data.dart';
 import 'ws_socket.dart';
 

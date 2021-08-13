@@ -52,7 +52,7 @@ void main() {
     debugPrintSynchronously(response.bodyAsJson()?.prettify());
     assert(response.isSuccessful);
 
-    final user = ChatEngineUser(response.bodyAsJson()!);
+    final user = Person(response.bodyAsJson()!);
 
     final authenticateResponse =
         await privateAPI.authenticate(user.username, secret);
@@ -107,7 +107,7 @@ void main() {
         ' "is_online": false'
         '}';
 
-    final user = ChatEngineUser.parse(userJsonString);
+    final user = Person.parse(userJsonString);
     assert(user.isOnline == false);
     assert(user.username == "John_Doe");
     assert(user.firstName == "John");

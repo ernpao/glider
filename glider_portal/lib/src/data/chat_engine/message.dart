@@ -1,10 +1,10 @@
 import 'package:glider/glider.dart';
 
-import 'chat_engine_user.dart';
+import 'person.dart';
 
 abstract class MessageModel {
   int get id;
-  ChatEngineUserModel get sender;
+  PersonModel get sender;
   DateTime? get created;
   List get attachments;
   String get text;
@@ -46,8 +46,8 @@ class Message implements MessageModel {
   String get text => data.getProperty<String>(_kText)!;
 
   @override
-  ChatEngineUser get sender =>
-      ChatEngineUser.fromMap(data.getProperty<KeyValueStore>(_kSender)!);
+  Person get sender =>
+      Person.fromMap(data.getProperty<KeyValueStore>(_kSender)!);
 
   @override
   int get id => data.getProperty<int>(_kId)!;

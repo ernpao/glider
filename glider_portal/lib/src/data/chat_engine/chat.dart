@@ -1,13 +1,13 @@
 import 'package:glider/glider.dart';
 
-import 'chat_user.dart';
 import 'chat_engine_user.dart';
+import 'person.dart';
 import 'message.dart';
 
 abstract class ChatModel {
   int get id;
-  ChatEngineUserModel get admin;
-  List<ChatUserModel> get people;
+  PersonModel get admin;
+  List<ChatEngineUserModel> get people;
   String get title;
   DateTime get created;
   Message get lastMessage;
@@ -18,7 +18,7 @@ class Chat implements ChatModel {
 
   Chat(this.data) {
     final mapList = data.getListProperty<Map<String, dynamic>>(_kPeople) ?? [];
-    people = mapList.map((map) => ChatRoomUser(JSON.fromMap(map))).toList();
+    people = mapList.map((map) => ChatEngineUser(JSON.fromMap(map))).toList();
   }
 
   static List<Chat> fromJsonArray(List<JSON> jsonArray) {
@@ -36,7 +36,7 @@ class Chat implements ChatModel {
   }
 
   @override
-  late final ChatEngineUser admin = ChatEngineUser(
+  late final Person admin = Person(
     JSON.fromMap(
       data.getProperty<KeyValueStore>(_kAdmin)!,
     ),
@@ -46,7 +46,7 @@ class Chat implements ChatModel {
   late final int id = data.getProperty<int>(_kId)!;
 
   @override
-  late final List<ChatRoomUser> people;
+  late final List<ChatEngineUser> people;
 
   @override
   String get title => data.getProperty<String>(_kTitle)!;

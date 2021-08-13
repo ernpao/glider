@@ -16,8 +16,6 @@ import 'web_socket_listeners.dart';
 /// of the socket is exposed through `channel` which can be used
 /// to access the stream for sinking or listening to data.
 class WebSocketConnection with WebURI {
-  bool get isClosed => !isOpen;
-
   WebSocketConnection({
     required this.host,
     this.port,
@@ -46,25 +44,23 @@ class WebSocketConnection with WebURI {
 
   bool _isOpen = false;
   bool get isOpen => _isOpen;
+  bool get isClosed => !isOpen;
 
   /// Open the connection with the WebSocketChannel with
   /// the configured URI.
   @mustCallSuper
   void openSocket() {
-    if (!_isOpen) {
-      _isOpen = true;
-      _channel = WebSocketChannel.connect(uri);
-    }
+    _isOpen = true;
+    _channel = WebSocketChannel.connect(uri);
   }
 
   /// Close the channel connection and send the
   /// "going away" status.
   @mustCallSuper
   Future<void> closeSocket() async {
-    if (_isOpen) {
-      _isOpen = false;
-      await _channel?.sink.close(status.goingAway);
-    }
+    _isOpen = false;
+    await _channel?.sink.close(status.goingAway);
+    _channel = null;
   }
 }
 
@@ -95,18 +91,15 @@ abstract class WebSocketStreamConnection {
   StreamSubscription? _subscription;
 
   Future<void> _startListening() async {
+    connection.openSocket();
+    final stream = connection.channel?.stream;
     await _subscription?.cancel();
     _subscription = null;
-    _subscription = connection.channel?.stream
-        .asBroadcastStream(
-          onCancel: (sub) => sub.pause(),
-          onListen: (sub) => sub.resume(),
-        )
-        .listen(
-          listener?.onData,
-          onError: listener?.onError,
-          onDone: _onDone,
-        );
+    _subscription = stream?.listen(
+      listener?.onData,
+      onError: listener?.onError,
+      onDone: _onDone,
+    );
   }
 
   Future<void> _onDone() async {

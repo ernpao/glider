@@ -31,28 +31,28 @@ mixin _ChatEnginePaths {
 
 @protected
 mixin _RequestHelper {
-  static const _chatEngineUrl = "api.chatengine.io";
-  String get chatEngineUrl => _chatEngineUrl;
+  static const _chatEngineIoUrl = "api.chatengine.io";
+  String get _baseUrl => _chatEngineIoUrl;
 
-  static const _chatEngineProjectId = "ab2204ec-10bc-4807-9f61-ecf012787ced";
-  String get chatEngineProjectId => _chatEngineProjectId;
+  static const _chatEngineIoProjectId = "ab2204ec-10bc-4807-9f61-ecf012787ced";
+  String get _projectId => _chatEngineIoProjectId;
 
   static final _webClient = WebClient(
-    host: _chatEngineUrl,
+    host: _chatEngineIoUrl,
     useHttps: true,
   );
 
-  T createUserRequest<T extends WebRequest>(
+  T _createUserRequest<T extends WebRequest>(
       String? path, String username, String secret) {
     final request = _webClient.createRequest<T>(path);
-    request.withHeader("Project-ID", chatEngineProjectId);
+    request.withHeader("Project-ID", _projectId);
     request.withHeader("User-Name", username);
     request.withHeader("User-Secret", secret);
     request.withJsonContentType();
     return request;
   }
 
-  T createPrivateRequest<T extends WebRequest>(
+  T _createPrivateRequest<T extends WebRequest>(
     String? path,
     String privateKey,
   ) {
@@ -75,7 +75,7 @@ class ChatEnginePrivateAPI
     String? firstName,
     String? lastName,
   }) {
-    final request = createPrivateRequest<POST>(_usersPath, _privateKey);
+    final request = _createPrivateRequest<POST>(_usersPath, _privateKey);
 
     final body = JSON()
       ..setProperty("username", username)
@@ -91,7 +91,7 @@ class ChatEnginePrivateAPI
 
   @override
   Future<WebResponse> getUser(int userId) {
-    final request = createPrivateRequest<GET>(
+    final request = _createPrivateRequest<GET>(
       _usersPathWithUserId(userId),
       _privateKey,
     );
@@ -100,13 +100,13 @@ class ChatEnginePrivateAPI
 
   @override
   Future<WebResponse> getUsers() {
-    final request = createPrivateRequest<GET>(_usersPath, _privateKey);
+    final request = _createPrivateRequest<GET>(_usersPath, _privateKey);
     return request.send();
   }
 
   @override
   Future<WebResponse> deleteUser(int userId) {
-    final request = createPrivateRequest<DELETE>(
+    final request = _createPrivateRequest<DELETE>(
       _usersPathWithUserId(userId),
       _privateKey,
     );
@@ -115,7 +115,7 @@ class ChatEnginePrivateAPI
 
   @override
   Future<WebResponse> authenticate(String username, String secret) {
-    return createUserRequest<GET>(_mePath, username, secret).send();
+    return _createUserRequest<GET>(_mePath, username, secret).send();
   }
 
   @override
@@ -149,7 +149,7 @@ class ChatEngineAPI
   });
 
   @override
-  String get projectId => chatEngineProjectId;
+  String get projectId => _projectId;
 
   @override
   final String secret;
@@ -159,7 +159,7 @@ class ChatEngineAPI
 
   @override
   Future<WebResponse> addChatMember(int chatId, String usernameToAdd) =>
-      createUserRequest<POST>("/chats/$chatId/people/", username, secret)
+      _createUserRequest<POST>("/chats/$chatId/people/", username, secret)
           .send();
 
   @override
@@ -168,35 +168,36 @@ class ChatEngineAPI
       ..setProperty("title", title)
       ..setProperty("is_direct_chat", isDirectChat);
 
-    final post = createUserRequest<POST>(_chatsPath, username, secret);
+    final post = _createUserRequest<POST>(_chatsPath, username, secret);
     post.withBody(body);
 
     return post.send();
   }
 
   @override
-  Future<WebResponse> deleteChat(int chatId) => createUserRequest<DELETE>(
+  Future<WebResponse> deleteChat(int chatId) => _createUserRequest<DELETE>(
         _chatsPathWithChatId(chatId),
         username,
         secret,
       ).send();
 
   @override
-  Future<WebResponse> getChatDetails(int chatId) => createUserRequest<GET>(
+  Future<WebResponse> getChatDetails(int chatId) => _createUserRequest<GET>(
         _chatsPathWithChatId(chatId),
         username,
         secret,
       ).send();
 
   @override
-  Future<WebResponse> getMyChats() => createUserRequest<GET>(
+  Future<WebResponse> getMyChats() => _createUserRequest<GET>(
         _chatsPath,
         username,
         secret,
       ).send();
 
   @override
-  Future<WebResponse> getMyLatestChats(int chatCount) => createUserRequest<GET>(
+  Future<WebResponse> getMyLatestChats(int chatCount) =>
+      _createUserRequest<GET>(
         _latestChatsPath(chatCount),
         username,
         secret,
@@ -208,7 +209,7 @@ class ChatEngineAPI
     int chatCount,
   ) {
     final body = JSON()..setProperty("before", before.toIso8601String());
-    final put = createUserRequest<PUT>(
+    final put = _createUserRequest<PUT>(
       _latestChatsPath(chatCount),
       username,
       secret,
@@ -228,7 +229,7 @@ class ChatEngineAPI
     if (title != null) body.setProperty("title", title);
     if (isDirectChat != null) body.setProperty("is_direct_chat", isDirectChat);
 
-    final request = createUserRequest<PUT>(_chatsPath, username, secret);
+    final request = _createUserRequest<PUT>(_chatsPath, username, secret);
     request.withBody(body);
     return request.send();
   }
@@ -243,7 +244,7 @@ class ChatEngineAPI
     if (newTitle != null) body.setProperty("title", newTitle);
     if (isDirectChat != null) body.setProperty("is_direct_chat", isDirectChat);
 
-    final request = createUserRequest<PATCH>(
+    final request = _createUserRequest<PATCH>(
       _chatsPathWithChatId(chatId),
       username,
       secret,
@@ -255,7 +256,7 @@ class ChatEngineAPI
 
   @override
   Future<WebResponse> getChatMembers(int chatId) {
-    final request = createUserRequest<GET>(
+    final request = _createUserRequest<GET>(
       _chatsPathWithPeople(chatId),
       username,
       secret,
@@ -265,7 +266,7 @@ class ChatEngineAPI
 
   @override
   Future<WebResponse> getOtherUsers(int chatId) {
-    final request = createUserRequest<GET>(
+    final request = _createUserRequest<GET>(
       _chatsPathWithOthers(chatId),
       username,
       secret,
@@ -276,7 +277,7 @@ class ChatEngineAPI
   @override
   Future<WebResponse> removeChatMember(int chatId, String usernameToRemove) {
     final body = JSON()..setProperty("username", usernameToRemove);
-    final request = createUserRequest<PUT>(
+    final request = _createUserRequest<PUT>(
       _chatsPathWithPeople(chatId),
       username,
       secret,
@@ -288,7 +289,7 @@ class ChatEngineAPI
   @override
   Future<WebResponse> searchOtherUsers(int chatId, String search) {
     final body = JSON()..setProperty("search", search);
-    final request = createUserRequest<POST>(
+    final request = _createUserRequest<POST>(
       _chatsPathWithOthers(chatId),
       username,
       secret,
@@ -299,14 +300,14 @@ class ChatEngineAPI
 
   @override
   Future<WebResponse> deleteMessage(int chatId, int messageId) =>
-      createUserRequest<DELETE>(
+      _createUserRequest<DELETE>(
         _messagesPathWithMessageId(chatId, messageId),
         username,
         secret,
       ).send();
 
   @override
-  Future<WebResponse> getChatMessages(int chatId) => createUserRequest<GET>(
+  Future<WebResponse> getChatMessages(int chatId) => _createUserRequest<GET>(
         _messagesPath(chatId),
         username,
         secret,
@@ -314,7 +315,7 @@ class ChatEngineAPI
 
   @override
   Future<WebResponse> getLatestChatMessages(int chatId, int chatCount) =>
-      createUserRequest<GET>(
+      _createUserRequest<GET>(
         _latestMessagesPath(chatId, chatCount),
         username,
         secret,
@@ -322,7 +323,7 @@ class ChatEngineAPI
 
   @override
   Future<WebResponse> getMessageDetails(int chatId, int messageId) =>
-      createUserRequest<GET>(
+      _createUserRequest<GET>(
         _messagesPathWithMessageId(chatId, messageId),
         username,
         secret,
@@ -331,7 +332,7 @@ class ChatEngineAPI
   @override
   Future<WebResponse> readMessage(int chatId, int lastReadMessageId) {
     final body = JSON()..setProperty("last_read", lastReadMessageId);
-    final request = createUserRequest<PATCH>(
+    final request = _createUserRequest<PATCH>(
       _chatsPathWithPeople(chatId),
       username,
       secret,
@@ -355,7 +356,7 @@ class ChatEngineAPI
     }
     if (customJson != null) body.setProperty("custom_json", customJson);
 
-    final request = createUserRequest<POST>(
+    final request = _createUserRequest<POST>(
       _messagesPath(chatId),
       username,
       secret,
@@ -372,7 +373,7 @@ class ChatEngineAPI
 
     if (newText != null) body.setProperty("text", newText);
 
-    final request = createUserRequest<PATCH>(
+    final request = _createUserRequest<PATCH>(
       _messagesPath(chatId),
       username,
       secret,
@@ -383,7 +384,7 @@ class ChatEngineAPI
   }
 
   @override
-  Future<WebResponse> userIsTyping(int chatId) => createUserRequest<PATCH>(
+  Future<WebResponse> userIsTyping(int chatId) => _createUserRequest<PATCH>(
         _typingPath(chatId),
         username,
         secret,
@@ -405,13 +406,13 @@ class ChatEngineSocketListener with _RequestHelper, Secret, Username {
   final String username;
 
   late final _socket = WsSocket(
-    host: chatEngineUrl,
+    host: _baseUrl,
     useWss: true,
     path: "/person/",
   );
 
   void _initializeSocket() {
-    _socket.withParameter("publicKey", chatEngineProjectId);
+    _socket.withParameter("publicKey", _projectId);
     _socket.withParameter("username", username);
     _socket.withParameter("secret", secret);
 

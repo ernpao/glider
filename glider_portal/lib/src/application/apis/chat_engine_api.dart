@@ -430,36 +430,44 @@ class ChatEngineWebSocket with _RequestHelper, Secret, Username {
 
     if (_socket.hasNoListener) {
       _socket.listen(
-        WebSocketJsonListener(onDataReceived: (json) {
-          final message = ChatEngineSocketEvent(json);
-          final action = message.action;
+        WebSocketJsonListener(
+          onDataReceived: (json) {
+            final message = ChatEngineSocketEvent(json);
+            final action = message.action;
 
-          switch (action) {
-            case ChatEngineSocketEvent.actionLoginError:
-              debugPrint("Chat Engine Socket login error:");
-              debugPrint("Socket URI: ${_socket.uri}");
-              debugPrint("Socket Query: ${_socket.query}");
-              debugPrint(
-                "Socket Query Parameters: ${_socket.queryParameters}",
-              );
-              break;
-            case ChatEngineSocketEvent.actionEditChat:
-              final chat = Chat(message.data);
-              onEditChatEvent?.call(chat);
-              break;
-            case ChatEngineSocketEvent.actionIsTyping:
-              onTypingEvent?.call(
-                message.data.getProperty<int>("id")!,
-                message.data.getProperty<String>("person")!,
-              );
-              break;
-            default:
-              break;
-          }
-        }, onError: (error) {
-          debugPrint("Chat Engine Socket Error: ${error.toString()}");
-          debugPrint("Socket URI: ${_socket.uri}");
-        }),
+            switch (action) {
+              case ChatEngineSocketEvent.actionLoginError:
+                debugPrint("Chat Engine Socket login error:");
+                debugPrint("Socket URI: ${_socket.uri}");
+                debugPrint("Socket Query: ${_socket.query}");
+                debugPrint(
+                  "Socket Query Parameters: ${_socket.queryParameters}",
+                );
+                break;
+              case ChatEngineSocketEvent.actionEditChat:
+                final chat = Chat(message.data);
+                onEditChatEvent?.call(chat);
+                break;
+              case ChatEngineSocketEvent.actionIsTyping:
+                final personTyping =
+                    message.data.getProperty<String>("person")!;
+                if (username != personTyping) {
+                  final chatId = message.data.getProperty<int>("id")!;
+                  onTypingEvent?.call(chatId, personTyping);
+                }
+                break;
+              default:
+                break;
+            }
+          },
+          onError: (error) {
+            debugPrint("Chat Engine Socket Error: ${error.toString()}");
+            debugPrint("Socket URI: ${_socket.uri}");
+          },
+          onDone: () {
+            debugPrint("Chat Engine Socket Done Event.");
+          },
+        ),
         reopenOnDone: true,
       );
     }

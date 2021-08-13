@@ -97,11 +97,16 @@ abstract class WebSocketStreamConnection {
   Future<void> _startListening() async {
     await _subscription?.cancel();
     _subscription = null;
-    _subscription = connection.channel?.stream.listen(
-      listener?.onData,
-      onError: listener?.onError,
-      onDone: _onDone,
-    );
+    _subscription = connection.channel?.stream
+        .asBroadcastStream(
+          onCancel: (sub) => sub.pause(),
+          onListen: (sub) => sub.resume(),
+        )
+        .listen(
+          listener?.onData,
+          onError: listener?.onError,
+          onDone: _onDone,
+        );
   }
 
   Future<void> _onDone() async {

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:meta/meta.dart';
 import 'package:glider_models/glider_models.dart';
 
@@ -49,16 +51,20 @@ class WebSocketConnection with WebURI {
   /// the configured URI.
   @mustCallSuper
   void openSocket() {
-    _isOpen = true;
-    _channel = WebSocketChannel.connect(uri);
+    if (!_isOpen) {
+      _isOpen = true;
+      _channel = WebSocketChannel.connect(uri);
+    }
   }
 
   /// Close the channel connection and send the
   /// "going away" status.
   @mustCallSuper
-  void closeSocket() {
-    _isOpen = false;
-    _channel?.sink.close(status.goingAway);
+  Future<void> closeSocket() async {
+    if (_isOpen) {
+      _isOpen = false;
+      await _channel?.sink.close(status.goingAway);
+    }
   }
 }
 
@@ -86,21 +92,21 @@ abstract class WebSocketStreamConnection {
 
   bool get reopenOnDone => _reopenOnDone;
 
-  void _startListening() {
-    connection.channel?.stream.listen(
+  StreamSubscription? _subscription;
+
+  Future<void> _startListening() async {
+    await _subscription?.cancel();
+    _subscription = null;
+    _subscription = connection.channel?.stream.listen(
       listener?.onData,
       onError: listener?.onError,
       onDone: _onDone,
     );
   }
 
-  void _onDone() {
+  Future<void> _onDone() async {
     listener?.onDone?.call();
-    if (reopenOnDone) {
-      _startListening();
-    } else {
-      connection.closeSocket();
-    }
+    if (reopenOnDone) _startListening();
   }
 }
 

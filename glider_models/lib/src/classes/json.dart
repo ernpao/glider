@@ -9,7 +9,17 @@ class JSON extends Parseable {
   /// Create a new `JSON` object by parsing a string.
   factory JSON.parse(String string) => _parser.parse(string);
 
-  factory JSON.fromMap(KeyValueStore map) => _parser.parseFromMap(map);
+  factory JSON.fromMap(KeyValueStore map) {
+    return _parser.parseFromMap(map);
+  }
+
+  factory JSON.fromDynamicMap(Map map) {
+    KeyValueStore translatedMap = {};
+    map.forEach((key, value) {
+      translatedMap[key.toString()] = value;
+    });
+    return _parser.parseFromMap(translatedMap);
+  }
 
   /// Attempt to parse a string into a list of JSON objects.
   static List<JSON> parseList(String string) => _parser.parseList(string);

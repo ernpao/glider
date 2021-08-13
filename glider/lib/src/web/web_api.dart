@@ -92,7 +92,7 @@ class WebAPI with WebURI implements WebClient, WebSocket {
   void openSocket() => socket.openSocket();
 
   @override
-  void closeSocket() => socket.closeSocket();
+  Future<void> closeSocket() => socket.closeSocket();
 
   @override
   @protected

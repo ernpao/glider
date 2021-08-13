@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:glider/glider.dart';
+import 'package:glider_portal/glider_portal.dart';
 
 import 'web_interfaces/web_interfaces.dart';
 
@@ -391,13 +392,13 @@ class ChatEngineAPI
       ).send();
 }
 
-class ChatEngineSocketListener with _RequestHelper, Secret, Username {
-  ChatEngineSocketListener({
+class ChatEngineWebSocket with _RequestHelper, Secret, Username {
+  ChatEngineWebSocket({
     required this.username,
     required this.secret,
-  }) {
-    _initializeSocket();
-  }
+    this.onEditChatEvent,
+    this.onTypingEvent,
+  });
 
   @override
   final String secret;
@@ -411,52 +412,86 @@ class ChatEngineSocketListener with _RequestHelper, Secret, Username {
     path: "/person/",
   );
 
-  void _initializeSocket() {
-    _socket.withParameter("publicKey", _projectId);
-    _socket.withParameter("username", username);
-    _socket.withParameter("secret", secret);
+  final void Function(int chatId, String username)? onTypingEvent;
+  final void Function(Chat chat)? onEditChatEvent;
 
-    debugPrint("Opening Chat Engine socket...");
-    _socket.openSocket();
-    _socket.listen(
-      WebSocketJsonListener(onDataReceived: (json) {
-        debugPrint(json.prettify());
-        final message = ChatEngineSocketMessage(json);
-        final action = message.action;
+  void close() {
+    _socket.closeSocket();
+  }
 
-        switch (action) {
-          case ChatEngineSocketMessage.actionLoginError:
-            debugPrint("Chat Engine Socket login error:");
-            debugPrint("Socket URI: ${_socket.uri}");
-            debugPrint("Socket Query: ${_socket.query}");
-            debugPrint(
-              "Socket Query Parameters: ${_socket.queryParameters}",
-            );
-            break;
-          default:
-            break;
-        }
-      }, onError: (error) {
-        debugPrint("Chat Engine Socket Error: ${error.toString()}");
-        debugPrint("Socket URI: ${_socket.uri}");
-      }),
-      reopenOnDone: true,
-    );
+  void begin() {
+    if (_socket.isClosed) {
+      _socket.withParameter("publicKey", _projectId);
+      _socket.withParameter("username", username);
+      _socket.withParameter("secret", secret);
+      debugPrint("Opening Chat Engine socket...");
+      _socket.openSocket();
+    }
+
+    if (_socket.hasNoListener) {
+      _socket.listen(
+        WebSocketJsonListener(onDataReceived: (json) {
+          final message = ChatEngineSocketEvent(json);
+          final action = message.action;
+
+          switch (action) {
+            case ChatEngineSocketEvent.actionLoginError:
+              debugPrint("Chat Engine Socket login error:");
+              debugPrint("Socket URI: ${_socket.uri}");
+              debugPrint("Socket Query: ${_socket.query}");
+              debugPrint(
+                "Socket Query Parameters: ${_socket.queryParameters}",
+              );
+              break;
+            case ChatEngineSocketEvent.actionEditChat:
+              final chat = Chat(message.data);
+              onEditChatEvent?.call(chat);
+              break;
+            case ChatEngineSocketEvent.actionIsTyping:
+              onTypingEvent?.call(
+                message.data.getProperty<int>("id")!,
+                message.data.getProperty<String>("person")!,
+              );
+              break;
+            default:
+              break;
+          }
+        }, onError: (error) {
+          debugPrint("Chat Engine Socket Error: ${error.toString()}");
+          debugPrint("Socket URI: ${_socket.uri}");
+        }),
+        reopenOnDone: true,
+      );
+    }
+
     debugPrint("Chat Engine socket initialized!");
   }
 }
 
-class ChatEngineSocketMessage {
-  ChatEngineSocketMessage(this.data);
-  final JSON data;
+class ChatEngineSocketEvent {
+  ChatEngineSocketEvent(this._eventData);
 
-  String get action => data.getProperty<String>(actionKey)!;
+  /// The JSON received from the socket.
+  /// Contains an `action` property
+  /// that describes the type of message
+  /// received and a `data` property which
+  /// is the payload of the message.
+  final JSON _eventData;
+
+  JSON get data {
+    final jsonMap = _eventData.getProperty<Map>(_dataKey)!;
+
+    return JSON.fromDynamicMap(jsonMap);
+  }
+
+  String get action => _eventData.getProperty<String>(_actionKey)!;
 
   bool get isLoginErrorAction => action == actionLoginError;
   bool get isTypingAction => action == actionIsTyping;
   bool get isEditChatAction => action == actionEditChat;
 
-  static const actionKey = "action";
+  static const _dataKey = "data";
+  static const _actionKey = "action";
   static const actionIsTyping = "is_typing";
   static const actionEditChat = "edit_chat";
   static const actionNewMessage = "new_message";

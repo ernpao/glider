@@ -2,12 +2,15 @@ import 'dart:convert';
 
 import 'package:glider_models/glider_models.dart';
 
+/// Interface for classes that can attached to a [WebSocket] via
+/// `WebSocket.listen` to process WebSocket events.
 abstract class WebSocketListener {
   Function(dynamic data)? get onData;
   Function(Object? error)? get onError;
   Function()? get onDone;
 }
 
+/// A [WebSocketListener] that parses incoming data into [JSON] objects.
 class WebSocketJsonListener implements WebSocketListener {
   WebSocketJsonListener({
     this.onDataReceived,

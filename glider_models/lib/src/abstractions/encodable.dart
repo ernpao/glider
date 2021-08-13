@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
+
 import 'mappable.dart';
 
 /// A [Mappable] object that can be encoded into a string
@@ -27,4 +29,7 @@ abstract class Encodable extends Mappable {
   String prettify() {
     return const JsonEncoder.withIndent('  ', _toEncodeable).convert(map());
   }
+
+  /// Use `debugPrint` to print this [Mappable] as a prettified string.
+  void prettyPrint() => debugPrint(prettify());
 }

@@ -5,6 +5,27 @@ import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
 /// A mixin used to give a class the
+/// [created] property.
+mixin Created {
+  /// A timestamp of when this object was created.
+  DateTime get created;
+}
+
+extension SortByCreated on List<Created> {
+  /// Sort items by `created` in ascending order.
+  List<Created> sortByCreatedAsc() {
+    final data = this;
+    data.sort((a, b) => a.created.difference(b.created).inMicroseconds);
+    return data;
+  }
+
+  /// Sort items by `created` in descending order.
+  List<Created> sortByCreatedDesc() {
+    return sortByCreatedAsc().reversed.toList();
+  }
+}
+
+/// A mixin used to give a class the
 /// [username] string property.
 mixin Username {
   String get username;

@@ -40,7 +40,7 @@ extension MapExtensions on Map {
   }
 
   /// Iterate through the `values` of this map and
-  /// return a list of all non-null
+  /// returns a list of all non-null
   /// objects that are of the type `T`.
   List<T> getNonNullValues<T>() {
     List<T> result = [];

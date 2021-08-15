@@ -17,11 +17,11 @@ class Message implements MessageModel {
 
   final JSON data;
 
-  static List<Message> fromJsonArray(List<JSON> jsonArray) {
+  static Messages fromJsonArray(List<JSON> jsonArray) {
     return jsonArray.map((json) => Message(json)).toList();
   }
 
-  static List<Message> fromWebResponse(WebResponse webResponse) {
+  static Messages messagesFromWebResponse(WebResponse webResponse) {
     if (webResponse.isSuccessful) {
       assert(webResponse.httpResponse.decodedBody is List);
       return fromJsonArray(webResponse.bodyAsJsonList()!);

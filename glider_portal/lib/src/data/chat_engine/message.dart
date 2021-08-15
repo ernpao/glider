@@ -10,6 +10,8 @@ abstract class MessageModel {
   String get text;
 }
 
+typedef Messages = List<Message>;
+
 class Message implements MessageModel {
   Message(this.data);
 

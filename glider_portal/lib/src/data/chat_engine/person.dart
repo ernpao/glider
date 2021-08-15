@@ -9,6 +9,8 @@ abstract class PersonModel {
   bool get isOnline;
 }
 
+typedef People = List<Person>;
+
 class Person implements PersonModel {
   Person(this.data);
 

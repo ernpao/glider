@@ -120,7 +120,7 @@ abstract class ChatEngineInterface {
     JSON? customJson,
   });
 
-  /// This request fetches and returns all the messages in belonging to Chat ID: {{chat_id}}.
+  /// This request fetches and returns all the messages belonging to Chat ID: {{chat_id}}.
   Future<WebResponse> getChatMessages(int chatId);
 
   /// This request will get the n latest chat messages in this chat where n is {{chat_count}} and the chat of interest is determined by {{chat_id}}.

@@ -16,6 +16,20 @@ class Person implements PersonModel {
 
   final JSON data;
 
+  static People fromJsonArray(List<JSON> jsonArray) {
+    return jsonArray.map((json) => Person(json)).toList();
+  }
+
+  static People peopleFromWebResponse(WebResponse webResponse) {
+    if (webResponse.isSuccessful) {
+      assert(webResponse.httpResponse.decodedBody is List);
+      return fromJsonArray(webResponse.bodyAsJsonList()!);
+    }
+    throw Exception(
+      "Can't get a list of Messages from an unsuccessful web request.",
+    );
+  }
+
   @override
   late final String? avatar = data.getProperty<String?>(_kAvatar);
 

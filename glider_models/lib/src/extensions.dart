@@ -38,6 +38,19 @@ extension MapExtensions on Map {
     });
     return key;
   }
+
+  /// Iterate through the `values` of this map and
+  /// return a list of all non-null
+  /// objects that are of the type `T`.
+  List<T> getNonNullValues<T>() {
+    List<T> result = [];
+    for (final value in values) {
+      if (value != null && value is T) {
+        result.add(value);
+      }
+    }
+    return result;
+  }
 }
 
 extension ListExtensions on List<dynamic> {

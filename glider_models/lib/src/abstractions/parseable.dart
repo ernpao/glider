@@ -11,10 +11,10 @@ class Parseable extends Encodable with Stringifiable {
     _setTypeInContent();
   }
 
-  static const _typeKey = "__type";
+  static const _kType = "__type";
 
   void _setTypeInContent() {
-    _content[_typeKey] = runtimeType.toString();
+    _content[_kType] = runtimeType.toString();
   }
 
   KeyValueStore _content = {};
@@ -25,15 +25,15 @@ class Parseable extends Encodable with Stringifiable {
   @protected
   @override
   void set(String key, dynamic value) {
-    if (key == _typeKey) {
-      throw Exception("$_typeKey is a reserved key for the Parseable class.");
+    if (key == _kType) {
+      throw Exception("$_kType is a reserved key for the Parseable class.");
     }
     _content[key] = value;
   }
 
   void remove(String key) {
-    if (key == _typeKey) {
-      throw Exception("$_typeKey is a reserved key for the Parseable class.");
+    if (key == _kType) {
+      throw Exception("$_kType is a reserved key for the Parseable class.");
     }
     _content.remove(key);
   }
@@ -123,12 +123,12 @@ abstract class Parser<T extends Parseable> {
   ///
   /// This will ensure that the item returned by `jsonDecode`
   /// is either an instance of the [Parseable] handled by this
-  /// parser, or a [Map]<String, dynamic> which is then set
+  /// parser, or a [KeyValueStore] which is then set
   /// as the content of a new instance of the [Parseable].
   Object? _reviver(Object? key, Object? value) {
     if (value is KeyValueStore) {
-      final valueType = value[Parseable._typeKey];
-      return valueType == _expectedType ? parseFromMap(value) : value;
+      final typeOfParseable = value[Parseable._kType]?.toString();
+      return typeOfParseable == _expectedType ? parseFromMap(value) : value;
     } else if (value is String && _iso8601RegExp.hasMatch(value)) {
       return DateTime.parse(value);
     } else {

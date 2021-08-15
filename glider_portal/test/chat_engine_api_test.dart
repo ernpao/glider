@@ -8,6 +8,21 @@ final api = ChatEngineAPI(username: "ernpao@g.com", secret: "password");
 void main() {
   test("Chat Engine API", () async {});
 
+  test("Chat Engine API - Test Get Latest Chats", () async {
+    WebResponse response = await api.createChat("Test Chat 1");
+    final chatA = Chat(response.bodyAsJson()!);
+    response = await api.createChat("Test Chat 2");
+    final chatB = Chat(response.bodyAsJson()!);
+
+    response = await api.getMyLatestChats(2);
+    final ascending = Chat.chatsFromWebResponse(response);
+    final descending = ascending.sortByCreatedDesc();
+    assert(ascending.last.created == descending.first.created);
+
+    await api.deleteChat(chatA.id);
+    await api.deleteChat(chatB.id);
+  });
+
   test("Chat Engine API - Test Get, Create, and Delete Chats", () async {
     var chats = <Chat>[];
 
@@ -15,7 +30,7 @@ void main() {
     assert(response.isSuccessful);
 
     response = await api.getMyChats();
-    chats = Chat.chatListFromWebResponse(response);
+    chats = Chat.chatsFromWebResponse(response);
     assert(chats.isNotEmpty);
 
     for (final chat in chats) {

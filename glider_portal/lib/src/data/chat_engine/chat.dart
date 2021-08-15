@@ -4,7 +4,7 @@ import 'activity.dart';
 import 'person.dart';
 import 'message.dart';
 
-abstract class ChatModel {
+abstract class ChatModel with Created {
   int get id;
 
   /// The admin of this chat.
@@ -20,6 +20,7 @@ abstract class ChatModel {
   String get title;
 
   /// Timestamp of when this chat was created.
+  @override
   DateTime get created;
 
   /// The last message in this chat.
@@ -40,7 +41,7 @@ class Chat implements ChatModel {
     return jsonArray.map((json) => Chat(json)).toList();
   }
 
-  static Chats chatListFromWebResponse(WebResponse webResponse) {
+  static Chats chatsFromWebResponse(WebResponse webResponse) {
     if (webResponse.isSuccessful) {
       assert(webResponse.httpResponse.decodedBody is List);
       return fromJsonArray(webResponse.bodyAsJsonList()!);

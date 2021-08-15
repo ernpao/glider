@@ -61,12 +61,3 @@ class Person implements PersonModel {
     }
   }
 }
-
-class ChatEngineActiveUser extends Person
-    with Secret
-    implements AuthenticatedUser {
-  ChatEngineActiveUser(JSON data, this.secret) : super(data);
-
-  @override
-  final String secret;
-}

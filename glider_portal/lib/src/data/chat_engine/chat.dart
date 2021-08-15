@@ -1,31 +1,46 @@
 import 'package:glider/glider.dart';
 
-import 'chat_engine_user.dart';
+import 'activity.dart';
 import 'person.dart';
 import 'message.dart';
 
 abstract class ChatModel {
   int get id;
+
+  /// The admin of this chat.
   PersonModel get admin;
-  List<ChatEngineUserModel> get people;
+
+  /// A list of the activity
+  /// of the people in this chat
+  /// (i.e. their last read
+  /// messages).
+  ActivitiesModel get people;
+
+  /// The title of this chat.
   String get title;
+
+  /// Timestamp of when this chat was created.
   DateTime get created;
+
+  /// The last message in this chat.
   Message get lastMessage;
 }
+
+typedef Chats = List<Chat>;
 
 class Chat implements ChatModel {
   final JSON data;
 
   Chat(this.data) {
-    final mapList = data.getListProperty<Map<String, dynamic>>(_kPeople) ?? [];
-    people = mapList.map((map) => ChatEngineUser(JSON.fromMap(map))).toList();
+    final peopleMap = data.getListProperty<KeyValueStore>(_kPeople) ?? [];
+    people = peopleMap.map((map) => Activity(JSON.fromMap(map))).toList();
   }
 
-  static List<Chat> fromJsonArray(List<JSON> jsonArray) {
+  static Chats fromJsonArray(List<JSON> jsonArray) {
     return jsonArray.map((json) => Chat(json)).toList();
   }
 
-  static List<Chat> fromWebResponse(WebResponse webResponse) {
+  static Chats chatListFromWebResponse(WebResponse webResponse) {
     if (webResponse.isSuccessful) {
       assert(webResponse.httpResponse.decodedBody is List);
       return fromJsonArray(webResponse.bodyAsJsonList()!);
@@ -46,7 +61,7 @@ class Chat implements ChatModel {
   late final int id = data.getProperty<int>(_kId)!;
 
   @override
-  late final List<ChatEngineUser> people;
+  late final Activities people;
 
   @override
   String get title => data.getProperty<String>(_kTitle)!;

@@ -6,10 +6,7 @@ import 'package:glider_portal/glider_portal.dart';
 final privateAPI = ChatEnginePrivateAPI();
 final api = ChatEngineAPI(username: "ernpao@g.com", secret: "password");
 void main() {
-  test("Chat Engine API", () async {
-    final socket =
-        ChatEngineWebSocket(username: "ernpao@g.com", secret: "password");
-  });
+  test("Chat Engine API", () async {});
 
   test("Chat Engine API - Test Get, Create, and Delete Chats", () async {
     var chats = <Chat>[];
@@ -18,7 +15,7 @@ void main() {
     assert(response.isSuccessful);
 
     response = await api.getMyChats();
-    chats = Chat.fromWebResponse(response);
+    chats = Chat.chatListFromWebResponse(response);
     assert(chats.isNotEmpty);
 
     for (final chat in chats) {
@@ -63,7 +60,7 @@ void main() {
     assert(deleteResponse.isSuccessful);
   });
 
-  test("Chat Engine API - ChatMessage Parsing", () async {
+  test("Chat Engine API - Message Parsing", () async {
     const chatMessageListString = ''
         '['
         ' {'
@@ -97,7 +94,7 @@ void main() {
     assert(sender.firstName == "John");
     assert(sender.lastName == "Doe");
   });
-  test("Chat Engine API - ChatEngineUser Parsing", () async {
+  test("Chat Engine API - Person Parsing", () async {
     const userJsonString = ''
         '{'
         ' "username": "John_Doe",'
@@ -117,27 +114,15 @@ void main() {
     );
   });
 
-  test("Chat Engine API - ChatMessage Parsing", () async {
-    const messageJsonString = ''
-        '{'
-        ' "id": 353,'
-        ' "sender": {'
-        '   "username": "wendy_walker",'
-        '   "first_name": null,'
-        '   "last_name": null,'
-        '   "avatar": null,'
-        '   "is_online": false'
-        ' },'
-        ' "created": "2021-01-28 02:45:27.747970+00:00",'
-        ' "attachments": [],'
-        ' "text": "Hello world!"'
-        '}';
-
-    final parsedMessage = Message.parse(messageJsonString);
-    final parsedSender = parsedMessage.sender;
-    assert(parsedMessage.id == 353);
-    assert(parsedMessage.attachments.isEmpty);
-    assert(parsedSender.username == "wendy_walker");
-    assert(parsedSender.avatar == null);
+  test("Chat Engine API - Get Chat Details", () async {
+    WebResponse response = await api.createChat("This is a test chat");
+    assert(response.isSuccessful);
+    final newChat = Chat(response.bodyAsJson()!);
+    response = await api.getChatDetails(newChat.id);
+    final fetchedChat = Chat(response.bodyAsJson()!);
+    assert(fetchedChat.title == newChat.title);
+    assert(response.isSuccessful);
+    response = await api.deleteChat(fetchedChat.id);
+    assert(response.isSuccessful);
   });
 }

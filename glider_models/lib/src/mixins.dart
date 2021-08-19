@@ -1,5 +1,7 @@
 library mixins;
 
+import 'dart:developer' as developer;
+
 import 'package:hover/hover.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
@@ -109,3 +111,15 @@ String _formatDateTimeWithoutSeconds(DateTime d) =>
 
 /// Formats a DateTime object and displays the time in 'MMMM d, yyyy' format.
 String _formatDate(DateTime d) => DateFormat("MMMM d, yyyy").format(d);
+
+extension DebugLogging on Object {
+  void log(String? message) {
+    if (message != null) {
+      developer.log(
+        message,
+        name: runtimeType.toString(),
+        time: DateTime.now(),
+      );
+    }
+  }
+}

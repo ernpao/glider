@@ -26,7 +26,7 @@ class Person implements PersonModel {
       return fromJsonArray(response.bodyAsJsonList()!);
     }
     throw Exception(
-      "Can't get a list of Messages from an unsuccessful web request.",
+      "Can't get a list of Person from an unsuccessful web request.",
     );
   }
 

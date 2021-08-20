@@ -15,6 +15,7 @@ mixin Created {
 
 extension SortByCreated on List<Created> {
   /// Sort items by `created` in ascending order.
+  /// Does not modify the current list.
   List<Created> sortByCreatedAsc() {
     final data = this;
     data.sort((a, b) => a.created.difference(b.created).inMicroseconds);
@@ -22,6 +23,7 @@ extension SortByCreated on List<Created> {
   }
 
   /// Sort items by `created` in descending order.
+  /// Does not modify the current list.
   List<Created> sortByCreatedDesc() {
     return sortByCreatedAsc().reversed.toList();
   }

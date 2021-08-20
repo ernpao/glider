@@ -1,6 +1,6 @@
 import 'package:glider/glider.dart';
 
-import 'activity.dart';
+import 'chat_member.dart';
 import 'person.dart';
 import 'message.dart';
 
@@ -14,7 +14,7 @@ abstract class ChatModel with Created {
   /// of the people in this chat
   /// (i.e. their last read
   /// messages).
-  ActivitiesModel get people;
+  ChatMembersModel get people;
 
   /// The title of this chat.
   String get title;
@@ -64,7 +64,7 @@ class Chat implements ChatModel {
 
   Chat(this.data) {
     final peopleMap = data.getListProperty<KeyValueStore>(_kPeople) ?? [];
-    people = peopleMap.map((map) => Activity(JSON.fromMap(map))).toList();
+    people = peopleMap.map((map) => ChatMember(JSON.fromMap(map))).toList();
   }
 
   static Chats fromJsonArray(List<JSON> jsonArray) {
@@ -92,7 +92,7 @@ class Chat implements ChatModel {
   late final int id = data.getProperty<int>(_kId)!;
 
   @override
-  late final Activities people;
+  late final ChatMembers people;
 
   @override
   String get title => data.getProperty<String>(_kTitle)!;

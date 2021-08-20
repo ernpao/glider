@@ -29,6 +29,36 @@ abstract class ChatModel with Created {
 
 typedef Chats = List<Chat>;
 
+extension ChatListExtensions on Chats {
+  Chats sortByMostRecentActivity() {
+    Chats chats = [];
+    Chats chatsWithoutMessages = [];
+
+    for (final chat in this) {
+      if (chat.lastMessage.created != null) {
+        chats.add(chat);
+      } else {
+        chatsWithoutMessages.add(chat);
+      }
+    }
+
+    chats.sort((a, b) {
+      return b.lastMessage.created!
+          .difference(a.lastMessage.created!)
+          .inMilliseconds;
+    });
+
+    /// Sort the chats without messages.
+    chatsWithoutMessages =
+        chatsWithoutMessages.sortByCreatedDesc().cast<Chat>().toList();
+
+    return [
+      ...chats,
+      ...chatsWithoutMessages,
+    ];
+  }
+}
+
 class Chat implements ChatModel {
   final JSON data;
 

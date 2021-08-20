@@ -21,13 +21,13 @@ class Message implements MessageModel {
     return jsonArray.map((json) => Message(json)).toList();
   }
 
-  static Messages messagesFromWebResponse(WebResponse webResponse) {
-    if (webResponse.isSuccessful) {
-      assert(webResponse.httpResponse.decodedBody is List);
-      return fromJsonArray(webResponse.bodyAsJsonList()!);
+  static Messages messagesFromWebResponse(WebResponse response) {
+    if (response.isSuccessful) {
+      assert(response.httpResponse.decodedBody is List);
+      return fromJsonArray(response.bodyAsJsonList()!);
     }
     throw Exception(
-      "Can't get a list of Messages from an unsuccessful web request.",
+      "Can't get a list of Message from an unsuccessful web request.",
     );
   }
 

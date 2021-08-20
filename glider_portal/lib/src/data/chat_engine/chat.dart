@@ -71,13 +71,13 @@ class Chat implements ChatModel {
     return jsonArray.map((json) => Chat(json)).toList();
   }
 
-  static Chats chatsFromWebResponse(WebResponse webResponse) {
-    if (webResponse.isSuccessful) {
-      assert(webResponse.httpResponse.decodedBody is List);
-      return fromJsonArray(webResponse.bodyAsJsonList()!);
+  static Chats chatsFromWebResponse(WebResponse response) {
+    if (response.isSuccessful) {
+      assert(response.httpResponse.decodedBody is List);
+      return fromJsonArray(response.bodyAsJsonList()!);
     }
     throw Exception(
-      "Can't get a list of Chats from an unsuccessful web request.",
+      "Can't get a list of Chat from an unsuccessful web request.",
     );
   }
 

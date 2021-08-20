@@ -32,11 +32,18 @@ class ChatMember implements ChatMemberModel {
   static ChatMembers parseList(String string) =>
       fromJsonList(JSON.parseList(string));
 
-  static List<ChatMember> fromJsonList(List<JSON> jsonArray) =>
+  static ChatMembers fromJsonList(List<JSON> jsonArray) =>
       jsonArray.map((json) => ChatMember(json)).toList();
 
-  static List<ChatMember> activitiesFromWebResponse(WebResponse response) =>
-      fromJsonList(response.bodyAsJsonList()!);
+  static ChatMembers activitiesFromWebResponse(WebResponse response) {
+    if (response.isSuccessful) {
+      assert(response.httpResponse.decodedBody is List);
+      return fromJsonList(response.bodyAsJsonList()!);
+    }
+    throw Exception(
+      "Can't get a list of ChatMember from an unsuccessful web request.",
+    );
+  }
 
   static const _kPerson = "person";
   static const _kLastRead = "last_read";

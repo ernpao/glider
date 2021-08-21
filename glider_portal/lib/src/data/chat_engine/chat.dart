@@ -25,37 +25,23 @@ abstract class ChatModel with Created {
 
   /// The last message in this chat.
   Message get lastMessage;
+
+  /// Returns the timestamp of the last message in this chat if it contains
+  /// messages. Otherwise, it will return the timestamp of when the chat
+  /// itself was created.
+  DateTime get timeOfLastActivity => lastMessage.created ?? created;
 }
 
 typedef Chats = List<Chat>;
 
 extension ChatListExtensions on Chats {
   Chats sortByMostRecentActivity() {
-    Chats chats = [];
-    Chats chatsWithoutMessages = [];
-
-    for (final chat in this) {
-      if (chat.lastMessage.created != null) {
-        chats.add(chat);
-      } else {
-        chatsWithoutMessages.add(chat);
-      }
-    }
-
-    chats.sort((a, b) {
-      return b.lastMessage.created!
-          .difference(a.lastMessage.created!)
-          .inMilliseconds;
-    });
-
-    /// Sort the chats without messages.
-    chatsWithoutMessages =
-        chatsWithoutMessages.sortByCreatedDesc().cast<Chat>().toList();
-
-    return [
-      ...chats,
-      ...chatsWithoutMessages,
-    ];
+    final chats = this;
+    chats.sort(
+      (a, b) =>
+          b.timeOfLastActivity.difference(a.timeOfLastActivity).inMicroseconds,
+    );
+    return chats;
   }
 }
 
@@ -113,4 +99,7 @@ class Chat implements ChatModel {
   static const _kCreated = "created";
   static const _kPeople = "people";
   static const _kLastMessage = "last_message";
+
+  @override
+  DateTime get timeOfLastActivity => lastMessage.created ?? created;
 }

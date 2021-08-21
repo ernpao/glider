@@ -72,4 +72,13 @@ extension StringExtensions on String {
     final intList = toIntList();
     if (intList != null) Uint8List.fromList(intList);
   }
+
+  String truncate(int length, {bool appendEllipsis = true}) {
+    if (length < this.length) {
+      final result = substring(0, length);
+      return appendEllipsis ? "$result..." : result;
+    } else {
+      return this;
+    }
+  }
 }

@@ -62,3 +62,37 @@ class Message implements MessageModel {
   static List<Message> parseList(String string) =>
       JSON.parseList(string).map((json) => Message(json)).toList();
 }
+
+/// Represents a placeholder message.
+class DummyMessage implements MessageModel {
+  DummyMessage({
+    required String text,
+    required Person sender,
+    List attachments = const [],
+  }) {
+    _created = DateTime.now();
+    _text = text;
+    _sender = sender;
+    _attachments = attachments;
+  }
+
+  late final DateTime? _created;
+  late final String _text;
+  late final Person _sender;
+  late final List _attachments;
+
+  @override
+  List get attachments => _attachments;
+
+  @override
+  DateTime? get created => _created;
+
+  @override
+  int get id => -1;
+
+  @override
+  Person get sender => _sender;
+
+  @override
+  String get text => _text;
+}

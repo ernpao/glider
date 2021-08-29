@@ -67,18 +67,15 @@ class Message implements MessageModel {
 class DummyMessage implements MessageModel {
   DummyMessage({
     required String text,
-    required Person sender,
     List attachments = const [],
   }) {
     _created = DateTime.now();
     _text = text;
-    _sender = sender;
     _attachments = attachments;
   }
 
   late final DateTime? _created;
   late final String _text;
-  late final Person _sender;
   late final List _attachments;
 
   @override
@@ -91,7 +88,9 @@ class DummyMessage implements MessageModel {
   int get id => -1;
 
   @override
-  Person get sender => _sender;
+  Person get sender {
+    throw Exception("Can't access the sender property of $runtimeType.");
+  }
 
   @override
   String get text => _text;

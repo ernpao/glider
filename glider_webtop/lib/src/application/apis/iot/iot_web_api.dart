@@ -4,11 +4,13 @@ import 'iot_interface.dart';
 class IotWebAPI extends WsAPI implements IotInterface {
   IotWebAPI({
     required String host,
+    required int port,
     required int socketPort,
   }) : super(
           host: host,
           useHttps: false,
           useWss: false,
+          httpPort: port,
           webSocketPort: socketPort,
         );
 
@@ -26,6 +28,7 @@ class IotWebAPI extends WsAPI implements IotInterface {
       ..setProperty("x", accelerometerX)
       ..setProperty("y", accelerometerY)
       ..setProperty("z", accelerometerZ);
+
     final gyroDataJson = JSON()
       ..setProperty("x", gyroscopeX)
       ..setProperty("y", gyroscopeY)
@@ -34,6 +37,7 @@ class IotWebAPI extends WsAPI implements IotInterface {
     final sensorDataJson = JSON()
       ..setProperty("accelerometer", accelDataJson)
       ..setProperty("gyroscope", gyroDataJson);
+
     socket.sendWsData(
       WsData(
         sender: sender,

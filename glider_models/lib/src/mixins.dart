@@ -68,6 +68,12 @@ mixin UUID {
   final String uuid = const Uuid().v4();
 }
 
+/// A mixin that gives an object the ability
+/// to create V4 UUID strings.
+mixin CreateUUID {
+  String createUuid() => (const Uuid()).v4();
+}
+
 /// A mixin that gives and object functions for formatting
 /// [DateTime] objects.
 mixin DateTimeFormatter {

@@ -1,7 +1,10 @@
+import 'package:glider/glider.dart';
+
 abstract class IotInterface {
   /// Send accelerometer and gyroscope readings to the Webtop server.
   void sendImuData(
-    String sender, {
+    String sender,
+    JSON dataSetInfo, {
     double? accelerometerX,
     double? accelerometerY,
     double? accelerometerZ,

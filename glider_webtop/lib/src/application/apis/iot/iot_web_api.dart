@@ -16,7 +16,8 @@ class IotWebAPI extends WsAPI implements IotInterface {
 
   @override
   void sendImuData(
-    String sender, {
+    String sender,
+    JSON dataSetInfo, {
     double? accelerometerX,
     double? accelerometerY,
     double? accelerometerZ,
@@ -36,7 +37,8 @@ class IotWebAPI extends WsAPI implements IotInterface {
 
     final sensorDataJson = JSON()
       ..setProperty("accelerometer", accelDataJson)
-      ..setProperty("gyroscope", gyroDataJson);
+      ..setProperty("gyroscope", gyroDataJson)
+      ..setProperty("dataSet", dataSetInfo);
 
     socket.sendWsData(
       WsData(

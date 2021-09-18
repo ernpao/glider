@@ -96,11 +96,11 @@ class WebAPI with WebURI implements WebClient, WebSocket {
 
   @override
   @protected
-  Future<WebResponse> get(String? requestPath) => _webClient.get(path);
+  Future<WebResponse> get(String? requestPath) => _webClient.get(requestPath);
 
   @override
   @protected
-  Future<WebResponse> post(String? requestPath) => _webClient.post(path);
+  Future<WebResponse> post(String? requestPath) => _webClient.post(requestPath);
 
   @override
   bool get hasListener => socket.hasListener;

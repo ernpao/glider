@@ -1,4 +1,5 @@
 import 'package:glider/glider.dart';
+
 import 'iot_interface.dart';
 
 class IotWebAPI extends WsAPI implements IotInterface {
@@ -48,5 +49,18 @@ class IotWebAPI extends WsAPI implements IotInterface {
         category: "sensor",
       ),
     );
+  }
+
+  @override
+  Future<List<String>> getWsDataSenders() async {
+    final response = await this.get("iot/senders");
+    final body = response.bodyAsJson();
+
+    if (body != null) {
+      final List<String> senders = body.getListProperty<String>("senders")!;
+      return senders;
+    } else {
+      return <String>[];
+    }
   }
 }

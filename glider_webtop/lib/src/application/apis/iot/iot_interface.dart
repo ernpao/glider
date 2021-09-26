@@ -12,4 +12,6 @@ abstract class IotInterface {
     double? gyroscopeY,
     double? gyroscopeZ,
   });
+
+  Future<List<String>> getWsDataSenders();
 }

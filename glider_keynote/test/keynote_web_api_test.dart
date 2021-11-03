@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:glider_keynote/glider_keynote.dart';
 
@@ -35,6 +38,38 @@ void main() {
   test("Keynote Mouse Click Test", () async {
     client.openSocket();
     client.clickMouse(MouseButton.right);
+    client.closeSocket();
+  });
+
+  test("Keystroke Loop Test", () async {
+    client.openSocket();
+
+    /// Number of times to send the keystroke
+    const count = 500;
+
+    /// Base delay between keystrokes in seconds
+    const baseDelay = 3.0;
+
+    /// Expected network latency in milliseconds
+    const latency = 0.4;
+
+    final rng = Random();
+
+    for (var i = 0; i < count; i++) {
+      const baseRandomDelay = 1.0;
+
+      /// Randomb delay in seconds
+      final randomDelay = baseRandomDelay * rng.nextDouble();
+      final totalDelay = baseDelay + latency + randomDelay;
+
+      debugPrint(
+        "Sending keystroke ${i + 1} of $count followed by a delay of $totalDelay seconds.",
+      );
+
+      client.sendKeystroke("f1");
+      await delay(totalDelay);
+    }
+
     client.closeSocket();
   });
 

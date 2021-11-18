@@ -1,7 +1,4 @@
-import 'package:glider_models/glider_models.dart';
 import 'package:glider_portal/glider_portal.dart';
-
-import 'person.dart';
 
 typedef ChatMembersModel = List<ChatMemberModel>;
 

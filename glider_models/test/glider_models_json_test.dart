@@ -27,9 +27,9 @@ void main() {
     final testModelCreatedType = testModel.getProperty("created").runtimeType;
     assert(parsedCreatedType == testModelCreatedType);
 
-    final KeyValueStore nested = parsed.getProperty("nested");
-    final JSON nestedBody = nested["body"];
-    final List nestedBodyItems = nestedBody.getProperty("items");
+    final nested = parsed.getProperty("nested");
+    final nestedBody = nested["body"];
+    final nestedBodyItems = nestedBody.getProperty("items");
     assert(nested is KeyValueStore);
     assert(nestedBody is JSON);
     assert(nestedBodyItems is List);

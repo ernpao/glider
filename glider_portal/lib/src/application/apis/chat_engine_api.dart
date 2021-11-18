@@ -1,8 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:glider/glider.dart';
 import 'package:glider_portal/glider_portal.dart';
-
-import 'web_interfaces/web_interfaces.dart';
 
 @protected
 mixin _ChatEnginePaths {

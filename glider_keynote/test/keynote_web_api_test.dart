@@ -48,15 +48,15 @@ void main() {
     const count = 500;
 
     /// Base delay between keystrokes in seconds
-    const baseDelay = 3.0;
+    const baseDelay = 2.4;
 
-    /// Expected network latency in milliseconds
-    const latency = 0.4;
+    /// Expected network latency in seconds
+    const latency = 0.3;
 
     final rng = Random();
 
     for (var i = 0; i < count; i++) {
-      const baseRandomDelay = 1.0;
+      const baseRandomDelay = 0.5;
 
       /// Randomb delay in seconds
       final randomDelay = baseRandomDelay * rng.nextDouble();

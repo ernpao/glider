@@ -48,7 +48,7 @@ void main() {
     const count = 500;
 
     /// Base delay between keystrokes in seconds
-    const baseDelay = 2.4;
+    const baseDelay = 1.3;
 
     /// Expected network latency in seconds
     const latency = 0.3;

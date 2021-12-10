@@ -80,5 +80,11 @@ void main() {
   });
 }
 
-Future<void> delay(double seconds) async =>
-    Future.delayed(Duration(milliseconds: (seconds * 1000).round()));
+Future<void> delay(double seconds) {
+  final ms = (seconds * 1000).round();
+  return delayMs(ms);
+}
+
+Future<void> delayMs(int milliseconds) {
+  return Future.delayed(Duration(milliseconds: milliseconds));
+}

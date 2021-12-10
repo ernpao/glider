@@ -3,13 +3,16 @@ import 'package:google_ml_kit/google_ml_kit.dart';
 
 final _textDetector = GoogleMlKit.vision.textDetector();
 final _imageLabeler = GoogleMlKit.vision.imageLabeler();
+final _poseDetector = GoogleMlKit.vision.poseDetector();
 
 class MachineLearningHelper {
   /// Creates an [InputImage] from the
   /// camera package's [CameraImage] and [CameraDescription]
   /// for use with the Google ML Kit package.
   static InputImage convertCameraImage(
-      CameraImage image, CameraDescription camera) {
+    CameraImage image,
+    CameraDescription camera,
+  ) {
     final imageSize = image.size;
     final bytes = image.bytes;
 
@@ -61,5 +64,9 @@ class MachineLearningHelper {
   /// Google ML Kit image labeler.
   static Future<List<ImageLabel>> labelImage(InputImage inputImage) {
     return _imageLabeler.processImage(inputImage);
+  }
+
+  static Future<List<Pose>> detectPose(InputImage inputImage) {
+    return _poseDetector.processImage(inputImage);
   }
 }

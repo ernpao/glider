@@ -13,7 +13,7 @@ dependencies:
     path: ../glider_sensors 
   glider:
     path: ../glider 
-  google_ml_kit: ^0.7.0
+  google_ml_kit: ^0.7.3
   hover: 
     path: ../hover
 

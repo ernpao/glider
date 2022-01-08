@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:glider_sensors/glider_sensors.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
-import 'package:provider/provider.dart';
+import 'package:hover/hover.dart';
 
 import 'machine_learning_helper.dart';
 
@@ -11,24 +11,26 @@ class PoseDetectorView extends StatelessWidget {
     required this.overlayBuilder,
   }) : super(key: key);
 
-  /// Builder for each text block detected.
+  /// Builder for each pose detected.
   final Widget Function(
     BuildContext context,
-    String detectedText,
+    Pose pose,
+    Size imageSize,
+    Size containerSize,
   ) overlayBuilder;
 
-  final _PoseDetector _textDetector = _PoseDetector(processingInterval: 1500);
+  final _PoseDetector _poseDetector = _PoseDetector(processingInterval: 100);
 
   @override
   Widget build(BuildContext context) {
     return CameraViewBuilder(
       resolution: ResolutionPreset.max,
-      onImage: _textDetector.detectPose,
+      onImage: _poseDetector.detectPose,
       builder: (context, viewController) {
         return CameraPreview(
           viewController.cameraController,
           child: _PoseDetectorProvider(
-            textDetector: _textDetector,
+            poseDetector: _poseDetector,
             child: _PoseDetectorOverlay(overlayBuilder: overlayBuilder),
           ),
         );
@@ -38,27 +40,25 @@ class PoseDetectorView extends StatelessWidget {
 }
 
 class _PoseDetector extends ChangeNotifier {
-  _PoseDetector({
-    required this.processingInterval,
-  });
+  _PoseDetector({required this.processingInterval});
 
   /// Processing interval in milliseconds.
   final int processingInterval;
 
-  /// Timestamp of the last text recognition process.
-  DateTime _lastProcessTimestamp = DateTime.now();
+  /// Timestamp of this pose recognition process.
+  DateTime _previousDetectionTime = DateTime.now();
 
-  /// Results of the last text recognition process.
+  /// Results of the last pose recognition process.
   _PoseDetectorResult? get latestResult => _lastestResult;
   _PoseDetectorResult? _lastestResult;
 
-  void detectPose(CameraImageData imageData) async {
-    final processCalledOn = DateTime.now();
-    final timeElapsedSinceLastProcess =
-        processCalledOn.difference(_lastProcessTimestamp).inMilliseconds;
+  void detectPose(CameraOutput imageData) async {
+    final currentTime = DateTime.now();
+    final timeElapsed =
+        currentTime.difference(_previousDetectionTime).inMilliseconds;
 
-    if (timeElapsedSinceLastProcess > processingInterval) {
-      _lastProcessTimestamp = processCalledOn;
+    if (timeElapsed > processingInterval) {
+      _previousDetectionTime = currentTime;
 
       final cameraImage = imageData.cameraImage;
       final cameraDescription = imageData.cameraDescription;
@@ -69,6 +69,7 @@ class _PoseDetector extends ChangeNotifier {
 
       final result = await MachineLearningHelper.detectPose(inputImage);
 
+      // Store the detected poses and notify listeners.
       _lastestResult = _PoseDetectorResult(
         inputImage: inputImage,
         detectedPoses: result,
@@ -78,8 +79,8 @@ class _PoseDetector extends ChangeNotifier {
 
       /// Calculate the processing time
       final processEnd = DateTime.now();
-      final processMs = processEnd.difference(processCalledOn).inMilliseconds;
-      print("Text recognition processing time: ${processMs}ms");
+      final processMs = processEnd.difference(currentTime).inMilliseconds;
+      print("Pose recognition processing time: ${processMs}ms");
     }
   }
 }
@@ -87,9 +88,9 @@ class _PoseDetector extends ChangeNotifier {
 class _PoseDetectorProvider extends ChangeNotifierProvider<_PoseDetector> {
   _PoseDetectorProvider({
     Widget? child,
-    required _PoseDetector textDetector,
+    required _PoseDetector poseDetector,
   }) : super(
-          create: (_) => textDetector,
+          create: (_) => poseDetector,
           child: child,
         );
 }
@@ -112,7 +113,9 @@ class _PoseDetectorOverlay extends StatelessWidget {
   /// overlays on top of the live camera preview.
   final Widget Function(
     BuildContext context,
-    String detectedText,
+    Pose pose,
+    Size imageSize,
+    Size containerSize,
   ) overlayBuilder;
 
   @override
@@ -128,36 +131,49 @@ class _PoseDetectorOverlay extends StatelessWidget {
         print("Overlay W: $containerWidth H: $containerHeight");
 
         if (detectionResult != null) {
-          // final imageData = detectionResult.inputImage.inputImageData!;
-          // final imageSize = imageData.size;
+          final imageData = detectionResult.inputImage.inputImageData!;
+          final imageSize = imageData.size;
 
           // /// Image is rotated 90 Deg by default, so we
           // /// flip width and height
-          // final imageWidth = imageSize.height;
-          // final imageHeight = imageSize.width;
+          final imageWidth = imageSize.height;
+          final imageHeight = imageSize.width;
+          print("Image W: $imageWidth H: $imageHeight");
 
           final poses = detectionResult.detectedPoses;
+          print("Poses detected: ${poses.length}");
 
-          poses.forEach((pose) {
-            // final blockRect = pose.rect;
-            // final x = (blockRect.topLeft.dx / imageWidth) * containerWidth;
-            // final y = (blockRect.topLeft.dy / imageHeight) * containerHeight;
-            // return AnimatedPositioned(
-            //   duration: Duration(milliseconds: 100),
-            //   top: y,
-            //   left: x,
-            //   child: overlayBuilder(context, pose.text),
-            // );
-            // return SizedBox.shrink();
+          if (poses.length > 0) {
+            final pose = poses.first;
 
-            /// TODO: Process pose landmarks and create overlay widgets.
-            final landmarks = pose.landmarks;
-            landmarks.forEach((landmarkType, landmark) {});
+            overlays = [
+              overlayBuilder(
+                context,
+                pose,
+                Size(imageWidth, imageHeight),
+                Size(containerWidth, containerHeight),
+              )
+            ];
 
-            final overlay = SizedBox.shrink();
+            // final landmarks = pose.landmarks;
+            // landmarks.forEach((landmarkType, landmark) {
+            //   final x = (landmark.x / imageWidth) * containerWidth;
+            //   final y = (landmark.y / imageHeight) * containerHeight;
 
-            overlays.add(overlay);
-          });
+            //   print("    ${landmarkType.name}");
+            //   overlays.add(AnimatedPositioned(
+            //     duration: Duration(milliseconds: 100),
+            //     top: y,
+            //     left: x,
+            //     child: Column(
+            //       children: [
+            //         overlayBuilder(context),
+            //         HoverText(landmarkType.name, fontSize: 6),
+            //       ],
+            //     ),
+            //   ));
+            // });
+          }
         }
 
         return Container(

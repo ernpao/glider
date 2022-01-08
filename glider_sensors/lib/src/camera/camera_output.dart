@@ -1,7 +1,7 @@
 import 'package:camera/camera.dart';
 
-class CameraImageData {
-  CameraImageData({
+class CameraOutput {
+  CameraOutput({
     required this.cameraImage,
     required this.cameraDescription,
     required this.imageFormatGroup,
@@ -17,12 +17,12 @@ class CameraImageData {
 
   final ResolutionPreset resolution;
 
-  /// Time when this [CameraImageData] was created.
+  /// Time when this [CameraOutput] was created.
   final DateTime createdOn = DateTime.now();
 
-  /// Width of the [cameraImage] property of this [CameraImageData].
+  /// Width of the [cameraImage] property of this [CameraOutput].
   int get width => cameraImage.width;
 
-  /// Height of the [cameraImage] property of this [CameraImageData].
+  /// Height of the [cameraImage] property of this [CameraOutput].
   int get height => cameraImage.height;
 }

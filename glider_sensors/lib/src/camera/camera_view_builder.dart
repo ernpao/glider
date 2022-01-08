@@ -1,7 +1,7 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 
-import 'camera_image_data.dart';
+import 'camera_output.dart';
 
 class CameraViewBuilder extends StatefulWidget {
   CameraViewBuilder({
@@ -19,9 +19,10 @@ class CameraViewBuilder extends StatefulWidget {
   /// Determines which camera to use upon initialization (i.e. front or rear).
   final CameraLensDirection initialDirection;
 
-  final Function(CameraImageData image)? onImage;
+  final Function(CameraOutput image)? onImage;
 
-  final Function(BuildContext context, CameraViewController viewController) builder;
+  final Function(BuildContext context, CameraViewController viewController)
+      builder;
 
   @override
   State<StatefulWidget> createState() => _CameraViewBuilderState();
@@ -62,7 +63,7 @@ class _CameraViewBuilderState extends State<CameraViewBuilder> {
 
     if (mounted) {
       _controller?.startImageStream((image) {
-        widget.onImage?.call(CameraImageData(
+        widget.onImage?.call(CameraOutput(
           cameraImage: image,
           cameraDescription: _controller!.description,
           imageFormatGroup: widget.imageFormatGroup,

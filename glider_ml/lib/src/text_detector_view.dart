@@ -52,7 +52,7 @@ class _TextDetector extends ChangeNotifier {
   _TextDetectorResult? get latestResult => _lastestResult;
   _TextDetectorResult? _lastestResult;
 
-  void recognizeText(CameraImageData imageData) async {
+  void recognizeText(CameraOutput cameraOutput) async {
     final processCalledOn = DateTime.now();
     final timeElapsedSinceLastProcess =
         processCalledOn.difference(_lastProcessTimestamp).inMilliseconds;
@@ -60,8 +60,8 @@ class _TextDetector extends ChangeNotifier {
     if (timeElapsedSinceLastProcess > processingInterval) {
       _lastProcessTimestamp = processCalledOn;
 
-      final cameraImage = imageData.cameraImage;
-      final cameraDescription = imageData.cameraDescription;
+      final cameraImage = cameraOutput.cameraImage;
+      final cameraDescription = cameraOutput.cameraDescription;
       final inputImage = MachineLearningHelper.convertCameraImage(
         cameraImage,
         cameraDescription,
@@ -120,11 +120,11 @@ class _TextDetectorOverlay extends StatelessWidget {
       builder: (context, constraints) {
         final modelState = Provider.of<_TextDetector>(context);
         final data = modelState.latestResult;
-        List<Widget> children = [];
+        List<Widget> overlays = [];
 
-        final layoutWidth = constraints.smallest.width;
-        final layoutHeight = constraints.smallest.height;
-        print("Overlay W: $layoutWidth H: $layoutHeight");
+        final containerWidth = constraints.smallest.width;
+        final containerHeight = constraints.smallest.height;
+        print("Overlay W: $containerWidth H: $containerHeight");
 
         if (data != null) {
           final imageData = data.inputImage.inputImageData!;
@@ -135,10 +135,10 @@ class _TextDetectorOverlay extends StatelessWidget {
           final imageWidth = imageSize.height;
           final imageHeight = imageSize.width;
 
-          children = data.recognisedText.blocks.map((block) {
+          overlays = data.recognisedText.blocks.map((block) {
             final blockRect = block.rect;
-            final x = (blockRect.topLeft.dx / imageWidth) * layoutWidth;
-            final y = (blockRect.topLeft.dy / imageHeight) * layoutHeight;
+            final x = (blockRect.topLeft.dx / imageWidth) * containerWidth;
+            final y = (blockRect.topLeft.dy / imageHeight) * containerHeight;
             return AnimatedPositioned(
               duration: Duration(milliseconds: 100),
               top: y,
@@ -149,10 +149,10 @@ class _TextDetectorOverlay extends StatelessWidget {
         }
 
         return Container(
-          width: layoutWidth,
-          height: layoutHeight,
+          width: containerWidth,
+          height: containerHeight,
           child: Stack(
-            children: children,
+            children: overlays,
           ),
         );
       },

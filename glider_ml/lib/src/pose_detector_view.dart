@@ -154,25 +154,6 @@ class _PoseDetectorOverlay extends StatelessWidget {
                 Size(containerWidth, containerHeight),
               )
             ];
-
-            // final landmarks = pose.landmarks;
-            // landmarks.forEach((landmarkType, landmark) {
-            //   final x = (landmark.x / imageWidth) * containerWidth;
-            //   final y = (landmark.y / imageHeight) * containerHeight;
-
-            //   print("    ${landmarkType.name}");
-            //   overlays.add(AnimatedPositioned(
-            //     duration: Duration(milliseconds: 100),
-            //     top: y,
-            //     left: x,
-            //     child: Column(
-            //       children: [
-            //         overlayBuilder(context),
-            //         HoverText(landmarkType.name, fontSize: 6),
-            //       ],
-            //     ),
-            //   ));
-            // });
           }
         }
 

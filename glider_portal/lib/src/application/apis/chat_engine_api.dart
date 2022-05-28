@@ -1,66 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:glider_portal/glider_portal.dart';
 
-@protected
-mixin _ChatEnginePaths {
-  final String _usersPath = "/users";
-  String _usersPathWithUserId(int userId) => "$_usersPath/$userId/";
-
-  late final String _mePath = "$_usersPath/me/";
-
-  final String _chatsPath = "/chats/";
-  String _latestChatsPath(int chatCount) => "/chats/latest/$chatCount";
-  String _chatsPathWithChatId(int chatId) => "/chats/$chatId/";
-  String _chatsPathWithPeople(int chatId) => "/chats/$chatId/people/";
-  String _chatsPathWithOthers(int chatId) => "/chats/$chatId/others/";
-
-  String _typingPath(int chatId) => "/chats/$chatId/typing/";
-
-  String _messagesPath(int chatId) => "/chats/$chatId/messages/";
-
-  String _messagesPathWithMessageId(int chatId, int messageId) {
-    return "${_messagesPath(chatId)}$messageId/";
-  }
-
-  String _latestMessagesPath(int chatId, int chatCount) {
-    return "${_messagesPath(chatId)}latest/$chatCount/";
-  }
-}
-
-@protected
-mixin _RequestHelper {
-  static const _chatEngineIoUrl = "api.chatengine.io";
-  String get _baseUrl => _chatEngineIoUrl;
-
-  static const _chatEngineIoProjectId = "ab2204ec-10bc-4807-9f61-ecf012787ced";
-  String get _projectId => _chatEngineIoProjectId;
-
-  static final _webClient = WebClient(
-    host: _chatEngineIoUrl,
-    useHttps: true,
-  );
-
-  T _createUserRequest<T extends WebRequest>(
-      String? path, String username, String secret) {
-    final request = _webClient.createRequest<T>(path);
-    request.withHeader("Project-ID", _projectId);
-    request.withHeader("User-Name", username);
-    request.withHeader("User-Secret", secret);
-    request.withJsonContentType();
-    return request;
-  }
-
-  T _createPrivateRequest<T extends WebRequest>(
-    String? path,
-    String privateKey,
-  ) {
-    final request = _webClient.createRequest<T>(path);
-    request.withHeader("PRIVATE-KEY", privateKey);
-    request.withJsonContentType();
-    return request;
-  }
-}
-
 class ChatEnginePrivateAPI
     with _ChatEnginePaths, _RequestHelper
     implements AuthInterface, ChatEnginePrivateInterface {
@@ -502,4 +442,64 @@ class ChatEngineSocketEvent {
   static const actionNewMessage = "new_message";
   static const actionDeleteChat = "delete_chat";
   static const actionLoginError = "login_error";
+}
+
+@protected
+mixin _ChatEnginePaths {
+  final String _usersPath = "/users";
+  String _usersPathWithUserId(int userId) => "$_usersPath/$userId/";
+
+  late final String _mePath = "$_usersPath/me/";
+
+  final String _chatsPath = "/chats/";
+  String _latestChatsPath(int chatCount) => "/chats/latest/$chatCount";
+  String _chatsPathWithChatId(int chatId) => "/chats/$chatId/";
+  String _chatsPathWithPeople(int chatId) => "/chats/$chatId/people/";
+  String _chatsPathWithOthers(int chatId) => "/chats/$chatId/others/";
+
+  String _typingPath(int chatId) => "/chats/$chatId/typing/";
+
+  String _messagesPath(int chatId) => "/chats/$chatId/messages/";
+
+  String _messagesPathWithMessageId(int chatId, int messageId) {
+    return "${_messagesPath(chatId)}$messageId/";
+  }
+
+  String _latestMessagesPath(int chatId, int chatCount) {
+    return "${_messagesPath(chatId)}latest/$chatCount/";
+  }
+}
+
+@protected
+mixin _RequestHelper {
+  static const _chatEngineIoUrl = "api.chatengine.io";
+  String get _baseUrl => _chatEngineIoUrl;
+
+  static const _chatEngineIoProjectId = "ab2204ec-10bc-4807-9f61-ecf012787ced";
+  String get _projectId => _chatEngineIoProjectId;
+
+  static final _webClient = WebClient(
+    host: _chatEngineIoUrl,
+    useHttps: true,
+  );
+
+  T _createUserRequest<T extends WebRequest>(
+      String? path, String username, String secret) {
+    final request = _webClient.createRequest<T>(path);
+    request.withHeader("Project-ID", _projectId);
+    request.withHeader("User-Name", username);
+    request.withHeader("User-Secret", secret);
+    request.withJsonContentType();
+    return request;
+  }
+
+  T _createPrivateRequest<T extends WebRequest>(
+    String? path,
+    String privateKey,
+  ) {
+    final request = _webClient.createRequest<T>(path);
+    request.withHeader("PRIVATE-KEY", privateKey);
+    request.withJsonContentType();
+    return request;
+  }
 }

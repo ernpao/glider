@@ -73,6 +73,32 @@ void main() {
     client.closeSocket();
   });
 
+  test("Fast Keystroke Loop Test", () async {
+    client.openSocket();
+
+    /// Number of times to send the keystroke
+    const count = 500;
+
+    /// Base delay between keystrokes in seconds
+    const baseDelay = 0.1;
+
+    /// Expected network latency in seconds
+    const latency = 0.01;
+
+    for (var i = 0; i < count; i++) {
+      const totalDelay = baseDelay + latency;
+
+      debugPrint(
+        "Sending keystroke ${i + 1} of $count followed by a delay of $totalDelay seconds.",
+      );
+
+      client.sendKeystroke("enter");
+      await delay(totalDelay);
+    }
+
+    client.closeSocket();
+  });
+
   test("Keynote Keystroke Test", () async {
     client.openSocket();
     client.sendKeystroke("A", modifier: KeyboardModifier.shift);

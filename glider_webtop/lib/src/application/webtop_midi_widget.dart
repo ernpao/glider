@@ -5,8 +5,8 @@ import 'apis/apis.dart';
 
 /// Base class for a widget that sends MIDI Continous Control
 /// messages to the remote Webtop server.
-abstract class MidiWidget extends StatelessWidget {
-  MidiWidget({
+abstract class WebtopMidiWidget extends StatelessWidget {
+  WebtopMidiWidget({
     Key? key,
     required this.interface,
     required this.parameters,

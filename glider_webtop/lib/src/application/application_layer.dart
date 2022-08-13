@@ -1,7 +1,7 @@
 library application_layer;
 
 export 'apis/apis.dart';
-export 'buffer_source_live_image.dart';
 export 'widgets/widgets.dart';
 
-export 'midi_widget.dart';
+export 'webtop_live_image.dart';
+export 'webtop_midi_widget.dart';

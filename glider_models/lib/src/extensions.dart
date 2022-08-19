@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
@@ -70,7 +69,10 @@ extension StringExtensions on String {
 
   Uint8List? toUint8List() {
     final intList = toIntList();
-    if (intList != null) Uint8List.fromList(intList);
+    if (intList != null) {
+      return Uint8List.fromList(intList);
+    }
+    return null;
   }
 
   String truncate(int length, {bool appendEllipsis = true}) {

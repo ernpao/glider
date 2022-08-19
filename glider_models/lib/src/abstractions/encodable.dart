@@ -23,6 +23,7 @@ abstract class Encodable extends Mappable {
     } else if (nonEncodable is DateTime) {
       return nonEncodable.toIso8601String();
     }
+    return null;
   }
 
   /// Create a prettified string of this [Encodable] object.

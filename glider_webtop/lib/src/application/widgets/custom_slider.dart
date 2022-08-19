@@ -57,6 +57,7 @@ class CustomSlider extends StatelessWidget {
         return newVal;
       }
     }
+    return null;
   }
 
   /// Simply scale the delta based on the screen and widget height.

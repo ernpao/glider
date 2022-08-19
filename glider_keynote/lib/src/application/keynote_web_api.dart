@@ -54,4 +54,13 @@ class KeynoteWebAPI extends WsAPI implements KeynoteInterface {
       ..withParameter("key", text);
     return request.send();
   }
+
+  @override
+  Future<WebResponse> sendNote(String note) async {
+    final json = JSON()..setProperty("note", note);
+    final request = createPOST("/note")
+      ..withBody(json)
+      ..withJsonContentType();
+    return await request.send();
+  }
 }

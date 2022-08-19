@@ -104,6 +104,10 @@ void main() {
     client.sendKeystroke("A", modifier: KeyboardModifier.shift);
     client.closeSocket();
   });
+
+  test("Keynote Notepad Test", () async {
+    await client.sendNote("This is a sample note.");
+  });
 }
 
 Future<void> delay(double seconds) {

@@ -86,3 +86,17 @@ class KeyboardKeystrokeCommand extends KeynoteKeyboardCommand {
     setBody(data.stringify());
   }
 }
+
+class KeynoteBroadcastCommand extends KeynoteCommand {
+  KeynoteBroadcastCommand({
+    required String sender,
+    required String message,
+  }) : super(
+          sender: sender,
+          topic: KeynoteCommandTopic.broadcast,
+        ) {
+    final data = JSON();
+    data.set("message", message);
+    setBody(data.stringify());
+  }
+}

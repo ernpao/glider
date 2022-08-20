@@ -101,12 +101,34 @@ void main() {
 
   test("Keynote Keystroke Test", () async {
     client.openSocket();
-    client.sendKeystroke("A", modifier: KeyboardModifier.shift);
+    client.sendKeystroke("a", modifier: KeyboardModifier.shift);
     client.closeSocket();
   });
 
   test("Keynote Notepad Test", () async {
     await client.sendNote("This is a sample note.");
+  });
+
+  test("Keynote Broadcast Test", () async {
+    final receiver = KeynoteWebAPI(
+      host: "192.168.100.191",
+      port: 7982,
+      socketPort: 8082,
+    );
+
+    client.openSocket();
+    receiver.openSocket();
+
+    const sampleMessage = "This is a sample broadcast.";
+
+    receiver.listenToBroadcasts((messageReceived) {
+      assert(messageReceived == sampleMessage);
+    });
+    client.broadcast(sampleMessage);
+
+    await delay(3.0);
+    client.closeSocket();
+    receiver.closeSocket();
   });
 }
 

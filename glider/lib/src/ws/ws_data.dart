@@ -93,10 +93,14 @@ class WsData extends JSON {
     message._rawData = json;
 
     /// Parse the timestamp of the message
-    final timestamp = json.get<String>(kCreated);
-    if (timestamp != null) {
-      final dateTime = DateTime.tryParse(timestamp);
-      if (dateTime != null) message._setCreated(dateTime);
+    if (json.get(kCreated) is DateTime) {
+      message._setCreated(json.get(kCreated)!);
+    } else {
+      final timestamp = json.get<String>(kCreated);
+      if (timestamp != null) {
+        final dateTime = DateTime.tryParse(timestamp);
+        if (dateTime != null) message._setCreated(dateTime);
+      }
     }
     return message;
   }

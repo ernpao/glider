@@ -63,4 +63,31 @@ class KeynoteWebAPI extends WsAPI implements KeynoteInterface {
       ..withJsonContentType();
     return await request.send();
   }
+
+  @override
+  void broadcast(String message) {
+    sendWsData(KeynoteBroadcastCommand(
+      sender: socket.uuid,
+      message: message,
+    ));
+  }
+
+  @override
+  void listenToBroadcasts(Function(String) onMessage) {
+    if (isOpen) {
+      // listen(WebSocketJsonListener(
+      //   onDataReceived: (json) {
+      //     final body = JSON.parse(json.getProperty<String>('_ws_body')!);
+      //     onMessage(body.getProperty<String>('message')!);
+      //   },
+      // ));
+
+      listen(WsDataListener(
+        onMessage: (wsData) {
+          final body = JSON.parse(wsData.body!);
+          onMessage(body.getProperty<String>('message')!);
+        },
+      ));
+    }
+  }
 }

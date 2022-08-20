@@ -13,6 +13,7 @@ enum KeyboardModifier {
 enum KeynoteCommandTopic {
   mouse,
   keyboard,
+  broadcast,
 }
 
 enum KeynoteMouseCommandType {

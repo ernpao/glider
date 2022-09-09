@@ -101,12 +101,19 @@ void main() {
 
   test("Keynote Keystroke Test", () async {
     client.openSocket();
-    client.sendKeystroke("a", modifier: KeyboardModifier.shift);
+    client.sendKeystroke("a", modifiers: [KeyboardModifier.shift]);
     client.closeSocket();
   });
 
   test("Keynote Notepad Test", () async {
     await client.sendNote("This is a sample note.");
+  });
+
+  test("Keynote Multiple Modifiers Test", () async {
+    client.openSocket();
+    client.sendKeystroke("f",
+        modifiers: [KeyboardModifier.control, KeyboardModifier.shift]);
+    client.closeSocket();
   });
 
   test("Keynote Broadcast Test", () async {

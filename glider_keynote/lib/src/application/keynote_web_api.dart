@@ -17,11 +17,11 @@ class KeynoteWebAPI extends WsAPI implements KeynoteInterface {
         );
 
   @override
-  void sendKeystroke(String key, {KeyboardModifier? modifier}) {
+  void sendKeystroke(String key, {List<KeyboardModifier>? modifiers}) {
     sendWsData(KeyboardKeystrokeCommand(
       sender: socket.uuid,
       key: key,
-      modifier: modifier,
+      modifiers: modifiers,
     ));
   }
 
@@ -75,13 +75,6 @@ class KeynoteWebAPI extends WsAPI implements KeynoteInterface {
   @override
   void listenToBroadcasts(Function(String) onMessage) {
     if (isOpen) {
-      // listen(WebSocketJsonListener(
-      //   onDataReceived: (json) {
-      //     final body = JSON.parse(json.getProperty<String>('_ws_body')!);
-      //     onMessage(body.getProperty<String>('message')!);
-      //   },
-      // ));
-
       listen(WsDataListener(
         onMessage: (wsData) {
           final body = JSON.parse(wsData.body!);

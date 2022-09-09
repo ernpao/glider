@@ -76,13 +76,19 @@ class KeyboardKeystrokeCommand extends KeynoteKeyboardCommand {
   KeyboardKeystrokeCommand({
     required String sender,
     required String key,
-    KeyboardModifier? modifier,
+    List<KeyboardModifier>? modifiers,
   }) : super(
           sender: sender,
         ) {
     final data = JSON();
     data.set("key", key);
-    data.set("modifier", modifier != null ? enumToString(modifier) : null);
+
+    if (modifiers != null) {
+      final modifierStrings =
+          modifiers.map((modifier) => enumToString(modifier));
+      data.set("modifiers", modifierStrings.toList());
+    }
+
     setBody(data.stringify());
   }
 }

@@ -83,4 +83,13 @@ extension StringExtensions on String {
       return this;
     }
   }
+
+  String capitalizeFirstLetter() {
+    String result = "";
+    if (length > 0) {
+      final firstLetter = substring(0, 1).toUpperCase();
+      result = firstLetter + substring(1);
+    }
+    return result;
+  }
 }

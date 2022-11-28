@@ -140,7 +140,7 @@ class _WebWidgetsDemoState extends State<_WebWidgetsDemo> {
           width: Hover.getScreenWidth(context),
           child: WsDataMonitor(
             socket: WsSocket(
-              host: "192.168.100.191",
+              host: "192.168.1.191",
               port: 6868,
             ),
             builder: (context, event) {

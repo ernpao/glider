@@ -6,7 +6,7 @@ import 'package:glider_keynote/glider_keynote.dart';
 
 void main() {
   final client = KeynoteWebAPI(
-    host: "192.168.100.191",
+    host: "192.168.1.191",
     port: 7982,
     socketPort: 8082,
   );
@@ -118,7 +118,7 @@ void main() {
 
   test("Keynote Broadcast Test", () async {
     final receiver = KeynoteWebAPI(
-      host: "192.168.100.191",
+      host: "192.168.1.191",
       port: 7982,
       socketPort: 8082,
     );
